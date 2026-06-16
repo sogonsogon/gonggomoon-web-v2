@@ -14,6 +14,7 @@ import {
   Trash2Icon,
 } from 'lucide-react';
 
+import SettingsModal from '@/features/auth/components/ui/SettingsModal';
 import logoImage from '@/shared/assets/images/logo.png';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar';
 import {
@@ -83,83 +84,88 @@ export function MainSidebarContent({
   showCollapseToggle = true,
   onNavigate,
 }: MainSidebarContentProps) {
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
+
   return (
-    <div className="flex h-full min-h-0 flex-col gap-2.5 overflow-hidden bg-background p-3 text-foreground group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">
-      <SidebarHeader className="p-0">
-        <div className="group-data-[collapsible=icon]:hidden">
-          <div className="flex h-11 min-w-0 items-center justify-between p-1">
-            <Link href="/" className="flex min-w-0 items-center" onClick={onNavigate}>
-              <Image
-                src={logoImage}
-                alt="공고문"
-                className="h-[30px] w-auto shrink-0 object-contain"
-                priority
-              />
-            </Link>
-            {showCollapseToggle ? <SidebarToggleButton /> : null}
+    <>
+      <div className="flex h-full min-h-0 flex-col gap-2.5 overflow-hidden bg-background p-3 text-foreground group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">
+        <SidebarHeader className="p-0">
+          <div className="group-data-[collapsible=icon]:hidden">
+            <div className="flex h-11 min-w-0 items-center justify-between p-1">
+              <Link href="/" className="flex min-w-0 items-center" onClick={onNavigate}>
+                <Image
+                  src={logoImage}
+                  alt="공고문"
+                  className="h-[30px] w-auto shrink-0 object-contain"
+                  priority
+                />
+              </Link>
+              {showCollapseToggle ? <SidebarToggleButton /> : null}
+            </div>
           </div>
-        </div>
-        {showCollapseToggle ? (
-          <div className="hidden justify-center group-data-[collapsible=icon]:flex">
-            <SidebarToggleButton collapsed />
-          </div>
-        ) : null}
-      </SidebarHeader>
+          {showCollapseToggle ? (
+            <div className="hidden justify-center group-data-[collapsible=icon]:flex">
+              <SidebarToggleButton collapsed />
+            </div>
+          ) : null}
+        </SidebarHeader>
 
-      <nav className="group-data-[collapsible=icon]:hidden">
-        <div className="flex flex-col gap-1 px-1">
-          {mainNavItems.map((item) => (
-            <MainSidebarNavItem key={item.label} item={item} onNavigate={onNavigate} />
-          ))}
-        </div>
-      </nav>
-
-      <nav className="hidden flex-col items-center gap-2 group-data-[collapsible=icon]:flex">
-        {mainNavItems.map((item) => (
-          <CollapsedIconButton
-            key={item.label}
-            label={item.label}
-            icon={item.iconComponent}
-            href={item.href}
-            active={item.active}
-            onNavigate={onNavigate}
-          />
-        ))}
-      </nav>
-
-      <SidebarSeparator className="mx-0 bg-border group-data-[collapsible=icon]:w-10" />
-
-      <SidebarContent className="gap-2 overflow-hidden p-0">
-        <div className="flex min-h-0 flex-1 flex-col gap-2 group-data-[collapsible=icon]:hidden">
-          <div className="px-2 text-xs leading-[1.3] font-semibold whitespace-nowrap text-muted-foreground">
-            최근 포트폴리오 전략
-          </div>
-          <div className="flex min-h-0 flex-col gap-1">
-            {MOCK_RECENT_STRATEGIES.map((strategy) => (
-              <RecentStrategyCard key={strategy.id} strategy={strategy} onNavigate={onNavigate} />
+        <nav className="group-data-[collapsible=icon]:hidden">
+          <div className="flex flex-col gap-1 px-1">
+            {mainNavItems.map((item) => (
+              <MainSidebarNavItem key={item.label} item={item} onNavigate={onNavigate} />
             ))}
           </div>
-        </div>
+        </nav>
 
-        <div className="hidden min-h-0 flex-1 flex-col items-center gap-2 group-data-[collapsible=icon]:flex">
-          {MOCK_RECENT_STRATEGIES.map((strategy) => (
+        <nav className="hidden flex-col items-center gap-2 group-data-[collapsible=icon]:flex">
+          {mainNavItems.map((item) => (
             <CollapsedIconButton
-              key={strategy.id}
-              label={strategy.title}
-              icon={FileTextIcon}
-              href={strategy.href}
+              key={item.label}
+              label={item.label}
+              icon={item.iconComponent}
+              href={item.href}
+              active={item.active}
               onNavigate={onNavigate}
             />
           ))}
-        </div>
-      </SidebarContent>
+        </nav>
 
-      <SidebarSeparator className="mx-0 bg-border group-data-[collapsible=icon]:w-10" />
+        <SidebarSeparator className="mx-0 bg-border group-data-[collapsible=icon]:w-10" />
 
-      <SidebarFooter className="p-0">
-        <UserProfile />
-      </SidebarFooter>
-    </div>
+        <SidebarContent className="gap-2 overflow-hidden p-0">
+          <div className="flex min-h-0 flex-1 flex-col gap-2 group-data-[collapsible=icon]:hidden">
+            <div className="px-2 text-xs leading-[1.3] font-semibold whitespace-nowrap text-muted-foreground">
+              최근 포트폴리오 전략
+            </div>
+            <div className="flex min-h-0 flex-col gap-1">
+              {MOCK_RECENT_STRATEGIES.map((strategy) => (
+                <RecentStrategyCard key={strategy.id} strategy={strategy} onNavigate={onNavigate} />
+              ))}
+            </div>
+          </div>
+
+          <div className="hidden min-h-0 flex-1 flex-col items-center gap-2 group-data-[collapsible=icon]:flex">
+            {MOCK_RECENT_STRATEGIES.map((strategy) => (
+              <CollapsedIconButton
+                key={strategy.id}
+                label={strategy.title}
+                icon={FileTextIcon}
+                href={strategy.href}
+                onNavigate={onNavigate}
+              />
+            ))}
+          </div>
+        </SidebarContent>
+
+        <SidebarSeparator className="mx-0 bg-border group-data-[collapsible=icon]:w-10" />
+
+        <SidebarFooter className="p-0">
+          <UserProfile onSettingsClick={() => setSettingsOpen(true)} />
+        </SidebarFooter>
+      </div>
+      <SettingsModal open={settingsOpen} onOpenChange={setSettingsOpen} />
+    </>
   );
 }
 
@@ -210,12 +216,14 @@ function CollapsedIconButton({
   href,
   active = false,
   onNavigate,
+  onClick,
 }: {
   label: string;
   icon: SidebarIcon;
   href?: string;
   active?: boolean;
   onNavigate?: () => void;
+  onClick?: () => void;
 }) {
   const className = cn(
     'flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-[10px] bg-transparent text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
@@ -231,7 +239,7 @@ function CollapsedIconButton({
   }
 
   return (
-    <button type="button" aria-label={label} title={label} className={className}>
+    <button type="button" aria-label={label} title={label} className={className} onClick={onClick}>
       <Icon className="size-[18px]" aria-hidden="true" />
     </button>
   );
@@ -294,7 +302,7 @@ function StrategyItemDropdown({ strategy }: { strategy: RecentStrategy }) {
   );
 }
 
-function UserProfile() {
+function UserProfile({ onSettingsClick }: { onSettingsClick: () => void }) {
   return (
     <>
       <div className="group-data-[collapsible=icon]:hidden">
@@ -314,6 +322,7 @@ function UserProfile() {
             type="button"
             aria-label="설정"
             className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-[var(--radius-sm)] bg-transparent text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            onClick={onSettingsClick}
           >
             <SettingsIcon className="size-4" aria-hidden="true" />
           </button>
@@ -321,7 +330,7 @@ function UserProfile() {
       </div>
 
       <div className="hidden justify-center group-data-[collapsible=icon]:flex">
-        <CollapsedIconButton label="설정" icon={SettingsIcon} />
+        <CollapsedIconButton label="설정" icon={SettingsIcon} onClick={onSettingsClick} />
       </div>
     </>
   );

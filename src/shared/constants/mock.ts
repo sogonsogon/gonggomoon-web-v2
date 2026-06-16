@@ -1,7 +1,7 @@
 export const MOCK_USER = {
   name: '박세윤',
   email: 'seun0714@naver.com',
-  profileImage: '',
+  profileImage: 'https://loremflickr.com/100/100',
 } as const;
 
 export const MOCK_MAIN_NAV_ITEMS = [
