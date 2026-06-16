@@ -1,3 +1,5 @@
+import JobPostingHomeSection from '@/features/job-posting/components/sections/JobPostingHomeSection';
+
 export default function Page() {
-  return <div>메인 페이지</div>;
+  return <JobPostingHomeSection />;
 }
