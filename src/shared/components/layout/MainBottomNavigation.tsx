@@ -12,29 +12,28 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/shared/components/ui/sheet';
+import { MOCK_MAIN_NAV_ITEMS } from '@/shared/constants/mock';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { cn } from '@/shared/lib/cn';
 
-type BottomNavigationItem = {
-  label: string;
-  href: string;
-  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-  active?: boolean;
+type BottomNavigationIconKey = (typeof MOCK_MAIN_NAV_ITEMS)[number]['icon'];
+
+type BottomNavigationItem = (typeof MOCK_MAIN_NAV_ITEMS)[number] & {
+  iconComponent: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 };
 
-const bottomNavigationItems: BottomNavigationItem[] = [
-  {
-    label: '포폴 전략',
-    href: '/',
-    icon: TargetIcon,
-    active: true,
-  },
-  {
-    label: '경험 관리',
-    href: '/experience',
-    icon: BriefcaseBusinessIcon,
-  },
-];
+const bottomNavigationIconMap: Record<
+  BottomNavigationIconKey,
+  React.ComponentType<React.SVGProps<SVGSVGElement>>
+> = {
+  target: TargetIcon,
+  briefcase: BriefcaseBusinessIcon,
+};
+
+const bottomNavigationItems: BottomNavigationItem[] = MOCK_MAIN_NAV_ITEMS.map((item) => ({
+  ...item,
+  iconComponent: bottomNavigationIconMap[item.icon],
+}));
 
 export default function MainBottomNavigation() {
   const [open, setOpen] = React.useState(false);
@@ -81,7 +80,7 @@ export default function MainBottomNavigation() {
 }
 
 function BottomNavigationLink({ item }: { item: BottomNavigationItem }) {
-  const Icon = item.icon;
+  const Icon = item.iconComponent;
 
   return (
     <Link

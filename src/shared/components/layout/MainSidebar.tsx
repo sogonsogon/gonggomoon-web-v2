@@ -15,6 +15,13 @@ import {
 } from 'lucide-react';
 
 import logoImage from '@/shared/assets/images/logo.png';
+import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/shared/components/ui/dropdown-menu';
 import {
   Sidebar,
   SidebarContent,
@@ -24,69 +31,36 @@ import {
   useSidebar,
 } from '@/shared/components/ui/sidebar';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/shared/components/ui/dropdown-menu';
+  MOCK_MAIN_NAV_ITEMS,
+  MOCK_RECENT_STRATEGIES,
+  MOCK_USER,
+} from '@/shared/constants/mock';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { cn } from '@/shared/lib/cn';
 
 type SidebarIcon = React.ComponentType<React.SVGProps<SVGSVGElement>>;
+type MainNavIconKey = (typeof MOCK_MAIN_NAV_ITEMS)[number]['icon'];
 
-type MainNavItem = {
-  label: string;
-  icon: SidebarIcon;
-  active?: boolean;
-  href: string;
+type MainNavItem = (typeof MOCK_MAIN_NAV_ITEMS)[number] & {
+  iconComponent: SidebarIcon;
 };
 
-type RecentStrategy = {
-  id: string;
-  title: string;
-  date: string;
-  href: string;
-};
+type RecentStrategy = (typeof MOCK_RECENT_STRATEGIES)[number];
 
 interface MainSidebarContentProps {
   showCollapseToggle?: boolean;
   onNavigate?: () => void;
 }
 
-const mainNavItems: MainNavItem[] = [
-  {
-    label: '포폴 전략',
-    icon: TargetIcon,
-    active: true,
-    href: '/',
-  },
-  {
-    label: '경험 관리',
-    icon: BriefcaseBusinessIcon,
-    href: '/experience',
-  },
-];
-
-const mockRecentStrategies: RecentStrategy[] = [
-  {
-    id: '1',
-    title: '당근 Frontend 개발자 채용',
-    date: '2026. 06. 02',
-    href: '/strategy/1/result',
-  },
-  {
-    id: '2',
-    title: '토스 Backend 개발자 채용',
-    date: '2026. 06. 01',
-    href: '/strategy/2/result',
-  },
-];
-
-const mockUser = {
-  name: '박세윤',
-  email: 'seun0714@naver.com',
-  initial: '박',
+const mainNavIconMap: Record<MainNavIconKey, SidebarIcon> = {
+  target: TargetIcon,
+  briefcase: BriefcaseBusinessIcon,
 };
+
+const mainNavItems: MainNavItem[] = MOCK_MAIN_NAV_ITEMS.map((item) => ({
+  ...item,
+  iconComponent: mainNavIconMap[item.icon],
+}));
 
 export default function MainSidebar() {
   const isMobile = useIsMobile();
@@ -145,7 +119,7 @@ export function MainSidebarContent({
           <CollapsedIconButton
             key={item.label}
             label={item.label}
-            icon={item.icon}
+            icon={item.iconComponent}
             href={item.href}
             active={item.active}
             onNavigate={onNavigate}
@@ -161,14 +135,14 @@ export function MainSidebarContent({
             최근 포트폴리오 전략
           </div>
           <div className="flex min-h-0 flex-col gap-1">
-            {mockRecentStrategies.map((strategy) => (
+            {MOCK_RECENT_STRATEGIES.map((strategy) => (
               <RecentStrategyCard key={strategy.id} strategy={strategy} onNavigate={onNavigate} />
             ))}
           </div>
         </div>
 
         <div className="hidden min-h-0 flex-1 flex-col items-center gap-2 group-data-[collapsible=icon]:flex">
-          {mockRecentStrategies.map((strategy) => (
+          {MOCK_RECENT_STRATEGIES.map((strategy) => (
             <CollapsedIconButton
               key={strategy.id}
               label={strategy.title}
@@ -209,7 +183,7 @@ function SidebarToggleButton({ collapsed = false }: { collapsed?: boolean }) {
 }
 
 function MainSidebarNavItem({ item, onNavigate }: { item: MainNavItem; onNavigate?: () => void }) {
-  const Icon = item.icon;
+  const Icon = item.iconComponent;
 
   return (
     <Link
@@ -329,10 +303,10 @@ function UserProfile() {
             <UserAvatar />
             <div className="flex min-w-0 flex-col gap-0.5">
               <span className="min-w-0 truncate whitespace-nowrap text-[13px] leading-[1.25] font-semibold text-foreground">
-                {mockUser.name}
+                {MOCK_USER.name}
               </span>
               <span className="min-w-0 truncate whitespace-nowrap text-[11px] leading-[1.25] font-medium text-muted-foreground">
-                {mockUser.email}
+                {MOCK_USER.email}
               </span>
             </div>
           </div>
@@ -355,8 +329,11 @@ function UserProfile() {
 
 function UserAvatar() {
   return (
-    <div className="flex size-[34px] shrink-0 items-center justify-center rounded-full bg-muted text-sm leading-none font-bold text-foreground">
-      {mockUser.initial}
-    </div>
+    <Avatar className="size-[34px] text-sm">
+      <AvatarImage src={MOCK_USER.profileImage || undefined} alt={`${MOCK_USER.name} 프로필`} />
+      <AvatarFallback className="font-bold text-foreground">
+        {MOCK_USER.name.slice(0, 1)}
+      </AvatarFallback>
+    </Avatar>
   );
 }
