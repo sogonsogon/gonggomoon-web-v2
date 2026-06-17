@@ -183,7 +183,7 @@ function WithdrawView({
         />
       </label>
 
-      <label className="flex cursor-pointer items-center gap-2.5">
+      <label className="flex cursor-pointer items-center gap-2.5 px-1">
         <Checkbox
           checked={checked}
           className="size-[18px]"
