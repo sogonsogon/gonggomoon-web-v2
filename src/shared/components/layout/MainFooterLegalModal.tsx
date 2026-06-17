@@ -78,7 +78,7 @@ export default function MainFooterLegalModal({ type, onOpenChange }: MainFooterL
 
   return (
     <Modal open={type !== null} onOpenChange={onOpenChange}>
-      <ModalContent size="lg" className="overflow-hidden">
+      <ModalContent size="xl" className="overflow-hidden">
         {document ? (
           <>
             <ModalHeader title={document.title} description={document.description} />
@@ -94,7 +94,7 @@ export default function MainFooterLegalModal({ type, onOpenChange }: MainFooterL
                     ),
                     h2: ({ ...props }) => (
                       <h2
-                        className="mt-6 text-base leading-[1.45] font-semibold text-foreground first:mt-0"
+                        className="mt-3 mb-2 text-base leading-[1.45] font-semibold text-foreground first:mt-0"
                         {...props}
                       />
                     ),
@@ -105,17 +105,17 @@ export default function MainFooterLegalModal({ type, onOpenChange }: MainFooterL
                       />
                     ),
                     p: ({ ...props }) => (
-                      <p className="text-sm leading-[1.7] text-muted-foreground" {...props} />
+                      <p className="text-sm leading-[1.4] text-muted-foreground" {...props} />
                     ),
                     ul: ({ ...props }) => (
                       <ul
-                        className="my-3 list-disc space-y-1.5 pl-5 text-sm leading-[1.7] text-muted-foreground"
+                        className="my-1 list-disc pl-5 text-sm leading-[1.4] text-muted-foreground"
                         {...props}
                       />
                     ),
                     ol: ({ ...props }) => (
                       <ol
-                        className="my-3 list-decimal space-y-1.5 pl-5 text-sm leading-[1.7] text-muted-foreground"
+                        className="my-1 list-decimal  pl-5 text-sm leading-[1.4] text-muted-foreground"
                         {...props}
                       />
                     ),
