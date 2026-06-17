@@ -29,7 +29,7 @@ export default function JobPostingAnalysisSection({ strategyId }: JobPostingAnal
           <Button asChild size="sm" className="w-full md:w-auto">
             <Link href={`/strategy/${strategyId}/experience-select`}>
               <ArrowRightIcon />
-              다음 단계
+              경험 입력
             </Link>
           </Button>
         </div>
