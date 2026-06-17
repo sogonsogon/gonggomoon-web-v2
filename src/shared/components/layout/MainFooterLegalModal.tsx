@@ -13,13 +13,18 @@ type MainFooterLegalModalProps = {
   onOpenChange: (open: boolean) => void;
 };
 
-const legalDocuments: Record<MainFooterLegalModalType, { title: string; href: string }> = {
+const legalDocuments: Record<
+  MainFooterLegalModalType,
+  { title: string; description: string; href: string }
+> = {
   terms: {
     title: '서비스 이용약관',
+    description: '서비스 이용약관 문서 내용을 확인합니다.',
     href: '/legal/terms.md',
   },
   privacy: {
     title: '개인정보처리방침',
+    description: '개인정보처리방침 문서 내용을 확인합니다.',
     href: '/legal/privacy.md',
   },
 };
@@ -76,7 +81,7 @@ export default function MainFooterLegalModal({ type, onOpenChange }: MainFooterL
       <ModalContent size="lg" className="overflow-hidden">
         {document ? (
           <>
-            <ModalHeader title={document.title} />
+            <ModalHeader title={document.title} description={document.description} />
             <div className="min-h-0 overflow-y-auto pr-1">
               {error ? (
                 <p className="text-sm leading-[1.6] text-muted-foreground">{error}</p>
