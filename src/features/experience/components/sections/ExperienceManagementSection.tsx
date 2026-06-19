@@ -44,7 +44,7 @@ export default function ExperienceManagementSection() {
               경험 관리
             </h1>
             <p className="mt-1 text-xs leading-[1.5] text-muted-foreground break-keep break-words">
-              등록한 경험을 확인하고, 채용 공고 맞춤 전략에 활용할 수 있도록 관리하세요.
+              등록한 경험을 확인하고, 관리할 수 있어요.
             </p>
           </div>
 
