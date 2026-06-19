@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { BriefcaseBusinessIcon, MenuIcon, TargetIcon } from 'lucide-react';
 
 import { MainSidebarContent } from '@/shared/components/layout/MainSidebar';
@@ -35,8 +36,13 @@ const bottomNavigationItems: BottomNavigationItem[] = MOCK_MAIN_NAV_ITEMS.map((i
   iconComponent: bottomNavigationIconMap[item.icon],
 }));
 
+function isMainNavActive(pathname: string, href: string) {
+  return pathname === href;
+}
+
 export default function MainBottomNavigation() {
   const [open, setOpen] = React.useState(false);
+  const pathname = usePathname();
   const isMobile = useIsMobile();
   const drawerOpen = isMobile && open;
 
@@ -44,7 +50,11 @@ export default function MainBottomNavigation() {
     <>
       <nav className="fixed inset-x-4 bottom-4 z-40 grid h-16 grid-cols-3 items-center gap-1 rounded-full border border-border/60 bg-background/95 p-1.5 shadow-[0_12px_32px_#0000001a] backdrop-blur md:hidden">
         {bottomNavigationItems.map((item) => (
-          <BottomNavigationLink key={item.label} item={item} />
+          <BottomNavigationLink
+            key={item.label}
+            item={item}
+            active={isMainNavActive(pathname, item.href)}
+          />
         ))}
 
         <button
@@ -79,7 +89,13 @@ export default function MainBottomNavigation() {
   );
 }
 
-function BottomNavigationLink({ item }: { item: BottomNavigationItem }) {
+function BottomNavigationLink({
+  item,
+  active,
+}: {
+  item: BottomNavigationItem;
+  active: boolean;
+}) {
   const Icon = item.iconComponent;
 
   return (
@@ -87,7 +103,7 @@ function BottomNavigationLink({ item }: { item: BottomNavigationItem }) {
       href={item.href}
       className={cn(
         'flex h-full min-w-0 flex-col items-center justify-center gap-1 rounded-full px-2 text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
-        item.active && 'bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary',
+        active && 'bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary',
       )}
     >
       <Icon className="size-5 shrink-0" aria-hidden="true" />

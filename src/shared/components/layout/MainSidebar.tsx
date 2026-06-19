@@ -3,6 +3,7 @@
 import * as React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   BriefcaseBusinessIcon,
   ChevronLeftIcon,
@@ -53,6 +54,8 @@ interface MainSidebarContentProps {
   onNavigate?: () => void;
 }
 
+const strategyRoutePattern = /^\/strategy\/([^/]+)\/(analysis|experience-select|result)$/;
+
 const mainNavIconMap: Record<MainNavIconKey, SidebarIcon> = {
   target: TargetIcon,
   briefcase: BriefcaseBusinessIcon,
@@ -62,6 +65,18 @@ const mainNavItems: MainNavItem[] = MOCK_MAIN_NAV_ITEMS.map((item) => ({
   ...item,
   iconComponent: mainNavIconMap[item.icon],
 }));
+
+function isMainNavActive(pathname: string, href: string) {
+  return pathname === href;
+}
+
+function getActiveStrategyId(pathname: string) {
+  return strategyRoutePattern.exec(pathname)?.[1] ?? null;
+}
+
+function isRecentStrategyActive(pathname: string, strategyId: string) {
+  return getActiveStrategyId(pathname) === strategyId;
+}
 
 export default function MainSidebar() {
   const isMobile = useIsMobile();
@@ -84,6 +99,7 @@ export function MainSidebarContent({
   showCollapseToggle = true,
   onNavigate,
 }: MainSidebarContentProps) {
+  const pathname = usePathname();
   const [settingsOpen, setSettingsOpen] = React.useState(false);
 
   return (
@@ -113,7 +129,12 @@ export function MainSidebarContent({
         <nav className="group-data-[collapsible=icon]:hidden">
           <div className="flex flex-col gap-1 px-1">
             {mainNavItems.map((item) => (
-              <MainSidebarNavItem key={item.label} item={item} onNavigate={onNavigate} />
+              <MainSidebarNavItem
+                key={item.label}
+                item={item}
+                active={isMainNavActive(pathname, item.href)}
+                onNavigate={onNavigate}
+              />
             ))}
           </div>
         </nav>
@@ -125,7 +146,7 @@ export function MainSidebarContent({
               label={item.label}
               icon={item.iconComponent}
               href={item.href}
-              active={item.active}
+              active={isMainNavActive(pathname, item.href)}
               onNavigate={onNavigate}
             />
           ))}
@@ -140,7 +161,12 @@ export function MainSidebarContent({
             </div>
             <div className="flex min-h-0 flex-col gap-1">
               {MOCK_RECENT_STRATEGIES.map((strategy) => (
-                <RecentStrategyCard key={strategy.id} strategy={strategy} onNavigate={onNavigate} />
+                <RecentStrategyCard
+                  key={strategy.id}
+                  strategy={strategy}
+                  active={isRecentStrategyActive(pathname, strategy.id)}
+                  onNavigate={onNavigate}
+                />
               ))}
             </div>
           </div>
@@ -152,6 +178,7 @@ export function MainSidebarContent({
                 label={strategy.title}
                 icon={FileTextIcon}
                 href={strategy.href}
+                active={isRecentStrategyActive(pathname, strategy.id)}
                 onNavigate={onNavigate}
               />
             ))}
@@ -188,7 +215,15 @@ function SidebarToggleButton({ collapsed = false }: { collapsed?: boolean }) {
   );
 }
 
-function MainSidebarNavItem({ item, onNavigate }: { item: MainNavItem; onNavigate?: () => void }) {
+function MainSidebarNavItem({
+  item,
+  active,
+  onNavigate,
+}: {
+  item: MainNavItem;
+  active: boolean;
+  onNavigate?: () => void;
+}) {
   const Icon = item.iconComponent;
 
   return (
@@ -197,7 +232,7 @@ function MainSidebarNavItem({ item, onNavigate }: { item: MainNavItem; onNavigat
       onClick={onNavigate}
       className={cn(
         'flex h-10 w-full cursor-pointer items-center justify-between gap-[var(--gap-sm)] overflow-hidden rounded-[var(--radius-sm)] bg-transparent px-2.5 py-2 text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
-        item.active && 'bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary',
+        active && 'bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary',
       )}
     >
       <span className="flex min-w-0 items-center gap-[9px] overflow-hidden">
@@ -247,9 +282,11 @@ function CollapsedIconButton({
 
 function RecentStrategyCard({
   strategy,
+  active,
   onNavigate,
 }: {
   strategy: RecentStrategy;
+  active: boolean;
   onNavigate?: () => void;
 }) {
   return (
@@ -257,30 +294,46 @@ function RecentStrategyCard({
       <Link
         href={strategy.href}
         onClick={onNavigate}
-        className="flex min-w-0 cursor-pointer flex-col gap-[7px] rounded-[var(--radius-sm)] bg-transparent p-2.5 pr-9 text-left transition-colors hover:bg-muted/70 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+        className={cn(
+          'flex min-w-0 cursor-pointer flex-col gap-[7px] rounded-[var(--radius-sm)] bg-transparent p-2.5 pr-9 text-left transition-colors hover:bg-muted/70 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+          active && 'bg-primary/10 hover:bg-primary/10',
+        )}
       >
-        <span className="min-w-0 truncate whitespace-nowrap text-[13px] leading-[1.3] font-semibold text-foreground">
+        <span
+          className={cn(
+            'min-w-0 truncate whitespace-nowrap text-[13px] leading-[1.3] font-semibold text-foreground',
+            active && 'text-primary',
+          )}
+        >
           {strategy.title}
         </span>
-        <span className="truncate whitespace-nowrap text-[11px] leading-[1.25] font-medium text-muted-foreground">
+        <span
+          className={cn(
+            'truncate whitespace-nowrap text-[11px] leading-[1.25] font-medium text-muted-foreground',
+            active && 'text-primary/80',
+          )}
+        >
           {strategy.date}
         </span>
       </Link>
       <div className="absolute top-2 right-2 z-10">
-        <StrategyItemDropdown strategy={strategy} />
+        <StrategyItemDropdown strategy={strategy} active={active} />
       </div>
     </div>
   );
 }
 
-function StrategyItemDropdown({ strategy }: { strategy: RecentStrategy }) {
+function StrategyItemDropdown({ strategy, active }: { strategy: RecentStrategy; active: boolean }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
           type="button"
           aria-label={`${strategy.title} 메뉴`}
-          className="flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-md bg-transparent text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          className={cn(
+            'flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-md bg-transparent text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+            active && 'text-primary hover:bg-primary/10 hover:text-primary',
+          )}
           onClick={(event) => event.stopPropagation()}
         >
           <MoreHorizontalIcon className="size-4" aria-hidden="true" />
