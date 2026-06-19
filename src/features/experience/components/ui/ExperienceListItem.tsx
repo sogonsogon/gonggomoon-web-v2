@@ -1,3 +1,4 @@
+import type { KeyboardEvent, MouseEvent } from 'react';
 import { CheckIcon, ChevronRightIcon, PencilIcon, Trash2Icon } from 'lucide-react';
 
 import type { Experience } from '@/features/experience/types';
@@ -5,100 +6,139 @@ import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/cn';
 
-interface ExperienceListItemProps {
+interface BaseExperienceListItemProps {
   experience: Experience;
-  selected: boolean;
-  onSelectedChange: (experienceId: string, selected: boolean) => void;
   onDetailClick: (experience: Experience) => void;
   onEditClick: (experience: Experience) => void;
 }
 
-export default function ExperienceListItem({
-  experience,
-  selected,
-  onSelectedChange,
-  onDetailClick,
-  onEditClick,
-}: ExperienceListItemProps) {
+type ExperienceListItemProps =
+  | (BaseExperienceListItemProps & {
+      variant?: 'checkbox';
+      selected: boolean;
+      onSelectedChange: (experienceId: string, selected: boolean) => void;
+    })
+  | (BaseExperienceListItemProps & {
+      variant: 'view';
+      selected?: never;
+      onSelectedChange?: never;
+    });
+
+export default function ExperienceListItem(props: ExperienceListItemProps) {
+  const { experience, onDetailClick, onEditClick } = props;
+  const isCheckboxVariant = props.variant !== 'view';
+  const selected = isCheckboxVariant ? props.selected : false;
+
   const handleToggle = () => {
-    onSelectedChange(experience.id, !selected);
+    if (props.variant !== 'view') {
+      props.onSelectedChange(experience.id, !selected);
+      return;
+    }
+
+    onDetailClick(experience);
   };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleToggle();
+    }
+  };
+
+  const handleActionClick =
+    (action: () => void) => (event: MouseEvent<HTMLButtonElement>) => {
+      event.stopPropagation();
+      action();
+    };
 
   return (
     <li
       className={cn(
-        'flex min-w-0 items-center rounded-[var(--radius-sm)] border border-border bg-card transition-colors',
-        selected && 'border-primary bg-primary/5',
+        'flex min-w-0 items-center transition-colors',
+        isCheckboxVariant
+          ? cn(
+              'rounded-[var(--radius-sm)] border',
+              selected
+                ? 'border-primary bg-primary/5 hover:border-primary hover:bg-primary/10'
+                : 'border-border bg-card hover:border-border/80 hover:bg-muted/30',
+            )
+          : 'min-h-[86px] bg-transparent hover:bg-muted/40',
       )}
     >
       <div
-        role="checkbox"
+        role={isCheckboxVariant ? 'checkbox' : 'button'}
         tabIndex={0}
-        aria-checked={selected}
-        aria-label={`${experience.title} 선택`}
-        className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 px-4 py-3 outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        aria-checked={isCheckboxVariant ? selected : undefined}
+        aria-label={`${experience.title} ${isCheckboxVariant ? '선택' : '상세 보기'}`}
+        className={cn(
+          'flex min-w-0 flex-1 cursor-pointer items-center gap-3 outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50',
+          isCheckboxVariant ? 'px-4 py-3' : 'px-4 py-5',
+        )}
         onClick={handleToggle}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            handleToggle();
-          }
-        }}
+        onKeyDown={handleKeyDown}
       >
-        <span
-          className={cn(
-            'flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors',
-            selected
-              ? 'border-primary bg-primary text-primary-foreground'
-              : 'border-border bg-background text-transparent',
-          )}
-          aria-hidden="true"
-        >
-          <CheckIcon className="size-3.5" />
-        </span>
+        {isCheckboxVariant ? (
+          <span
+            className={cn(
+              'flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors',
+              selected
+                ? 'border-primary bg-primary text-primary-foreground'
+                : 'border-border bg-background text-transparent',
+            )}
+            aria-hidden="true"
+          >
+            <CheckIcon className="size-3.5" />
+          </span>
+        ) : null}
 
         <div className="grid min-w-0 flex-1 gap-1">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <Badge variant="secondary" className="bg-primary/10 text-primary">
               {experience.type}
             </Badge>
-            <span className="invisible text-xs leading-[1.45] text-muted-foreground md:visible">
+            <span className="text-xs leading-[1.45] text-muted-foreground">
               {experience.period}
             </span>
           </div>
-          <span className="truncate text-sm leading-[1.5] font-bold text-foreground break-keep break-words">
+          <span
+            className={cn(
+              'text-sm leading-[1.5] font-bold text-foreground break-keep break-words',
+              isCheckboxVariant ? 'truncate' : 'min-w-0',
+            )}
+          >
             {experience.title}
           </span>
         </div>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2 pr-3">
+      <div className="flex shrink-0 items-center gap-3 pr-3">
         <Button
           type="button"
           variant="ghost"
-          size="icon-sm"
+          size="icon"
           aria-label={`${experience.title} 삭제`}
           className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+          onClick={handleActionClick(() => undefined)}
         >
           <Trash2Icon className="size-4" aria-hidden="true" />
         </Button>
         <Button
           type="button"
           variant="ghost"
-          size="icon-sm"
+          size="icon"
           aria-label={`${experience.title} 수정`}
           className="text-muted-foreground hover:bg-muted hover:text-foreground"
-          onClick={() => onEditClick(experience)}
+          onClick={handleActionClick(() => onEditClick(experience))}
         >
           <PencilIcon className="size-4" aria-hidden="true" />
         </Button>
         <Button
           type="button"
           variant="ghost"
-          size="icon-sm"
+          size="icon"
           aria-label={`${experience.title} 상세 보기`}
           className="text-muted-foreground hover:bg-muted hover:text-foreground"
-          onClick={() => onDetailClick(experience)}
+          onClick={handleActionClick(() => onDetailClick(experience))}
         >
           <ChevronRightIcon className="size-4" aria-hidden="true" />
         </Button>

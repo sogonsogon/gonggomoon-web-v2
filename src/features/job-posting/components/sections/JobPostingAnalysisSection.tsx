@@ -14,7 +14,7 @@ export default function JobPostingAnalysisSection({ strategyId }: JobPostingAnal
 
   return (
     <section className="flex w-full justify-center bg-background px-5 pt-3 md:pt-6 pb-10 md:px-10">
-      <div className="grid w-full max-w-[860px] gap-[var(--gap-md)]">
+      <div className="grid w-full max-w-[860px] gap-6">
         <div className="flex flex-col gap-[var(--gap-md)] md:flex-row md:items-center md:justify-between">
           <div className="min-w-0">
             <h1 className="text-2xl leading-[1.25] font-bold tracking-normal text-foreground md:text-[28px] break-keep">

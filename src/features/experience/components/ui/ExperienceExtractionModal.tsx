@@ -44,13 +44,9 @@ export default function ExperienceExtractionModal({
             </div>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm leading-[1.45] font-bold text-foreground">
-                {/* 파일 연결 */}
-                {'박세윤_포트폴리오.pdf'}
+                박세윤_포트폴리오.pdf
               </p>
-              <p className="text-xs leading-[1.45] text-muted-foreground">
-                {/* 파일 연결 */}
-                {'1.3MB'}
-              </p>
+              <p className="text-xs leading-[1.45] text-muted-foreground">1.3MB</p>
             </div>
           </div>
         </div>

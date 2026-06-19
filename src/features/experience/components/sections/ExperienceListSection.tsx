@@ -1,9 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { PencilLineIcon } from 'lucide-react';
 
 import ExperienceListItem from '@/features/experience/components/ui/ExperienceListItem';
+import ExperienceWriteButton from '@/features/experience/components/ui/ExperienceWriteButton';
 import type { Experience } from '@/features/experience/types';
 import { Button } from '@/shared/components/ui/button';
 
@@ -62,16 +62,7 @@ export default function ExperienceListSection({
           </span>
         </div>
 
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="w-full sm:w-auto"
-          onClick={onRegisterClick}
-        >
-          <PencilLineIcon />
-          직접 입력
-        </Button>
+        <ExperienceWriteButton onClick={onRegisterClick} />
       </div>
 
       <ul className="grid gap-2">

@@ -1,27 +1,20 @@
 'use client';
 
 import * as React from 'react';
-import { ArrowRightIcon } from 'lucide-react';
 
-import ExperienceListSection from '@/features/experience/components/sections/ExperienceListSection';
+import ExperienceListItem from '@/features/experience/components/ui/ExperienceListItem';
 import ExperienceDetailModal from '@/features/experience/components/ui/ExperienceDetailModal';
 import ExperienceEditModal from '@/features/experience/components/ui/ExperienceEditModal';
 import ExperienceExtractionBanner from '@/features/experience/components/ui/ExperienceExtractionBanner';
 import ExperienceExtractionModal from '@/features/experience/components/ui/ExperienceExtractionModal';
 import ExperienceRegisterModal from '@/features/experience/components/ui/ExperienceRegisterModal';
+import ExperienceWriteButton from '@/features/experience/components/ui/ExperienceWriteButton';
 import { MOCK_EXPERIENCES } from '@/features/experience/constants/mock';
 import type { Experience } from '@/features/experience/types';
-import { Button } from '@/shared/components/ui/button';
-
-interface ExperienceSelectionSectionProps {
-  strategyId: string;
-}
 
 type ExperienceModalType = 'extraction' | 'register' | 'detail' | 'edit' | null;
 
-export default function ExperienceSelectionSection({
-  strategyId,
-}: ExperienceSelectionSectionProps) {
+export default function ExperienceManagementSection() {
   const [activeModal, setActiveModal] = React.useState<ExperienceModalType>(null);
   const [activeExperience, setActiveExperience] = React.useState<Experience | null>(null);
 
@@ -44,35 +37,47 @@ export default function ExperienceSelectionSection({
 
   return (
     <>
-      <section
-        data-strategy-id={strategyId}
-        className="flex w-full justify-center bg-background px-5 pt-3 pb-10 md:px-10 md:pt-6"
-      >
+      <section className="flex w-full justify-center bg-background px-5 pt-3 pb-10 md:px-10 md:pt-6">
         <div className="grid w-full max-w-[860px] gap-6">
-          <div className="flex flex-col gap-[var(--gap-md)] md:flex-row md:items-center md:justify-between">
-            <div className="min-w-0">
-              <h1 className="text-2xl leading-[1.25] font-bold tracking-normal text-foreground break-keep md:text-[28px]">
-                경험 입력
-              </h1>
-              <p className="mt-1 text-xs leading-[1.5] text-muted-foreground break-keep break-words">
-                포트폴리오 전략에 사용할 경험을 선택하세요.
-              </p>
-            </div>
-
-            <Button type="button" size="sm" className="w-full md:w-auto">
-              <ArrowRightIcon />
-              포트폴리오 전략 생성
-            </Button>
+          <div className="min-w-0">
+            <h1 className="text-2xl leading-[1.25] font-bold tracking-normal text-foreground break-keep md:text-[28px]">
+              경험 관리
+            </h1>
+            <p className="mt-1 text-xs leading-[1.5] text-muted-foreground break-keep break-words">
+              등록한 경험을 확인하고, 채용 공고 맞춤 전략에 활용할 수 있도록 관리하세요.
+            </p>
           </div>
 
-          <ExperienceExtractionBanner onExtractionClick={() => setActiveModal('extraction')} />
-
-          <ExperienceListSection
-            experiences={MOCK_EXPERIENCES}
-            onRegisterClick={() => setActiveModal('register')}
-            onDetailClick={handleDetailClick}
-            onEditClick={handleEditClick}
+          <ExperienceExtractionBanner
+            size="compact"
+            onExtractionClick={() => setActiveModal('extraction')}
           />
+
+          <section className="overflow-hidden rounded-[var(--radius-lg)] border border-border bg-card">
+            <div className="flex min-h-[74px] flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0">
+                <h2 className="text-base leading-[1.45] font-bold text-foreground break-keep">
+                  등록된 경험 목록
+                </h2>
+                <p className="mt-1 text-xs leading-[1.45] text-muted-foreground">
+                  총 {MOCK_EXPERIENCES.length}개의 경험
+                </p>
+              </div>
+              <ExperienceWriteButton onClick={() => setActiveModal('register')} />
+            </div>
+
+            <ul className="divide-y divide-border/70 border-t border-border/70">
+              {MOCK_EXPERIENCES.map((experience) => (
+                <ExperienceListItem
+                  key={experience.id}
+                  variant="view"
+                  experience={experience}
+                  onDetailClick={handleDetailClick}
+                  onEditClick={handleEditClick}
+                />
+              ))}
+            </ul>
+          </section>
         </div>
       </section>
 
