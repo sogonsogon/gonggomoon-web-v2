@@ -18,15 +18,17 @@ export default function ExperienceEditModal({
   onOpenChange,
   experience,
 }: ExperienceEditModalProps) {
-  const [startDate = '', endDate = ''] = experience?.period.split('-') ?? [];
-  const initialValue: Partial<ExperienceFormValue> | undefined = experience
-    ? {
-        type: experience.type,
-        startDate,
-        endDate,
-        content: experience.content,
-      }
-    : undefined;
+  const periodValue = experience ? parseExperiencePeriod(experience.period) : null;
+  const initialValue: Partial<ExperienceFormValue> | undefined =
+    experience && periodValue
+      ? {
+          type: experience.type,
+          startDate: periodValue.startDate,
+          endDate: periodValue.endDate,
+          ongoing: periodValue.ongoing,
+          content: experience.content,
+        }
+      : undefined;
 
   return (
     <Modal open={open && Boolean(experience)} onOpenChange={onOpenChange}>
@@ -44,4 +46,15 @@ export default function ExperienceEditModal({
       ) : null}
     </Modal>
   );
+}
+
+export function parseExperiencePeriod(period: string) {
+  const [startDate = '', endDate = ''] = period.split('-').map((value) => value.trim());
+  const ongoing = endDate === '진행 중';
+
+  return {
+    startDate: startDate || null,
+    endDate: ongoing ? null : endDate || null,
+    ongoing,
+  };
 }

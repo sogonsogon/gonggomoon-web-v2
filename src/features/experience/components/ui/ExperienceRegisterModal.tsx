@@ -1,10 +1,9 @@
 'use client';
 
 import * as React from 'react';
-
 import { Button } from '@/shared/components/ui/button';
-import { Input } from '@/shared/components/ui/input';
 import { Modal, ModalContent, ModalFooter, ModalHeader } from '@/shared/components/ui/modal';
+import MonthRangePicker from '@/shared/components/ui/MonthRangePicker';
 import {
   Select,
   SelectContent,
@@ -13,13 +12,13 @@ import {
   SelectValue,
 } from '@/shared/components/ui/select';
 import { Textarea } from '@/shared/components/ui/textarea';
-
-const EXPERIENCE_TYPE_OPTIONS = ['공모전', '교육', '프로젝트', '인턴십', '대외활동'] as const;
+import { EXPERIENCE_TYPE_OPTIONS } from '@/features/experience/constants/experienceOptions';
 
 export interface ExperienceFormValue {
   type: string;
-  startDate: string;
-  endDate: string;
+  startDate: string | null;
+  endDate: string | null;
+  ongoing: boolean;
   content: string;
 }
 
@@ -38,8 +37,9 @@ interface ExperienceFormModalContentProps {
 
 const DEFAULT_FORM_VALUE: ExperienceFormValue = {
   type: '',
-  startDate: '',
-  endDate: '',
+  startDate: null,
+  endDate: null,
+  ongoing: false,
   content: '',
 };
 
@@ -77,6 +77,26 @@ export function ExperienceFormModalContent({
     setFormValue((currentValue) => ({ ...currentValue, [field]: value }));
   };
 
+  const handleRangeChange = React.useCallback(
+    ({
+      startMonth,
+      endMonth,
+      ongoing,
+    }: {
+      startMonth: string | null;
+      endMonth: string | null;
+      ongoing: boolean;
+    }) => {
+      setFormValue((currentValue) => ({
+        ...currentValue,
+        startDate: startMonth,
+        endDate: endMonth,
+        ongoing,
+      }));
+    },
+    [],
+  );
+
   return (
     <>
       <ModalHeader title={title} description={description} />
@@ -103,20 +123,13 @@ export function ExperienceFormModalContent({
 
         <div className="grid gap-2">
           <span className="text-[13px] leading-[1.42] font-bold text-foreground">기간</span>
-          <div className="grid grid-cols-2 gap-2">
-            <Input
-              value={formValue.startDate}
-              placeholder="2023.01"
-              className="bg-card"
-              onChange={(event) => handleValueChange('startDate', event.target.value)}
-            />
-            <Input
-              value={formValue.endDate}
-              placeholder="2023.12"
-              className="bg-card"
-              onChange={(event) => handleValueChange('endDate', event.target.value)}
-            />
-          </div>
+          <MonthRangePicker
+            startMonth={formValue.startDate}
+            endMonth={formValue.endDate}
+            ongoing={formValue.ongoing}
+            allowOngoing
+            onRangeChange={handleRangeChange}
+          />
         </div>
 
         <label className="grid gap-2">
