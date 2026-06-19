@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import { ArrowUpIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -10,6 +11,7 @@ import { Input } from '@/shared/components/ui/input';
 const JOB_POSTING_URL_REGEX = /^https?:\/\/(?:[\w-]+\.)+[\w-]{2,}(?::\d{2,5})?(?:[/?#][^\s]*)?$/i;
 
 export default function JobPostingUrlInput() {
+  const router = useRouter();
   const [url, setUrl] = React.useState('');
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -17,7 +19,10 @@ export default function JobPostingUrlInput() {
 
     if (!JOB_POSTING_URL_REGEX.test(url.trim())) {
       toast.warning('유효한 공고 URL을 입력해주세요.');
+      return;
     }
+
+    router.push('/strategy/1/analysis');
   };
 
   return (

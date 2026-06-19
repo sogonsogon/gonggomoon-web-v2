@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import { ArrowRightIcon } from 'lucide-react';
 
 import ExperienceListSection from '@/features/experience/components/sections/ExperienceListSection';
@@ -22,6 +23,7 @@ type ExperienceModalType = 'extraction' | 'register' | 'detail' | 'edit' | null;
 export default function ExperienceSelectionSection({
   strategyId,
 }: ExperienceSelectionSectionProps) {
+  const router = useRouter();
   const [activeModal, setActiveModal] = React.useState<ExperienceModalType>(null);
   const [activeExperience, setActiveExperience] = React.useState<Experience | null>(null);
 
@@ -59,7 +61,12 @@ export default function ExperienceSelectionSection({
               </p>
             </div>
 
-            <Button type="button" size="sm" className="w-full md:w-auto">
+            <Button
+              type="button"
+              size="sm"
+              className="w-full md:w-auto"
+              onClick={() => router.push('/strategy/1/result')}
+            >
               <ArrowRightIcon />
               포트폴리오 전략 생성
             </Button>
