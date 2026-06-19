@@ -1,6 +1,10 @@
 import { Badge } from '@/shared/components/ui/badge';
 import { Card, CardContent } from '@/shared/components/ui/card';
-import { AccordionContent, AccordionItem, AccordionTrigger } from '@/shared/components/ui/accordion';
+import {
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/shared/components/ui/accordion';
 import { cn } from '@/shared/lib/cn';
 import type { StrategyAnalysisCardData } from '@/features/strategy/constants/mock';
 
@@ -20,7 +24,7 @@ export default function StrategyAnalysisCard({ card }: StrategyAnalysisCardProps
     >
       <CardContent className="px-5 py-0">
         <AccordionItem value={card.id} className="border-b-0">
-          <AccordionTrigger className="py-5 hover:no-underline">
+          <AccordionTrigger className="py-5 hover:no-underline cursor-pointer">
             <div className="flex min-w-0 items-center gap-2">
               <span
                 className={cn(
