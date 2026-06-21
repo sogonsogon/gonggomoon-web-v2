@@ -6,15 +6,15 @@ import remarkGfm from 'remark-gfm';
 
 import { Modal, ModalContent, ModalHeader } from '@/shared/components/ui/modal';
 
-export type MainFooterLegalModalType = 'terms' | 'privacy';
+export type LegalModalType = 'terms' | 'privacy';
 
-type MainFooterLegalModalProps = {
-  type: MainFooterLegalModalType | null;
+type LegalModalProps = {
+  type: LegalModalType | null;
   onOpenChange: (open: boolean) => void;
 };
 
 const legalDocuments: Record<
-  MainFooterLegalModalType,
+  LegalModalType,
   { title: string; description: string; href: string }
 > = {
   terms: {
@@ -29,12 +29,12 @@ const legalDocuments: Record<
   },
 };
 
-export default function MainFooterLegalModal({ type, onOpenChange }: MainFooterLegalModalProps) {
+export default function LegalModal({ type, onOpenChange }: LegalModalProps) {
   const [markdownByType, setMarkdownByType] = React.useState<
-    Partial<Record<MainFooterLegalModalType, string>>
+    Partial<Record<LegalModalType, string>>
   >({});
   const [errorByType, setErrorByType] = React.useState<
-    Partial<Record<MainFooterLegalModalType, string>>
+    Partial<Record<LegalModalType, string>>
   >({});
 
   const document = type ? legalDocuments[type] : null;
@@ -76,8 +76,12 @@ export default function MainFooterLegalModal({ type, onOpenChange }: MainFooterL
     return () => controller.abort();
   }, [errorByType, markdownByType, type]);
 
+  if (!type) {
+    return null;
+  }
+
   return (
-    <Modal open={type !== null} onOpenChange={onOpenChange}>
+    <Modal open onOpenChange={onOpenChange}>
       <ModalContent size="xl" className="overflow-hidden">
         {document ? (
           <>

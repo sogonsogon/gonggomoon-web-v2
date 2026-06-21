@@ -2,12 +2,10 @@
 
 import * as React from 'react';
 
-import MainFooterLegalModal, {
-  type MainFooterLegalModalType,
-} from '@/shared/components/layout/MainFooterLegalModal';
+import LegalModal, { type LegalModalType } from '@/shared/components/layout/LegalModal';
 
 export default function MainFooter() {
-  const [legalModalType, setLegalModalType] = React.useState<MainFooterLegalModalType | null>(null);
+  const [legalModalType, setLegalModalType] = React.useState<LegalModalType | null>(null);
 
   return (
     <footer className="flex h-[72px] shrink-0 items-center justify-between gap-[var(--gap-md)] border-t border-border/60 bg-background px-6 text-xs text-muted-foreground md:px-10">
@@ -30,7 +28,7 @@ export default function MainFooter() {
         </button>
       </div>
 
-      <MainFooterLegalModal
+      <LegalModal
         type={legalModalType}
         onOpenChange={(open) => {
           if (!open) {
