@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowRightIcon } from 'lucide-react';
+import { toast } from 'sonner';
 
 import ExperienceListSection from '@/features/experience/components/sections/ExperienceListSection';
 import ExperienceDetailModal from '@/features/experience/components/ui/ExperienceDetailModal';
@@ -16,7 +17,9 @@ import {
   SHOW_LOADING_EXPERIENCES,
 } from '@/features/experience/constants/mock';
 import type { Experience } from '@/features/experience/types';
+import AiProcessingOverlay from '@/shared/components/ui/AiProcessingOverlay';
 import { Button } from '@/shared/components/ui/button';
+import { simulateAiRequest } from '@/shared/lib/SimulateAiRequest';
 
 interface ExperienceSelectionSectionProps {
   strategyId: string;
@@ -32,6 +35,7 @@ export default function ExperienceSelectionSection({
   const router = useRouter();
   const [activeModal, setActiveModal] = React.useState<ExperienceModalType>(null);
   const [activeExperience, setActiveExperience] = React.useState<Experience | null>(null);
+  const [isProcessing, setIsProcessing] = React.useState(false);
 
   const handleModalOpenChange = React.useCallback((open: boolean) => {
     if (!open) {
@@ -49,6 +53,22 @@ export default function ExperienceSelectionSection({
     setActiveExperience(experience);
     setActiveModal('edit');
   }, []);
+
+  const handleGenerateStrategy = async () => {
+    if (isProcessing) {
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      await simulateAiRequest();
+      router.push(`/strategy/${strategyId}/result`);
+    } catch {
+      setIsProcessing(false);
+      toast.error('포트폴리오 전략을 생성하지 못했습니다. 다시 시도해주세요.');
+    }
+  };
 
   return (
     <>
@@ -71,7 +91,8 @@ export default function ExperienceSelectionSection({
               type="button"
               size="sm"
               className="w-full md:w-auto"
-              onClick={() => router.push('/strategy/1/result')}
+              disabled={isProcessing}
+              onClick={handleGenerateStrategy}
             >
               <ArrowRightIcon />
               포트폴리오 전략 생성
@@ -107,6 +128,11 @@ export default function ExperienceSelectionSection({
         open={activeModal === 'edit'}
         onOpenChange={handleModalOpenChange}
         experience={activeExperience}
+      />
+      <AiProcessingOverlay
+        open={isProcessing}
+        title="포트폴리오 전략을 생성하고 있어요"
+        description="공고와 선택한 경험을 바탕으로 맞춤 전략을 만들고 있어요. 잠시만 기다려주세요."
       />
     </>
   );
