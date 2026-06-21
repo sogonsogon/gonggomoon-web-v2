@@ -8,10 +8,16 @@ import ExperienceDetailModal from '@/features/experience/components/ui/Experienc
 import ExperienceEditModal from '@/features/experience/components/ui/ExperienceEditModal';
 import ExperienceExtractionBanner from '@/features/experience/components/ui/ExperienceExtractionBanner';
 import ExperienceExtractionModal from '@/features/experience/components/ui/ExperienceExtractionModal';
+import ExperienceListSkeleton from '@/features/experience/components/ui/ExperienceListSkeleton';
 import ExperienceRegisterModal from '@/features/experience/components/ui/ExperienceRegisterModal';
 import ExperienceWriteButton from '@/features/experience/components/ui/ExperienceWriteButton';
-import { MOCK_EXPERIENCES, SHOW_EMPTY_EXPERIENCES } from '@/features/experience/constants/mock';
+import {
+  MOCK_EXPERIENCES,
+  SHOW_EMPTY_EXPERIENCES,
+  SHOW_LOADING_EXPERIENCES,
+} from '@/features/experience/constants/mock';
 import type { Experience } from '@/features/experience/types';
+import { Skeleton } from '@/shared/components/ui/skeleton';
 
 type ExperienceModalType = 'extraction' | 'register' | 'detail' | 'edit' | null;
 
@@ -60,16 +66,22 @@ export default function ExperienceManagementSection() {
             <div className="flex min-h-[74px] flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
                 <h2 className="text-base leading-[1.45] font-bold text-foreground break-keep">
-                  등록된 경험 목록
+                  경험 목록
                 </h2>
-                <p className="mt-1 text-xs leading-[1.45] text-muted-foreground">
-                  총 {experiences.length}개의 경험
-                </p>
+                {SHOW_LOADING_EXPERIENCES ? (
+                  <Skeleton aria-hidden="true" className="mt-1 h-3 w-24" />
+                ) : (
+                  <p className="mt-1 text-xs leading-[1.45] text-muted-foreground">
+                    총 {experiences.length}개의 경험
+                  </p>
+                )}
               </div>
               <ExperienceWriteButton onClick={() => setActiveModal('register')} />
             </div>
 
-            {experiences.length > 0 ? (
+            {SHOW_LOADING_EXPERIENCES ? (
+              <ExperienceListSkeleton variant="view" />
+            ) : experiences.length > 0 ? (
               <ul className="divide-y divide-border/70 border-t border-border/70">
                 {experiences.map((experience) => (
                   <ExperienceListItem

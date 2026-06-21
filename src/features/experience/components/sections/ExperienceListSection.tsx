@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import ExperienceEmptyState from '@/features/experience/components/ui/ExperienceEmptyState';
 import ExperienceListItem from '@/features/experience/components/ui/ExperienceListItem';
+import ExperienceListSkeleton from '@/features/experience/components/ui/ExperienceListSkeleton';
 import ExperienceWriteButton from '@/features/experience/components/ui/ExperienceWriteButton';
 import type { Experience } from '@/features/experience/types';
 import { Button } from '@/shared/components/ui/button';
@@ -11,6 +12,7 @@ import { cn } from '@/shared/lib/cn';
 
 interface ExperienceListSectionProps {
   experiences: Experience[];
+  isLoading: boolean;
   onRegisterClick: () => void;
   onDetailClick: (experience: Experience) => void;
   onEditClick: (experience: Experience) => void;
@@ -18,6 +20,7 @@ interface ExperienceListSectionProps {
 
 export default function ExperienceListSection({
   experiences,
+  isLoading,
   onRegisterClick,
   onDetailClick,
   onEditClick,
@@ -41,7 +44,7 @@ export default function ExperienceListSection({
   }, []);
 
   const isAllSelected = experiences.length > 0 && selectedExperienceIds.size === experiences.length;
-  const hasExperiences = experiences.length > 0;
+  const hasExperiences = !isLoading && experiences.length > 0;
 
   const handleToggleAll = React.useCallback(() => {
     setSelectedExperienceIds(() => {
@@ -75,7 +78,9 @@ export default function ExperienceListSection({
         <ExperienceWriteButton onClick={onRegisterClick} />
       </div>
 
-      {hasExperiences ? (
+      {isLoading ? (
+        <ExperienceListSkeleton variant="checkbox" />
+      ) : hasExperiences ? (
         <ul className="grid gap-2">
           {experiences.map((experience) => (
             <ExperienceListItem

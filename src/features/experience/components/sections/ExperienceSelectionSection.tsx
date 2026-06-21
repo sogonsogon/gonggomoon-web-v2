@@ -13,6 +13,7 @@ import ExperienceRegisterModal from '@/features/experience/components/ui/Experie
 import {
   MOCK_EXPERIENCES,
   SHOW_EMPTY_EXPERIENCES,
+  SHOW_LOADING_EXPERIENCES,
 } from '@/features/experience/constants/mock';
 import type { Experience } from '@/features/experience/types';
 import { Button } from '@/shared/components/ui/button';
@@ -81,6 +82,7 @@ export default function ExperienceSelectionSection({
 
           <ExperienceListSection
             experiences={experiences}
+            isLoading={SHOW_LOADING_EXPERIENCES}
             onRegisterClick={() => setActiveModal('register')}
             onDetailClick={handleDetailClick}
             onEditClick={handleEditClick}
