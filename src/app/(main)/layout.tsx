@@ -1,3 +1,4 @@
+import LoginGate from '@/features/auth/components/LoginGate';
 import MainBottomNavigation from '@/shared/components/layout/MainBottomNavigation';
 import MainFooter from '@/shared/components/layout/MainFooter';
 import MainSidebar from '@/shared/components/layout/MainSidebar';
@@ -19,6 +20,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         <MainFooter />
       </SidebarInset>
       <MainBottomNavigation />
+      <LoginGate />
     </SidebarProvider>
   );
 }
