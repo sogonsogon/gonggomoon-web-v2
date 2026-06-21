@@ -37,9 +37,11 @@ import {
   MOCK_RECENT_STRATEGIES,
   MOCK_USER,
   SHOW_EMPTY_RECENT_STRATEGIES,
+  SHOW_LOADING_RECENT_STRATEGIES,
 } from '@/shared/constants/mock';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { cn } from '@/shared/lib/cn';
+import { Skeleton } from '@/shared/components/ui/skeleton';
 
 type SidebarIcon = React.ComponentType<React.SVGProps<SVGSVGElement>>;
 type MainNavIconKey = (typeof MOCK_MAIN_NAV_ITEMS)[number]['icon'];
@@ -163,7 +165,9 @@ export function MainSidebarContent({
               최근 포트폴리오 전략
             </div>
             <div className="flex min-h-0 flex-col gap-1">
-              {recentStrategies.length > 0 ? (
+              {SHOW_LOADING_RECENT_STRATEGIES ? (
+                <RecentStrategySkeletonList />
+              ) : recentStrategies.length > 0 ? (
                 recentStrategies.map((strategy) => (
                   <RecentStrategyCard
                     key={strategy.id}
@@ -181,16 +185,20 @@ export function MainSidebarContent({
           </div>
 
           <div className="hidden min-h-0 flex-1 flex-col items-center gap-2 group-data-[collapsible=icon]:flex">
-            {recentStrategies.map((strategy) => (
-              <CollapsedIconButton
-                key={strategy.id}
-                label={strategy.title}
-                icon={FileTextIcon}
-                href={strategy.href}
-                active={isRecentStrategyActive(pathname, strategy.id)}
-                onNavigate={onNavigate}
-              />
-            ))}
+            {SHOW_LOADING_RECENT_STRATEGIES ? (
+              <RecentStrategySkeletonList collapsed />
+            ) : (
+              recentStrategies.map((strategy) => (
+                <CollapsedIconButton
+                  key={strategy.id}
+                  label={strategy.title}
+                  icon={FileTextIcon}
+                  href={strategy.href}
+                  active={isRecentStrategyActive(pathname, strategy.id)}
+                  onNavigate={onNavigate}
+                />
+              ))
+            )}
           </div>
         </SidebarContent>
 
@@ -329,6 +337,31 @@ function RecentStrategyCard({
         <StrategyItemDropdown strategy={strategy} active={active} />
       </div>
     </div>
+  );
+}
+
+function RecentStrategySkeletonList({ collapsed = false }: { collapsed?: boolean }) {
+  return (
+    <>
+      <span className="sr-only" role="status">
+        최근 포트폴리오 전략을 불러오는 중입니다.
+      </span>
+      {[0, 1, 2].map((item) =>
+        collapsed ? (
+          <Skeleton key={item} aria-hidden="true" className="size-10 shrink-0 rounded-[10px]" />
+        ) : (
+          <div
+            key={item}
+            aria-hidden="true"
+            className="relative grid min-h-[57px] gap-[7px] rounded-[var(--radius-sm)] p-2.5 pr-9"
+          >
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="absolute top-2 right-2 size-6 rounded-md" />
+          </div>
+        ),
+      )}
+    </>
   );
 }
 
