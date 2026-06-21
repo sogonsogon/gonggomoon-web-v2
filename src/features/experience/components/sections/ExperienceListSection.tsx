@@ -2,10 +2,12 @@
 
 import * as React from 'react';
 
+import ExperienceEmptyState from '@/features/experience/components/ui/ExperienceEmptyState';
 import ExperienceListItem from '@/features/experience/components/ui/ExperienceListItem';
 import ExperienceWriteButton from '@/features/experience/components/ui/ExperienceWriteButton';
 import type { Experience } from '@/features/experience/types';
 import { Button } from '@/shared/components/ui/button';
+import { cn } from '@/shared/lib/cn';
 
 interface ExperienceListSectionProps {
   experiences: Experience[];
@@ -39,6 +41,7 @@ export default function ExperienceListSection({
   }, []);
 
   const isAllSelected = experiences.length > 0 && selectedExperienceIds.size === experiences.length;
+  const hasExperiences = experiences.length > 0;
 
   const handleToggleAll = React.useCallback(() => {
     setSelectedExperienceIds(() => {
@@ -52,31 +55,44 @@ export default function ExperienceListSection({
 
   return (
     <section className="grid gap-3">
-      <div className="grid gap-2 sm:flex sm:items-center sm:justify-between">
-        <div className="flex items-baseline justify-between gap-2 sm:justify-start">
-          <Button type="button" variant="ghost" size="xs" onClick={handleToggleAll}>
-            {isAllSelected ? '전체 해제' : '전체 선택'}
-          </Button>
-          <span className="text-[11px] leading-[1.45] text-muted-foreground">
-            {selectedExperienceIds.size}개 선택
-          </span>
-        </div>
+      <div
+        className={cn(
+          'grid gap-2 sm:flex sm:items-center',
+          hasExperiences ? 'sm:justify-between' : 'sm:justify-end',
+        )}
+      >
+        {hasExperiences ? (
+          <div className="flex items-baseline justify-between gap-2 sm:justify-start">
+            <Button type="button" variant="ghost" size="xs" onClick={handleToggleAll}>
+              {isAllSelected ? '전체 해제' : '전체 선택'}
+            </Button>
+            <span className="text-[11px] leading-[1.45] text-muted-foreground">
+              {selectedExperienceIds.size}개 선택
+            </span>
+          </div>
+        ) : null}
 
         <ExperienceWriteButton onClick={onRegisterClick} />
       </div>
 
-      <ul className="grid gap-2">
-        {experiences.map((experience) => (
-          <ExperienceListItem
-            key={experience.id}
-            experience={experience}
-            selected={selectedExperienceIds.has(experience.id)}
-            onSelectedChange={handleSelectedChange}
-            onDetailClick={onDetailClick}
-            onEditClick={onEditClick}
-          />
-        ))}
-      </ul>
+      {hasExperiences ? (
+        <ul className="grid gap-2">
+          {experiences.map((experience) => (
+            <ExperienceListItem
+              key={experience.id}
+              experience={experience}
+              selected={selectedExperienceIds.has(experience.id)}
+              onSelectedChange={handleSelectedChange}
+              onDetailClick={onDetailClick}
+              onEditClick={onEditClick}
+            />
+          ))}
+        </ul>
+      ) : (
+        <div className="overflow-hidden rounded-[var(--radius-lg)] border border-border bg-card">
+          <ExperienceEmptyState message="경험을 먼저 등록하고 선택할 수 있어요" />
+        </div>
+      )}
     </section>
   );
 }

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 
+import ExperienceEmptyState from '@/features/experience/components/ui/ExperienceEmptyState';
 import ExperienceListItem from '@/features/experience/components/ui/ExperienceListItem';
 import ExperienceDetailModal from '@/features/experience/components/ui/ExperienceDetailModal';
 import ExperienceEditModal from '@/features/experience/components/ui/ExperienceEditModal';
@@ -9,10 +10,12 @@ import ExperienceExtractionBanner from '@/features/experience/components/ui/Expe
 import ExperienceExtractionModal from '@/features/experience/components/ui/ExperienceExtractionModal';
 import ExperienceRegisterModal from '@/features/experience/components/ui/ExperienceRegisterModal';
 import ExperienceWriteButton from '@/features/experience/components/ui/ExperienceWriteButton';
-import { MOCK_EXPERIENCES } from '@/features/experience/constants/mock';
+import { MOCK_EXPERIENCES, SHOW_EMPTY_EXPERIENCES } from '@/features/experience/constants/mock';
 import type { Experience } from '@/features/experience/types';
 
 type ExperienceModalType = 'extraction' | 'register' | 'detail' | 'edit' | null;
+
+const experiences = SHOW_EMPTY_EXPERIENCES ? [] : MOCK_EXPERIENCES;
 
 export default function ExperienceManagementSection() {
   const [activeModal, setActiveModal] = React.useState<ExperienceModalType>(null);
@@ -60,23 +63,29 @@ export default function ExperienceManagementSection() {
                   등록된 경험 목록
                 </h2>
                 <p className="mt-1 text-xs leading-[1.45] text-muted-foreground">
-                  총 {MOCK_EXPERIENCES.length}개의 경험
+                  총 {experiences.length}개의 경험
                 </p>
               </div>
               <ExperienceWriteButton onClick={() => setActiveModal('register')} />
             </div>
 
-            <ul className="divide-y divide-border/70 border-t border-border/70">
-              {MOCK_EXPERIENCES.map((experience) => (
-                <ExperienceListItem
-                  key={experience.id}
-                  variant="view"
-                  experience={experience}
-                  onDetailClick={handleDetailClick}
-                  onEditClick={handleEditClick}
-                />
-              ))}
-            </ul>
+            {experiences.length > 0 ? (
+              <ul className="divide-y divide-border/70 border-t border-border/70">
+                {experiences.map((experience) => (
+                  <ExperienceListItem
+                    key={experience.id}
+                    variant="view"
+                    experience={experience}
+                    onDetailClick={handleDetailClick}
+                    onEditClick={handleEditClick}
+                  />
+                ))}
+              </ul>
+            ) : (
+              <div className="border-t border-border/70">
+                <ExperienceEmptyState message="아직 등록된 경험이 없어요" />
+              </div>
+            )}
           </section>
         </div>
       </section>

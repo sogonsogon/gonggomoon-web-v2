@@ -10,7 +10,10 @@ import ExperienceEditModal from '@/features/experience/components/ui/ExperienceE
 import ExperienceExtractionBanner from '@/features/experience/components/ui/ExperienceExtractionBanner';
 import ExperienceExtractionModal from '@/features/experience/components/ui/ExperienceExtractionModal';
 import ExperienceRegisterModal from '@/features/experience/components/ui/ExperienceRegisterModal';
-import { MOCK_EXPERIENCES } from '@/features/experience/constants/mock';
+import {
+  MOCK_EXPERIENCES,
+  SHOW_EMPTY_EXPERIENCES,
+} from '@/features/experience/constants/mock';
 import type { Experience } from '@/features/experience/types';
 import { Button } from '@/shared/components/ui/button';
 
@@ -19,6 +22,8 @@ interface ExperienceSelectionSectionProps {
 }
 
 type ExperienceModalType = 'extraction' | 'register' | 'detail' | 'edit' | null;
+
+const experiences = SHOW_EMPTY_EXPERIENCES ? [] : MOCK_EXPERIENCES;
 
 export default function ExperienceSelectionSection({
   strategyId,
@@ -75,7 +80,7 @@ export default function ExperienceSelectionSection({
           <ExperienceExtractionBanner onExtractionClick={() => setActiveModal('extraction')} />
 
           <ExperienceListSection
-            experiences={MOCK_EXPERIENCES}
+            experiences={experiences}
             onRegisterClick={() => setActiveModal('register')}
             onDetailClick={handleDetailClick}
             onEditClick={handleEditClick}
