@@ -36,6 +36,7 @@ import {
   MOCK_MAIN_NAV_ITEMS,
   MOCK_RECENT_STRATEGIES,
   MOCK_USER,
+  SHOW_EMPTY_RECENT_STRATEGIES,
 } from '@/shared/constants/mock';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { cn } from '@/shared/lib/cn';
@@ -65,6 +66,8 @@ const mainNavItems: MainNavItem[] = MOCK_MAIN_NAV_ITEMS.map((item) => ({
   ...item,
   iconComponent: mainNavIconMap[item.icon],
 }));
+
+const recentStrategies = SHOW_EMPTY_RECENT_STRATEGIES ? [] : MOCK_RECENT_STRATEGIES;
 
 function isMainNavActive(pathname: string, href: string) {
   return pathname === href;
@@ -160,19 +163,25 @@ export function MainSidebarContent({
               최근 포트폴리오 전략
             </div>
             <div className="flex min-h-0 flex-col gap-1">
-              {MOCK_RECENT_STRATEGIES.map((strategy) => (
-                <RecentStrategyCard
-                  key={strategy.id}
-                  strategy={strategy}
-                  active={isRecentStrategyActive(pathname, strategy.id)}
-                  onNavigate={onNavigate}
-                />
-              ))}
+              {recentStrategies.length > 0 ? (
+                recentStrategies.map((strategy) => (
+                  <RecentStrategyCard
+                    key={strategy.id}
+                    strategy={strategy}
+                    active={isRecentStrategyActive(pathname, strategy.id)}
+                    onNavigate={onNavigate}
+                  />
+                ))
+              ) : (
+                <p className="min-w-0 overflow-hidden px-2 py-3 text-xs leading-[1.55] whitespace-nowrap text-muted-foreground">
+                  아직 생성된 포폴 전략이 없어요
+                </p>
+              )}
             </div>
           </div>
 
           <div className="hidden min-h-0 flex-1 flex-col items-center gap-2 group-data-[collapsible=icon]:flex">
-            {MOCK_RECENT_STRATEGIES.map((strategy) => (
+            {recentStrategies.map((strategy) => (
               <CollapsedIconButton
                 key={strategy.id}
                 label={strategy.title}

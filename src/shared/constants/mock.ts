@@ -1,3 +1,5 @@
+export const SHOW_EMPTY_RECENT_STRATEGIES = true;
+
 export const MOCK_USER = {
   name: '박세윤',
   email: 'seun0714@naver.com',
