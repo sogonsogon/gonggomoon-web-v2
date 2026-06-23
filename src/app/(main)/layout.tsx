@@ -3,24 +3,34 @@ import MainBottomNavigation from '@/shared/components/layout/MainBottomNavigatio
 import MainFooter from '@/shared/components/layout/MainFooter';
 import MainSidebar from '@/shared/components/layout/MainSidebar';
 import { SidebarInset, SidebarProvider } from '@/shared/components/ui/sidebar';
+import { AuthStoreProvider } from '@/shared/provider/AuthProvider';
+import QueryProvider from '@/shared/provider/QueryProvider';
+import { cookies } from 'next/headers';
 
-export default function MainLayout({ children }: { children: React.ReactNode }) {
+export default async function MainLayout({ children }: { children: React.ReactNode }) {
+  const cookieStore = await cookies();
+  const isLoggedIn = Boolean(cookieStore.get('access_token')?.value);
+
   return (
-    <SidebarProvider
-      style={
-        {
-          '--sidebar-width': '280px',
-          '--sidebar-width-icon': '72px',
-        } as React.CSSProperties
-      }
-    >
-      <MainSidebar />
-      <SidebarInset className="pb-24 md:pb-0">
-        <div className="min-h-svh">{children}</div>
-        <MainFooter />
-      </SidebarInset>
-      <MainBottomNavigation />
-      <LoginGate />
-    </SidebarProvider>
+    <QueryProvider>
+      <AuthStoreProvider isLoggedIn={isLoggedIn}>
+        <SidebarProvider
+          style={
+            {
+              '--sidebar-width': '280px',
+              '--sidebar-width-icon': '72px',
+            } as React.CSSProperties
+          }
+        >
+          <MainSidebar />
+          <SidebarInset className="pb-24 md:pb-0">
+            <div className="min-h-svh">{children}</div>
+            <MainFooter />
+          </SidebarInset>
+          <MainBottomNavigation />
+          <LoginGate />
+        </SidebarProvider>
+      </AuthStoreProvider>
+    </QueryProvider>
   );
 }
