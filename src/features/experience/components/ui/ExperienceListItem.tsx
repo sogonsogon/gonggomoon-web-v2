@@ -45,11 +45,14 @@ export default function ExperienceListItem(props: ExperienceListItemProps) {
     }
   };
 
-  const handleActionClick =
-    (action: () => void) => (event: MouseEvent<HTMLButtonElement>) => {
-      event.stopPropagation();
-      action();
-    };
+  const handleActionClick = (action: () => void) => (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    action();
+  };
+
+  const handleDelete = () => {
+    // TODO: query 로직 import 후 삭제 로직 연동
+  };
 
   return (
     <li
@@ -118,7 +121,7 @@ export default function ExperienceListItem(props: ExperienceListItemProps) {
           size="icon"
           aria-label={`${experience.title} 삭제`}
           className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-          onClick={handleActionClick(() => undefined)}
+          onClick={handleActionClick(() => handleDelete())}
         >
           <Trash2Icon className="size-4" aria-hidden="true" />
         </Button>

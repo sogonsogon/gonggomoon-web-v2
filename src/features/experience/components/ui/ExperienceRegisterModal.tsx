@@ -97,6 +97,13 @@ export function ExperienceFormModalContent({
     [],
   );
 
+  // TODO: 등록, 수정 query 로직 import 후 사용
+
+  const handleSumbit = () => {
+    // id가 존재하는 경우 -> 수정
+    // id가 존재하지 않으면 -> 등록
+  };
+
   return (
     <>
       <ModalHeader title={title} description={description} />
@@ -147,7 +154,13 @@ export function ExperienceFormModalContent({
         <Button type="button" variant="outline" size="sm" onClick={() => onOpenChange(false)}>
           취소
         </Button>
-        <Button type="button" size="sm">
+        <Button
+          type="button"
+          size="sm"
+          onClick={() => {
+            handleSumbit();
+          }}
+        >
           {submitLabel}
         </Button>
       </ModalFooter>

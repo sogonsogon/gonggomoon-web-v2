@@ -21,6 +21,8 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 
 type ExperienceModalType = 'extraction' | 'register' | 'detail' | 'edit' | null;
 
+// TODO: 경험 목록 조회 연동
+// mock 데이터를 그냥 가져와서 쓰는 것을, queries 내의 로직 호출해서 가져오도록 수정.
 const experiences = SHOW_EMPTY_EXPERIENCES ? [] : MOCK_EXPERIENCES;
 
 export default function ExperienceManagementSection() {
