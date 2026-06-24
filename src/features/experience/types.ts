@@ -6,9 +6,7 @@ export interface Experience {
   content: string;
 }
 
-export interface UpdateExperienceData {
-  type?: string;
-  period?: string;
-  title?: string;
-  content?: string;
-}
+export type UpdateExperienceRequest = {
+  id: string;
+  data: Omit<Experience, 'id'>;
+};
