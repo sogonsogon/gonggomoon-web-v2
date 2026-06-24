@@ -5,3 +5,10 @@ export interface Experience {
   title: string;
   content: string;
 }
+
+export interface UpdateExperienceData {
+  type?: string;
+  period?: string;
+  title?: string;
+  content?: string;
+}
