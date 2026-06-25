@@ -15,6 +15,7 @@ import { Textarea } from '@/shared/components/ui/textarea';
 import { EXPERIENCE_TYPE_OPTIONS } from '@/features/experience/constants/experienceOptions';
 import { useCreateExperience, useUpdateExperience } from '@/features/experience/queries';
 import { Input } from '@/shared/components/ui/input';
+import { toast } from 'sonner';
 
 export interface ExperienceFormValue {
   type: string;
@@ -106,8 +107,6 @@ export function ExperienceFormModalContent({
     [],
   );
 
-  // TODO: 등록, 수정 query 로직 import 후 사용
-
   const handleSumbit = () => {
     const data = {
       type: formValue.type,
@@ -116,9 +115,28 @@ export function ExperienceFormModalContent({
       period: `${formValue.startDate} ~ ${formValue.endDate ?? '진행 중'}`,
     };
     if (id) {
-      updateExperience({ id, data }, { onSuccess: () => onOpenChange(false) });
+      updateExperience(
+        { id, data },
+        {
+          onSuccess: () => {
+            onOpenChange(false);
+            toast.success('경험이 수정되었습니다.');
+          },
+          onError: (error) => {
+            toast.error(error.message || '경험 수정에 실패했습니다. 잠시 후 시도해주세요.');
+          },
+        },
+      );
     } else {
-      createExperience(data, { onSuccess: () => onOpenChange(false) });
+      createExperience(data, {
+        onSuccess: () => {
+          onOpenChange(false);
+          toast.success('경험이 등록되었습니다.');
+        },
+        onError: (error) => {
+          toast.error(error.message || '경험 등록에 실패했습니다. 잠시 후 시도해주세요.');
+        },
+      });
     }
   };
 

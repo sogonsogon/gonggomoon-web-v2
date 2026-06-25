@@ -3,6 +3,7 @@ import MainBottomNavigation from '@/shared/components/layout/MainBottomNavigatio
 import MainFooter from '@/shared/components/layout/MainFooter';
 import MainSidebar from '@/shared/components/layout/MainSidebar';
 import { SidebarInset, SidebarProvider } from '@/shared/components/ui/sidebar';
+import { Toaster } from '@/shared/components/ui/sonner';
 import { AuthStoreProvider } from '@/shared/provider/AuthProvider';
 import QueryProvider from '@/shared/provider/QueryProvider';
 import { cookies } from 'next/headers';
@@ -29,6 +30,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
           </SidebarInset>
           <MainBottomNavigation />
           <LoginGate />
+          <Toaster richColors position="top-center" />
         </SidebarProvider>
       </AuthStoreProvider>
     </QueryProvider>

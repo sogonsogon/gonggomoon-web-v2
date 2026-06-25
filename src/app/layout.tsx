@@ -22,10 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className={`${pretendard.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">
-        {children}
-        <Toaster theme="system" />
-      </body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }
