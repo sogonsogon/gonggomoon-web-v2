@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import '@/app/globals.css';
-import { Toaster } from '@/shared/components/ui/sonner';
 
 const pretendard = localFont({
   src: '../shared/assets/fonts/PretendardVariable.woff2',

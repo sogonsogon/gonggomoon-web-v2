@@ -36,13 +36,13 @@ export default function ExperienceEditModal({
       {experience ? (
         <ModalContent size="md">
           <ExperienceFormModalContent
+            id={experience.id}
             key={`${experience.id}-${experience.period}`}
             title="경험 수정"
             description="등록한 경험 내용을 수정하세요."
             submitLabel="저장"
             initialValue={initialValue}
             onOpenChange={onOpenChange}
-            id={experience.id}
           />
         </ModalContent>
       ) : null}

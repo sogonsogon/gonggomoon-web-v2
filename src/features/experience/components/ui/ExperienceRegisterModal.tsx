@@ -32,12 +32,12 @@ interface ExperienceRegisterModalProps {
 }
 
 interface ExperienceFormModalContentProps {
+  id?: string; // id가 존재하면 수정, 없으면 등록
   title: string;
   description: string;
   submitLabel: string;
   initialValue?: Partial<ExperienceFormValue>;
   onOpenChange: (open: boolean) => void;
-  id?: string; // id가 존재하면 수정, 없으면 등록
 }
 
 const DEFAULT_FORM_VALUE: ExperienceFormValue = {
@@ -68,12 +68,12 @@ export default function ExperienceRegisterModal({
 }
 
 export function ExperienceFormModalContent({
+  id,
   title,
   description,
   submitLabel,
   initialValue,
   onOpenChange,
-  id,
 }: ExperienceFormModalContentProps) {
   const [formValue, setFormValue] = React.useState<ExperienceFormValue>({
     ...DEFAULT_FORM_VALUE,
