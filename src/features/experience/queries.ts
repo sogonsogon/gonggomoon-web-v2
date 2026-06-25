@@ -1,11 +1,12 @@
 'use client';
 
 import {
+  createExperience,
   deleteExperience,
   getExperienceList,
   updateExperience,
 } from '@/features/experience/actions';
-import { UpdateExperienceRequest } from '@/features/experience/types';
+import { Experience, UpdateExperienceRequest } from '@/features/experience/types';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const experienceKeys = {
@@ -32,6 +33,22 @@ export function useGetExperienceList() {
 }
 
 // TODO: 경험 등록
+export function useCreateExperience() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: Omit<Experience, 'id'>) => {
+      const result = await createExperience(data);
+      if (!result.success) {
+        return Promise.reject(result);
+      }
+      return result.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: experienceKeys.list() });
+    },
+  });
+}
 
 // 경험 수정
 export function useUpdateExperience() {

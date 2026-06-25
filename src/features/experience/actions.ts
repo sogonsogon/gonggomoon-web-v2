@@ -14,7 +14,21 @@ export async function getExperienceList(): Promise<ApiResponse<Experience[]>> {
   };
 }
 
-// TODO: 경험 등록 creates
+// TODO: 경험 등록 create
+export async function createExperience(
+  data: Omit<Experience, 'id'>,
+): Promise<ApiResponse<Experience>> {
+  const newExperience: Experience = {
+    id: (MOCK_EXPERIENCES.length + 1).toString(),
+    ...data,
+  };
+  return {
+    success: true,
+    code: 'SUCCESS',
+    message: '',
+    data: newExperience,
+  };
+}
 
 //경험 수정
 export async function updateExperience(

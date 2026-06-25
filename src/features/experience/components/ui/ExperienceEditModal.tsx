@@ -23,6 +23,7 @@ export default function ExperienceEditModal({
     experience && periodValue
       ? {
           type: experience.type,
+          title: experience.title,
           startDate: periodValue.startDate,
           endDate: periodValue.endDate,
           ongoing: periodValue.ongoing,
@@ -41,6 +42,7 @@ export default function ExperienceEditModal({
             submitLabel="저장"
             initialValue={initialValue}
             onOpenChange={onOpenChange}
+            id={experience.id}
           />
         </ModalContent>
       ) : null}

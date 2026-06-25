@@ -5,6 +5,8 @@ import type { Experience } from '@/features/experience/types';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/cn';
+import { toast } from 'sonner';
+import { useDeleteExperience } from '@/features/experience/queries';
 
 interface BaseExperienceListItemProps {
   experience: Experience;
@@ -28,6 +30,7 @@ export default function ExperienceListItem(props: ExperienceListItemProps) {
   const { experience, onDetailClick, onEditClick } = props;
   const isCheckboxVariant = props.variant !== 'view';
   const selected = isCheckboxVariant ? props.selected : false;
+  const { mutate: deleteExperience } = useDeleteExperience();
 
   const handleToggle = () => {
     if (props.variant !== 'view') {
@@ -52,6 +55,17 @@ export default function ExperienceListItem(props: ExperienceListItemProps) {
 
   const handleDelete = () => {
     // TODO: query 로직 import 후 삭제 로직 연동
+    console.log('delete experience:', experience.id);
+    deleteExperience(experience.id, {
+      onSuccess: () => {
+        console.log('삭제 성공:', experience.id);
+        toast.success(`포폴 전략이 삭제되었습니다.`);
+      },
+      onError: () => {
+        console.error('삭제 실패:', experience.id);
+        toast.error('포폴 전략 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      },
+    });
   };
 
   return (

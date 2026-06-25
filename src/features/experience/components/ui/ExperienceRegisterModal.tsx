@@ -13,9 +13,12 @@ import {
 } from '@/shared/components/ui/select';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { EXPERIENCE_TYPE_OPTIONS } from '@/features/experience/constants/experienceOptions';
+import { useCreateExperience, useUpdateExperience } from '@/features/experience/queries';
+import { Input } from '@/shared/components/ui/input';
 
 export interface ExperienceFormValue {
   type: string;
+  title: string;
   startDate: string | null;
   endDate: string | null;
   ongoing: boolean;
@@ -33,10 +36,12 @@ interface ExperienceFormModalContentProps {
   submitLabel: string;
   initialValue?: Partial<ExperienceFormValue>;
   onOpenChange: (open: boolean) => void;
+  id?: string; // id가 존재하면 수정, 없으면 등록
 }
 
 const DEFAULT_FORM_VALUE: ExperienceFormValue = {
   type: '',
+  title: '',
   startDate: null,
   endDate: null,
   ongoing: false,
@@ -67,11 +72,15 @@ export function ExperienceFormModalContent({
   submitLabel,
   initialValue,
   onOpenChange,
+  id,
 }: ExperienceFormModalContentProps) {
   const [formValue, setFormValue] = React.useState<ExperienceFormValue>({
     ...DEFAULT_FORM_VALUE,
     ...initialValue,
   });
+
+  const { mutate: createExperience } = useCreateExperience();
+  const { mutate: updateExperience } = useUpdateExperience();
 
   const handleValueChange = (field: keyof ExperienceFormValue, value: string) => {
     setFormValue((currentValue) => ({ ...currentValue, [field]: value }));
@@ -100,8 +109,17 @@ export function ExperienceFormModalContent({
   // TODO: 등록, 수정 query 로직 import 후 사용
 
   const handleSumbit = () => {
-    // id가 존재하는 경우 -> 수정
-    // id가 존재하지 않으면 -> 등록
+    const data = {
+      type: formValue.type,
+      title: formValue.title,
+      content: formValue.content,
+      period: `${formValue.startDate} ~ ${formValue.endDate ?? '진행 중'}`,
+    };
+    if (id) {
+      updateExperience({ id, data }, { onSuccess: () => onOpenChange(false) });
+    } else {
+      createExperience(data, { onSuccess: () => onOpenChange(false) });
+    }
   };
 
   return (
@@ -109,6 +127,14 @@ export function ExperienceFormModalContent({
       <ModalHeader title={title} description={description} />
 
       <div className="grid gap-3">
+        <label className="grid gap-2">
+          <span className="text-[13px] leading-[1.42] font-bold text-foreground">제목</span>
+          <Input
+            value={formValue.title}
+            placeholder="경험 제목을 입력하세요."
+            onChange={(event) => handleValueChange('title', event.target.value)}
+          />
+        </label>
         <label className="grid gap-2">
           <span className="text-[13px] leading-[1.42] font-bold text-foreground">경험 유형</span>
           <Select
