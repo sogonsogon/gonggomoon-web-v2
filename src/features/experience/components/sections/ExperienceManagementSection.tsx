@@ -17,9 +17,6 @@ import { useGetExperienceList } from '@/features/experience/queries';
 
 type ExperienceModalType = 'extraction' | 'register' | 'detail' | 'edit' | null;
 
-// TODO: 경험 목록 조회 연동
-// mock 데이터를 그냥 가져와서 쓰는 것을, queries 내의 로직 호출해서 가져오도록 수정.
-
 export default function ExperienceManagementSection() {
   const { data = [], isLoading } = useGetExperienceList();
 

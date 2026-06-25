@@ -32,7 +32,7 @@ export function useGetExperienceList() {
   return useQuery(experienceListQueryOptions());
 }
 
-// TODO: 경험 등록
+// 경험 등록
 export function useCreateExperience() {
   const queryClient = useQueryClient();
 

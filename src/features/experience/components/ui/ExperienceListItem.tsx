@@ -54,16 +54,18 @@ export default function ExperienceListItem(props: ExperienceListItemProps) {
   };
 
   const handleDelete = () => {
-    // TODO: query 로직 import 후 삭제 로직 연동
-    console.log('delete experience:', experience.id);
-    deleteExperience(experience.id, {
-      onSuccess: () => {
-        toast.success(`포폴 전략이 삭제되었습니다.`);
-      },
-      onError: (error) => {
-        toast.error(error.message || '포폴 전략 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.');
-      },
-    });
+    if (confirm('정말 삭제하시겠습니까?')) {
+      deleteExperience(experience.id, {
+        onSuccess: () => {
+          console.log('삭제 성공:', experience.id);
+          toast.success(`포폴 전략이 삭제되었습니다.`);
+        },
+        onError: () => {
+          console.error('삭제 실패:', experience.id);
+          toast.error('포폴 전략 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        },
+      });
+    }
   };
 
   return (
