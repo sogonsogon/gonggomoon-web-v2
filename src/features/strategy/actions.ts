@@ -3,7 +3,7 @@
 import { Strategy, StrategyResult } from '@/features/strategy/types';
 import { ApiResponse } from '@/shared/types/api';
 import { MOCK_STRATEGY_RESULT } from '@/features/strategy/constants/mock';
-import { MOCK_RECENT_STRATEGIES } from '@/shared/constants/mock';
+import { MOCK_RECENT_STRATEGIES } from '@/features/strategy/constants/mock';
 
 //포폴 전략 목록 조회
 export async function getStrategyList(): Promise<ApiResponse<Strategy[]>> {
@@ -11,7 +11,7 @@ export async function getStrategyList(): Promise<ApiResponse<Strategy[]>> {
     success: true,
     code: 'SUCCESS',
     message: '',
-    data: MOCK_RECENT_STRATEGIES.map(({ href: _, ...rest }) => rest),
+    data: MOCK_RECENT_STRATEGIES.map(({ id, title, date }) => ({ id, title, date })),
   };
 }
 

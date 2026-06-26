@@ -9,14 +9,17 @@ import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Input } from '@/shared/components/ui/input';
 import { Modal, ModalContent, ModalFooter, ModalHeader } from '@/shared/components/ui/modal';
 import { Separator } from '@/shared/components/ui/separator';
-import { MOCK_USER } from '@/shared/constants/mock';
+import { MOCK_USER } from '@/features/auth/constants/mock';
+import { useDeleteUser, useGetUser } from '@/features/auth/queries';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 type SettingsModalView = 'settings' | 'withdraw';
 
 type SettingsModalUser = {
   name: string;
   email: string;
-  profileImage?: string | null;
+  profileImageUrl?: string | null;
 };
 
 type SettingsModalProps = {
@@ -25,8 +28,8 @@ type SettingsModalProps = {
   user?: SettingsModalUser;
 };
 
-export default function SettingsModal({ open, onOpenChange, user }: SettingsModalProps) {
-  const resolvedUser = { ...MOCK_USER, ...user };
+export default function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
+  const { data = MOCK_USER } = useGetUser();
   const [view, setView] = React.useState<SettingsModalView>('settings');
   const [confirmEmail, setConfirmEmail] = React.useState('');
   const [checked, setChecked] = React.useState(false);
@@ -52,20 +55,38 @@ export default function SettingsModal({ open, onOpenChange, user }: SettingsModa
     resetWithdrawState();
     setView('settings');
   }, [resetWithdrawState]);
+  const { mutate: deleteUser, isPending } = useDeleteUser();
+  const router = useRouter();
+
+  const handleConfirm = () => {
+    if (!setChecked || isPending) return;
+    deleteUser(undefined, {
+      onSuccess: () => {
+        toast.success('회원 탈퇴가 완료되었습니다.');
+        router.replace('/');
+
+        handleOpenChange(false);
+      },
+      onError: (error) => {
+        toast.error(error.message || '회원 탈퇴에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      },
+    });
+  };
 
   return (
     <Modal open={open} onOpenChange={handleOpenChange}>
       <ModalContent size="md" className="gap-4">
         {view === 'settings' ? (
-          <SettingsView user={resolvedUser} onWithdrawClick={() => setView('withdraw')} />
+          <SettingsView user={data} onWithdrawClick={() => setView('withdraw')} />
         ) : (
           <WithdrawView
-            user={resolvedUser}
+            user={data}
             confirmEmail={confirmEmail}
             checked={checked}
             onConfirmEmailChange={setConfirmEmail}
             onCheckedChange={setChecked}
             onCancel={handleWithdrawCancel}
+            onConfirm={handleConfirm}
           />
         )}
       </ModalContent>
@@ -128,6 +149,7 @@ function WithdrawView({
   onConfirmEmailChange,
   onCheckedChange,
   onCancel,
+  onConfirm,
 }: {
   user: Required<SettingsModalUser>;
   confirmEmail: string;
@@ -135,6 +157,7 @@ function WithdrawView({
   onConfirmEmailChange: (value: string) => void;
   onCheckedChange: (value: boolean) => void;
   onCancel: () => void;
+  onConfirm: () => void;
 }) {
   const canWithdraw = confirmEmail.trim() === user.email && checked;
 
@@ -198,7 +221,13 @@ function WithdrawView({
         <Button type="button" variant="outline" size="sm" onClick={onCancel}>
           취소
         </Button>
-        <Button type="button" variant="destructive" size="sm" disabled={!canWithdraw}>
+        <Button
+          type="button"
+          variant="destructive"
+          size="sm"
+          disabled={!canWithdraw}
+          onClick={onConfirm}
+        >
           <UserXIcon className="size-4" aria-hidden="true" />
           회원탈퇴
         </Button>
@@ -219,7 +248,7 @@ function ProfileRow({ label, children }: { label: string; children: React.ReactN
 function UserAvatar({ user, size }: { user: Required<SettingsModalUser>; size: 'md' | 'lg' }) {
   return (
     <Avatar className={size === 'lg' ? 'size-14 text-[15px]' : 'size-10 text-[15px]'}>
-      <AvatarImage src={user.profileImage || undefined} alt={`${user.name} 프로필`} />
+      <AvatarImage src={user.profileImageUrl || undefined} alt={`${user.name} 프로필`} />
       <AvatarFallback className="font-bold text-foreground">{user.name.slice(0, 1)}</AvatarFallback>
     </Avatar>
   );

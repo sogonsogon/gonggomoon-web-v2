@@ -32,17 +32,16 @@ import {
   SidebarSeparator,
   useSidebar,
 } from '@/shared/components/ui/sidebar';
-import {
-  MOCK_MAIN_NAV_ITEMS,
-  MOCK_USER,
-  SHOW_LOADING_RECENT_STRATEGIES,
-} from '@/shared/constants/mock';
+import { MOCK_MAIN_NAV_ITEMS } from '@/shared/constants/mock';
+import { MOCK_USER } from '@/features/auth/constants/mock';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { cn } from '@/shared/lib/cn';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useDeleteStrategy, useGetStrategyList } from '@/features/strategy/queries';
 import { Strategy } from '@/features/strategy/types';
 import { toast } from 'sonner';
+import { SHOW_LOADING_RECENT_STRATEGIES } from '@/features/strategy/constants/mock';
+import { useGetUser } from '@/features/auth/queries';
 
 type SidebarIcon = React.ComponentType<React.SVGProps<SVGSVGElement>>;
 type MainNavIconKey = (typeof MOCK_MAIN_NAV_ITEMS)[number]['icon'];
@@ -408,6 +407,8 @@ function StrategyItemDropdown({ strategy, active }: { strategy: Strategy; active
 }
 
 function UserProfile({ onSettingsClick }: { onSettingsClick: () => void }) {
+  const { data = MOCK_USER } = useGetUser();
+
   return (
     <>
       <div className="group-data-[collapsible=icon]:hidden">
@@ -416,10 +417,10 @@ function UserProfile({ onSettingsClick }: { onSettingsClick: () => void }) {
             <UserAvatar />
             <div className="flex min-w-0 flex-col gap-0.5">
               <span className="min-w-0 truncate whitespace-nowrap text-[13px] leading-[1.25] font-semibold text-foreground">
-                {MOCK_USER.name}
+                {data.name}
               </span>
               <span className="min-w-0 truncate whitespace-nowrap text-[11px] leading-[1.25] font-medium text-muted-foreground">
-                {MOCK_USER.email}
+                {data.email}
               </span>
             </div>
           </div>
@@ -442,12 +443,11 @@ function UserProfile({ onSettingsClick }: { onSettingsClick: () => void }) {
 }
 
 function UserAvatar() {
+  const { data = MOCK_USER } = useGetUser();
   return (
     <Avatar className="size-[34px] text-sm">
-      <AvatarImage src={MOCK_USER.profileImage || undefined} alt={`${MOCK_USER.name} 프로필`} />
-      <AvatarFallback className="font-bold text-foreground">
-        {MOCK_USER.name.slice(0, 1)}
-      </AvatarFallback>
+      <AvatarImage src={data.profileImageUrl || undefined} alt={`${data.name} 프로필`} />
+      <AvatarFallback className="font-bold text-foreground">{data.name.slice(0, 1)}</AvatarFallback>
     </Avatar>
   );
 }
