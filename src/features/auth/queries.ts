@@ -30,7 +30,6 @@ export function useDeleteUser() {
   return useMutation({
     mutationFn: () => deleteUser(),
     onSuccess: () => {
-      queryClient.clear();
       setIsLoggedIn(false);
     },
     onError: (error) => {

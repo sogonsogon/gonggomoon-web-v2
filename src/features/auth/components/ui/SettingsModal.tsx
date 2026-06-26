@@ -12,6 +12,7 @@ import { Separator } from '@/shared/components/ui/separator';
 import { useDeleteUser, useGetUser } from '@/features/auth/queries';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 
 type SettingsModalView = 'settings' | 'withdraw';
 
@@ -56,15 +57,16 @@ export default function SettingsModal({ open, onOpenChange }: SettingsModalProps
   }, [resetWithdrawState]);
   const { mutate: deleteUser, isPending } = useDeleteUser();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const handleConfirm = () => {
     if (!setChecked || isPending) return;
     deleteUser(undefined, {
       onSuccess: () => {
-        toast.success('회원 탈퇴가 완료되었습니다.');
-        router.replace('/');
-
         handleOpenChange(false);
+        router.replace('/');
+        toast.success('회원 탈퇴가 완료되었습니다.');
+        queryClient.clear();
       },
       onError: (error) => {
         toast.error(error.message || '회원 탈퇴에 실패했습니다. 잠시 후 다시 시도해주세요.');
