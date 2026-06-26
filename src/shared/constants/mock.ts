@@ -1,5 +1,5 @@
 export const SHOW_EMPTY_RECENT_STRATEGIES = true;
-export const SHOW_LOADING_RECENT_STRATEGIES = true;
+export const SHOW_LOADING_RECENT_STRATEGIES = false;
 
 export const MOCK_USER = {
   name: '박세윤',

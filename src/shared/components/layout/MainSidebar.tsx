@@ -34,14 +34,15 @@ import {
 } from '@/shared/components/ui/sidebar';
 import {
   MOCK_MAIN_NAV_ITEMS,
-  MOCK_RECENT_STRATEGIES,
   MOCK_USER,
-  SHOW_EMPTY_RECENT_STRATEGIES,
   SHOW_LOADING_RECENT_STRATEGIES,
 } from '@/shared/constants/mock';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { cn } from '@/shared/lib/cn';
 import { Skeleton } from '@/shared/components/ui/skeleton';
+import { useDeleteStrategy, useGetStrategyList } from '@/features/strategy/queries';
+import { Strategy } from '@/features/strategy/types';
+import { toast } from 'sonner';
 
 type SidebarIcon = React.ComponentType<React.SVGProps<SVGSVGElement>>;
 type MainNavIconKey = (typeof MOCK_MAIN_NAV_ITEMS)[number]['icon'];
@@ -49,9 +50,6 @@ type MainNavIconKey = (typeof MOCK_MAIN_NAV_ITEMS)[number]['icon'];
 type MainNavItem = (typeof MOCK_MAIN_NAV_ITEMS)[number] & {
   iconComponent: SidebarIcon;
 };
-
-type RecentStrategy = (typeof MOCK_RECENT_STRATEGIES)[number];
-
 interface MainSidebarContentProps {
   showCollapseToggle?: boolean;
   onNavigate?: () => void;
@@ -68,8 +66,6 @@ const mainNavItems: MainNavItem[] = MOCK_MAIN_NAV_ITEMS.map((item) => ({
   ...item,
   iconComponent: mainNavIconMap[item.icon],
 }));
-
-const recentStrategies = SHOW_EMPTY_RECENT_STRATEGIES ? [] : MOCK_RECENT_STRATEGIES;
 
 function isMainNavActive(pathname: string, href: string) {
   return pathname === href;
@@ -106,6 +102,7 @@ export function MainSidebarContent({
 }: MainSidebarContentProps) {
   const pathname = usePathname();
   const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const { data = [], isLoading } = useGetStrategyList();
 
   return (
     <>
@@ -167,8 +164,8 @@ export function MainSidebarContent({
             <div className="flex min-h-0 flex-col gap-1">
               {SHOW_LOADING_RECENT_STRATEGIES ? (
                 <RecentStrategySkeletonList />
-              ) : recentStrategies.length > 0 ? (
-                recentStrategies.map((strategy) => (
+              ) : data.length > 0 ? (
+                data.map((strategy) => (
                   <RecentStrategyCard
                     key={strategy.id}
                     strategy={strategy}
@@ -188,12 +185,12 @@ export function MainSidebarContent({
             {SHOW_LOADING_RECENT_STRATEGIES ? (
               <RecentStrategySkeletonList collapsed />
             ) : (
-              recentStrategies.map((strategy) => (
+              data.map((strategy) => (
                 <CollapsedIconButton
                   key={strategy.id}
                   label={strategy.title}
                   icon={FileTextIcon}
-                  href={strategy.href}
+                  href={strategy.id}
                   active={isRecentStrategyActive(pathname, strategy.id)}
                   onNavigate={onNavigate}
                 />
@@ -302,14 +299,14 @@ function RecentStrategyCard({
   active,
   onNavigate,
 }: {
-  strategy: RecentStrategy;
+  strategy: Strategy;
   active: boolean;
   onNavigate?: () => void;
 }) {
   return (
     <div className="relative min-w-0 rounded-[var(--radius-sm)]">
       <Link
-        href={strategy.href}
+        href={`/strategy/${strategy.id}/result`}
         onClick={onNavigate}
         className={cn(
           'flex min-w-0 cursor-pointer flex-col gap-[7px] rounded-[var(--radius-sm)] bg-transparent p-2.5 pr-9 text-left transition-colors hover:bg-muted/70 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
@@ -365,7 +362,20 @@ function RecentStrategySkeletonList({ collapsed = false }: { collapsed?: boolean
   );
 }
 
-function StrategyItemDropdown({ strategy, active }: { strategy: RecentStrategy; active: boolean }) {
+function StrategyItemDropdown({ strategy, active }: { strategy: Strategy; active: boolean }) {
+  const { mutate: deleteStrategy } = useDeleteStrategy();
+  const handleDelete = () => {
+    if (confirm('정말 삭제하시겠습니까?')) {
+      deleteStrategy(strategy.id, {
+        onSuccess: () => {
+          toast.success(`포폴 전략이 삭제되었습니다.`);
+        },
+        onError: () => {
+          toast.error('포폴 전략 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        },
+      });
+    }
+  };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -388,7 +398,7 @@ function StrategyItemDropdown({ strategy, active }: { strategy: RecentStrategy; 
         className="min-w-20 border-border/60 shadow-[0_8px_24px_#00000014]"
         onCloseAutoFocus={(event) => event.preventDefault()}
       >
-        <DropdownMenuItem variant="destructive" className="cursor-pointer">
+        <DropdownMenuItem variant="destructive" className="cursor-pointer" onClick={handleDelete}>
           <Trash2Icon className="size-4" aria-hidden="true" />
           삭제
         </DropdownMenuItem>

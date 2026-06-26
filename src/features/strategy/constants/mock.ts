@@ -1,27 +1,4 @@
-export type StrategyAnalysisCardType = 'summary' | 'list' | 'keywords';
-
-export type StrategyAnalysisCardData =
-  | {
-      id: string;
-      order: number;
-      type: 'summary';
-      title: string;
-      content: string;
-    }
-  | {
-      id: string;
-      order: number;
-      type: 'list';
-      title: string;
-      items: string[];
-    }
-  | {
-      id: string;
-      order: number;
-      type: 'keywords';
-      title: string;
-      keywords: string[];
-    };
+import { StrategyAnalysisCardData } from '@/features/strategy/types';
 
 export const MOCK_STRATEGY_RESULT = {
   createdAt: '2026.06.17',
