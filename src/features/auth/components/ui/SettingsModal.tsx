@@ -9,7 +9,6 @@ import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Input } from '@/shared/components/ui/input';
 import { Modal, ModalContent, ModalFooter, ModalHeader } from '@/shared/components/ui/modal';
 import { Separator } from '@/shared/components/ui/separator';
-import { MOCK_USER } from '@/features/auth/constants/mock';
 import { useDeleteUser, useGetUser } from '@/features/auth/queries';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -29,7 +28,7 @@ type SettingsModalProps = {
 };
 
 export default function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
-  const { data = MOCK_USER } = useGetUser();
+  const { data } = useGetUser();
   const [view, setView] = React.useState<SettingsModalView>('settings');
   const [confirmEmail, setConfirmEmail] = React.useState('');
   const [checked, setChecked] = React.useState(false);
@@ -72,6 +71,8 @@ export default function SettingsModal({ open, onOpenChange }: SettingsModalProps
       },
     });
   };
+
+  if (!data) return null;
 
   return (
     <Modal open={open} onOpenChange={handleOpenChange}>

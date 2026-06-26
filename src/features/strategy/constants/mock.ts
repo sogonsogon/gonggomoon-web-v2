@@ -1,4 +1,4 @@
-import { Strategy, StrategyAnalysisCardData } from '@/features/strategy/types';
+import { Strategy, StrategyResult } from '@/features/strategy/types';
 
 export const SHOW_EMPTY_RECENT_STRATEGIES = true;
 export const SHOW_LOADING_RECENT_STRATEGIES = false;
@@ -77,8 +77,8 @@ export const MOCK_STRATEGY_RESULT = {
         '과장된 표현보다 실제 행동, 선택, 결과를 중심으로 작성하세요.',
       ],
     },
-  ] satisfies StrategyAnalysisCardData[],
-} as const;
+  ],
+} as StrategyResult;
 
 export const MOCK_RECENT_STRATEGIES = [
   {

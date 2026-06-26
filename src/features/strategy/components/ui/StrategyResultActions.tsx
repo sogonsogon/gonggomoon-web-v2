@@ -6,9 +6,8 @@ import { toast } from 'sonner';
 
 import JobPostingAnalysisModal from '@/features/job-posting/components/ui/JobPostingAnalysisModal';
 import { MOCK_JOB_POSTING_ANALYSIS } from '@/features/job-posting/constants/mock';
-import type { MOCK_STRATEGY_RESULT } from '@/features/strategy/constants/mock';
 import { Button } from '@/shared/components/ui/button';
-import { StrategyAnalysisCardData, StrategyResult } from '@/features/strategy/types';
+import { StrategyResult, StrategyAnalysisCardData } from '@/features/strategy/types';
 
 interface StrategyResultActionsProps {
   result: StrategyResult;

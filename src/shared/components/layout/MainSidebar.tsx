@@ -33,14 +33,12 @@ import {
   useSidebar,
 } from '@/shared/components/ui/sidebar';
 import { MOCK_MAIN_NAV_ITEMS } from '@/shared/constants/mock';
-import { MOCK_USER } from '@/features/auth/constants/mock';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { cn } from '@/shared/lib/cn';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useDeleteStrategy, useGetStrategyList } from '@/features/strategy/queries';
 import { Strategy } from '@/features/strategy/types';
 import { toast } from 'sonner';
-import { SHOW_LOADING_RECENT_STRATEGIES } from '@/features/strategy/constants/mock';
 import { useGetUser } from '@/features/auth/queries';
 
 type SidebarIcon = React.ComponentType<React.SVGProps<SVGSVGElement>>;
@@ -161,7 +159,7 @@ export function MainSidebarContent({
               최근 포트폴리오 전략
             </div>
             <div className="flex min-h-0 flex-col gap-1">
-              {SHOW_LOADING_RECENT_STRATEGIES ? (
+              {isLoading ? (
                 <RecentStrategySkeletonList />
               ) : data.length > 0 ? (
                 data.map((strategy) => (
@@ -181,7 +179,7 @@ export function MainSidebarContent({
           </div>
 
           <div className="hidden min-h-0 flex-1 flex-col items-center gap-2 group-data-[collapsible=icon]:flex">
-            {SHOW_LOADING_RECENT_STRATEGIES ? (
+            {isLoading ? (
               <RecentStrategySkeletonList collapsed />
             ) : (
               data.map((strategy) => (
@@ -407,21 +405,30 @@ function StrategyItemDropdown({ strategy, active }: { strategy: Strategy; active
 }
 
 function UserProfile({ onSettingsClick }: { onSettingsClick: () => void }) {
-  const { data = MOCK_USER } = useGetUser();
+  const { data, isLoading } = useGetUser();
 
   return (
     <>
       <div className="group-data-[collapsible=icon]:hidden">
         <div className="flex min-w-0 items-center justify-between gap-[var(--gap-sm)] rounded-[var(--radius-sm)] p-2">
           <div className="flex min-w-0 items-center gap-[9px]">
-            <UserAvatar />
+            <UserAvatar data={data} isLoading={isLoading} />
             <div className="flex min-w-0 flex-col gap-0.5">
-              <span className="min-w-0 truncate whitespace-nowrap text-[13px] leading-[1.25] font-semibold text-foreground">
-                {data.name}
-              </span>
-              <span className="min-w-0 truncate whitespace-nowrap text-[11px] leading-[1.25] font-medium text-muted-foreground">
-                {data.email}
-              </span>
+              {isLoading ? (
+                <>
+                  <Skeleton className="h-3.5 w-16" />
+                  <Skeleton className="h-3 w-24" />
+                </>
+              ) : data ? (
+                <>
+                  <span className="min-w-0 truncate whitespace-nowrap text-[13px] leading-[1.25] font-semibold text-foreground">
+                    {data.name}
+                  </span>
+                  <span className="min-w-0 truncate whitespace-nowrap text-[11px] leading-[1.25] font-medium text-muted-foreground">
+                    {data.email}
+                  </span>
+                </>
+              ) : null}
             </div>
           </div>
           <button
@@ -442,8 +449,19 @@ function UserProfile({ onSettingsClick }: { onSettingsClick: () => void }) {
   );
 }
 
-function UserAvatar() {
-  const { data = MOCK_USER } = useGetUser();
+function UserAvatar({
+  data,
+  isLoading,
+}: {
+  data: { profileImageUrl?: string | null; name: string } | undefined;
+  isLoading: boolean;
+}) {
+  if (isLoading) {
+    return <Skeleton className="size-[34px] shrink-0 rounded-full" />;
+  }
+
+  if (!data) return null;
+
   return (
     <Avatar className="size-[34px] text-sm">
       <AvatarImage src={data.profileImageUrl || undefined} alt={`${data.name} 프로필`} />
