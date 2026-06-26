@@ -5,3 +5,8 @@ export interface Experience {
   title: string;
   content: string;
 }
+
+export type UpdateExperienceRequest = {
+  id: string;
+  data: Omit<Experience, 'id'>;
+};

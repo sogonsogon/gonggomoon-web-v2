@@ -1,7 +1,7 @@
 import type { Experience } from '@/features/experience/types';
 
-export const SHOW_EMPTY_EXPERIENCES = true;
-export const SHOW_LOADING_EXPERIENCES = true;
+export const SHOW_EMPTY_EXPERIENCES = false;
+export const SHOW_LOADING_EXPERIENCES = false;
 
 export const MOCK_EXPERIENCES: Experience[] = [
   {

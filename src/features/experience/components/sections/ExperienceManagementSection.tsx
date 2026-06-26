@@ -11,19 +11,15 @@ import ExperienceExtractionModal from '@/features/experience/components/ui/Exper
 import ExperienceListSkeleton from '@/features/experience/components/ui/ExperienceListSkeleton';
 import ExperienceRegisterModal from '@/features/experience/components/ui/ExperienceRegisterModal';
 import ExperienceWriteButton from '@/features/experience/components/ui/ExperienceWriteButton';
-import {
-  MOCK_EXPERIENCES,
-  SHOW_EMPTY_EXPERIENCES,
-  SHOW_LOADING_EXPERIENCES,
-} from '@/features/experience/constants/mock';
 import type { Experience } from '@/features/experience/types';
 import { Skeleton } from '@/shared/components/ui/skeleton';
+import { useGetExperienceList } from '@/features/experience/queries';
 
 type ExperienceModalType = 'extraction' | 'register' | 'detail' | 'edit' | null;
 
-const experiences = SHOW_EMPTY_EXPERIENCES ? [] : MOCK_EXPERIENCES;
-
 export default function ExperienceManagementSection() {
+  const { data = [], isLoading } = useGetExperienceList();
+
   const [activeModal, setActiveModal] = React.useState<ExperienceModalType>(null);
   const [activeExperience, setActiveExperience] = React.useState<Experience | null>(null);
 
@@ -68,22 +64,22 @@ export default function ExperienceManagementSection() {
                 <h2 className="text-base leading-[1.45] font-bold text-foreground break-keep">
                   경험 목록
                 </h2>
-                {SHOW_LOADING_EXPERIENCES ? (
+                {isLoading ? (
                   <Skeleton aria-hidden="true" className="mt-1 h-3 w-24" />
                 ) : (
                   <p className="mt-1 text-xs leading-[1.45] text-muted-foreground">
-                    총 {experiences.length}개의 경험
+                    총 {data.length}개의 경험
                   </p>
                 )}
               </div>
               <ExperienceWriteButton onClick={() => setActiveModal('register')} />
             </div>
 
-            {SHOW_LOADING_EXPERIENCES ? (
+            {isLoading ? (
               <ExperienceListSkeleton variant="view" />
-            ) : experiences.length > 0 ? (
+            ) : data.length > 0 ? (
               <ul className="divide-y divide-border/70 border-t border-border/70">
-                {experiences.map((experience) => (
+                {data.map((experience) => (
                   <ExperienceListItem
                     key={experience.id}
                     variant="view"

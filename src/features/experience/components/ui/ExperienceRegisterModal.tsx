@@ -13,9 +13,13 @@ import {
 } from '@/shared/components/ui/select';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { EXPERIENCE_TYPE_OPTIONS } from '@/features/experience/constants/experienceOptions';
+import { useCreateExperience, useUpdateExperience } from '@/features/experience/queries';
+import { Input } from '@/shared/components/ui/input';
+import { toast } from 'sonner';
 
 export interface ExperienceFormValue {
   type: string;
+  title: string;
   startDate: string | null;
   endDate: string | null;
   ongoing: boolean;
@@ -28,6 +32,7 @@ interface ExperienceRegisterModalProps {
 }
 
 interface ExperienceFormModalContentProps {
+  id?: string; // id가 존재하면 수정, 없으면 등록
   title: string;
   description: string;
   submitLabel: string;
@@ -37,6 +42,7 @@ interface ExperienceFormModalContentProps {
 
 const DEFAULT_FORM_VALUE: ExperienceFormValue = {
   type: '',
+  title: '',
   startDate: null,
   endDate: null,
   ongoing: false,
@@ -62,6 +68,7 @@ export default function ExperienceRegisterModal({
 }
 
 export function ExperienceFormModalContent({
+  id,
   title,
   description,
   submitLabel,
@@ -72,6 +79,9 @@ export function ExperienceFormModalContent({
     ...DEFAULT_FORM_VALUE,
     ...initialValue,
   });
+
+  const { mutate: createExperience } = useCreateExperience();
+  const { mutate: updateExperience } = useUpdateExperience();
 
   const handleValueChange = (field: keyof ExperienceFormValue, value: string) => {
     setFormValue((currentValue) => ({ ...currentValue, [field]: value }));
@@ -97,11 +107,52 @@ export function ExperienceFormModalContent({
     [],
   );
 
+  const handleSumbit = () => {
+    const data = {
+      type: formValue.type,
+      title: formValue.title,
+      content: formValue.content,
+      period: `${formValue.startDate} ~ ${formValue.endDate ?? '진행 중'}`,
+    };
+    if (id) {
+      updateExperience(
+        { id, data },
+        {
+          onSuccess: () => {
+            onOpenChange(false);
+            toast.success('경험이 수정되었습니다.');
+          },
+          onError: (error) => {
+            toast.error(error.message || '경험 수정에 실패했습니다. 잠시 후 시도해주세요.');
+          },
+        },
+      );
+    } else {
+      createExperience(data, {
+        onSuccess: () => {
+          onOpenChange(false);
+          toast.success('경험이 등록되었습니다.');
+        },
+        onError: (error) => {
+          toast.error(error.message || '경험 등록에 실패했습니다. 잠시 후 시도해주세요.');
+        },
+      });
+    }
+  };
+
   return (
     <>
       <ModalHeader title={title} description={description} />
 
       <div className="grid gap-3">
+        <label className="grid gap-2">
+          <span className="text-[13px] leading-[1.42] font-bold text-foreground">제목</span>
+          <Input
+            value={formValue.title}
+            placeholder="경험 제목을 입력하세요."
+            onChange={(event) => handleValueChange('title', event.target.value)}
+          />
+        </label>
         <label className="grid gap-2">
           <span className="text-[13px] leading-[1.42] font-bold text-foreground">경험 유형</span>
           <Select
@@ -147,7 +198,13 @@ export function ExperienceFormModalContent({
         <Button type="button" variant="outline" size="sm" onClick={() => onOpenChange(false)}>
           취소
         </Button>
-        <Button type="button" size="sm">
+        <Button
+          type="button"
+          size="sm"
+          onClick={() => {
+            handleSumbit();
+          }}
+        >
           {submitLabel}
         </Button>
       </ModalFooter>

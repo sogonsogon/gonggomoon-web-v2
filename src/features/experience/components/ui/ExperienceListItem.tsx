@@ -5,6 +5,8 @@ import type { Experience } from '@/features/experience/types';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/cn';
+import { toast } from 'sonner';
+import { useDeleteExperience } from '@/features/experience/queries';
 
 interface BaseExperienceListItemProps {
   experience: Experience;
@@ -28,6 +30,7 @@ export default function ExperienceListItem(props: ExperienceListItemProps) {
   const { experience, onDetailClick, onEditClick } = props;
   const isCheckboxVariant = props.variant !== 'view';
   const selected = isCheckboxVariant ? props.selected : false;
+  const { mutate: deleteExperience } = useDeleteExperience();
 
   const handleToggle = () => {
     if (props.variant !== 'view') {
@@ -45,11 +48,23 @@ export default function ExperienceListItem(props: ExperienceListItemProps) {
     }
   };
 
-  const handleActionClick =
-    (action: () => void) => (event: MouseEvent<HTMLButtonElement>) => {
-      event.stopPropagation();
-      action();
-    };
+  const handleActionClick = (action: () => void) => (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    action();
+  };
+
+  const handleDelete = () => {
+    if (confirm('정말 삭제하시겠습니까?')) {
+      deleteExperience(experience.id, {
+        onSuccess: () => {
+          toast.success(`포폴 전략이 삭제되었습니다.`);
+        },
+        onError: () => {
+          toast.error('포폴 전략 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        },
+      });
+    }
+  };
 
   return (
     <li
@@ -118,7 +133,7 @@ export default function ExperienceListItem(props: ExperienceListItemProps) {
           size="icon"
           aria-label={`${experience.title} 삭제`}
           className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-          onClick={handleActionClick(() => undefined)}
+          onClick={handleActionClick(() => handleDelete())}
         >
           <Trash2Icon className="size-4" aria-hidden="true" />
         </Button>
