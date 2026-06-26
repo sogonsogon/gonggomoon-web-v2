@@ -13,13 +13,13 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/shared/components/ui/sheet';
-import { MOCK_MAIN_NAV_ITEMS } from '@/shared/constants/mock';
+import { NAV_ITEMS } from '@/shared/constants/navItems';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { cn } from '@/shared/lib/cn';
 
-type BottomNavigationIconKey = (typeof MOCK_MAIN_NAV_ITEMS)[number]['icon'];
+type BottomNavigationIconKey = (typeof NAV_ITEMS)[number]['icon'];
 
-type BottomNavigationItem = (typeof MOCK_MAIN_NAV_ITEMS)[number] & {
+type BottomNavigationItem = (typeof NAV_ITEMS)[number] & {
   iconComponent: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 };
 
@@ -31,7 +31,7 @@ const bottomNavigationIconMap: Record<
   briefcase: BriefcaseBusinessIcon,
 };
 
-const bottomNavigationItems: BottomNavigationItem[] = MOCK_MAIN_NAV_ITEMS.map((item) => ({
+const bottomNavigationItems: BottomNavigationItem[] = NAV_ITEMS.map((item) => ({
   ...item,
   iconComponent: bottomNavigationIconMap[item.icon],
 }));
@@ -89,13 +89,7 @@ export default function MainBottomNavigation() {
   );
 }
 
-function BottomNavigationLink({
-  item,
-  active,
-}: {
-  item: BottomNavigationItem;
-  active: boolean;
-}) {
+function BottomNavigationLink({ item, active }: { item: BottomNavigationItem; active: boolean }) {
   const Icon = item.iconComponent;
 
   return (

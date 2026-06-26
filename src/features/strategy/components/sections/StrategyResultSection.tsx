@@ -22,6 +22,7 @@ export default function StrategyResultSection({ strategyId }: StrategyResultSect
         <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="min-w-0">
             <p className="text-xs leading-[1.45] font-medium text-primary">{data.createdAt}</p>
+            {/* TODO: isLoading 분기 처리 작은 스켈레톤 */}
             <h1 className="mt-1 text-2xl leading-[1.25] font-bold tracking-normal text-foreground break-keep md:text-[28px]">
               {data.jobTitle}
             </h1>
@@ -30,9 +31,10 @@ export default function StrategyResultSection({ strategyId }: StrategyResultSect
             </p>
           </div>
 
-          <StrategyResultActions result={data} />
+          <StrategyResultActions result={data} isLoading={isLoading} />
         </header>
 
+        {/* TODO: isLoading 분기 처리 : 총 7개의 아코디언으로 구성되어있는데 스켈레톤도 7줄의 UI 처럼 표시되도록 구현. */}
         <Accordion
           type="multiple"
           defaultValue={firstCardId ? [firstCardId] : undefined}

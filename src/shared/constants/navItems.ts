@@ -1,4 +1,4 @@
-export const MOCK_MAIN_NAV_ITEMS = [
+export const NAV_ITEMS = [
   {
     label: '포폴 전략',
     href: '/',

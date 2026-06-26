@@ -10,15 +10,16 @@ import { Button } from '@/shared/components/ui/button';
 import { StrategyResult, StrategyAnalysisCardData } from '@/features/strategy/types';
 
 interface StrategyResultActionsProps {
-  result: StrategyResult;
+  result?: StrategyResult;
+  isLoading: boolean;
 }
 
-export default function StrategyResultActions({ result }: StrategyResultActionsProps) {
+export default function StrategyResultActions({ result, isLoading }: StrategyResultActionsProps) {
   const [analysisOpen, setAnalysisOpen] = React.useState(false);
 
   const handleCopyStrategy = async () => {
     try {
-      await navigator.clipboard.writeText(formatStrategyResultForCopy(result));
+      await navigator.clipboard.writeText(formatStrategyResultForCopy(result!));
       toast.success('전략 내용이 복사되었습니다.');
     } catch {
       toast.error('전략 내용을 복사하지 못했습니다.');
@@ -38,7 +39,13 @@ export default function StrategyResultActions({ result }: StrategyResultActionsP
           <FileTextIcon className="size-4" aria-hidden="true" />
           공고 분석 보기
         </Button>
-        <Button type="button" size="sm" className="w-full md:w-auto" onClick={handleCopyStrategy}>
+        <Button
+          type="button"
+          size="sm"
+          className="w-full md:w-auto"
+          onClick={handleCopyStrategy}
+          disabled={isLoading}
+        >
           <CopyIcon className="size-4" aria-hidden="true" />
           전략 복사하기
         </Button>

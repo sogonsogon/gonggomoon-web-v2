@@ -32,7 +32,7 @@ import {
   SidebarSeparator,
   useSidebar,
 } from '@/shared/components/ui/sidebar';
-import { MOCK_MAIN_NAV_ITEMS } from '@/shared/constants/mock';
+import { NAV_ITEMS } from '@/shared/constants/navItems';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { cn } from '@/shared/lib/cn';
 import { Skeleton } from '@/shared/components/ui/skeleton';
@@ -42,9 +42,9 @@ import { toast } from 'sonner';
 import { useGetUser } from '@/features/auth/queries';
 
 type SidebarIcon = React.ComponentType<React.SVGProps<SVGSVGElement>>;
-type MainNavIconKey = (typeof MOCK_MAIN_NAV_ITEMS)[number]['icon'];
+type MainNavIconKey = (typeof NAV_ITEMS)[number]['icon'];
 
-type MainNavItem = (typeof MOCK_MAIN_NAV_ITEMS)[number] & {
+type MainNavItem = (typeof NAV_ITEMS)[number] & {
   iconComponent: SidebarIcon;
 };
 interface MainSidebarContentProps {
@@ -59,7 +59,7 @@ const mainNavIconMap: Record<MainNavIconKey, SidebarIcon> = {
   briefcase: BriefcaseBusinessIcon,
 };
 
-const mainNavItems: MainNavItem[] = MOCK_MAIN_NAV_ITEMS.map((item) => ({
+const mainNavItems: MainNavItem[] = NAV_ITEMS.map((item) => ({
   ...item,
   iconComponent: mainNavIconMap[item.icon],
 }));
@@ -187,7 +187,7 @@ export function MainSidebarContent({
                   key={strategy.id}
                   label={strategy.title}
                   icon={FileTextIcon}
-                  href={strategy.id}
+                  href={`/strategy/${strategy.id}/result`}
                   active={isRecentStrategyActive(pathname, strategy.id)}
                   onNavigate={onNavigate}
                 />
@@ -360,15 +360,17 @@ function RecentStrategySkeletonList({ collapsed = false }: { collapsed?: boolean
 }
 
 function StrategyItemDropdown({ strategy, active }: { strategy: Strategy; active: boolean }) {
-  const { mutate: deleteStrategy } = useDeleteStrategy();
+  // TODO: 모든 mutate(생성, 수정, 삭제)에 isPending을 받아서 disabled 처리 필요
+  const { mutate: deleteStrategy, isPending } = useDeleteStrategy();
   const handleDelete = () => {
-    if (confirm('정말 삭제하시겠습니까?')) {
+    if (confirm('정말 포폴 전략을 삭제하시겠습니까?')) {
       deleteStrategy(strategy.id, {
         onSuccess: () => {
           toast.success(`포폴 전략이 삭제되었습니다.`);
+          // TODO: 해당 포폴 전략 결과 페이지에 있을 때 삭제한 경우, router 로직 필요
         },
-        onError: () => {
-          toast.error('포폴 전략 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        onError: (error) => {
+          toast.error(error.message || '포폴 전략 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.');
         },
       });
     }

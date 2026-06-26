@@ -1,8 +1,5 @@
 import { Strategy, StrategyResult } from '@/features/strategy/types';
 
-export const SHOW_EMPTY_RECENT_STRATEGIES = true;
-export const SHOW_LOADING_RECENT_STRATEGIES = false;
-
 export const MOCK_STRATEGY_RESULT = {
   createdAt: '2026.06.17',
   jobTitle: '토스 Backend 신입 채용',

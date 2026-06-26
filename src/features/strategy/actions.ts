@@ -11,7 +11,7 @@ export async function getStrategyList(): Promise<ApiResponse<Strategy[]>> {
     success: true,
     code: 'SUCCESS',
     message: '',
-    data: MOCK_RECENT_STRATEGIES.map(({ id, title, date }) => ({ id, title, date })),
+    data: MOCK_RECENT_STRATEGIES,
   };
 }
 

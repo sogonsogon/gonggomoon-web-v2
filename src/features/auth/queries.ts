@@ -31,6 +31,7 @@ export function useDeleteUser() {
     mutationFn: () => deleteUser(),
     onSuccess: () => {
       setIsLoggedIn(false);
+      queryClient.clear();
     },
     onError: (error) => {
       console.error('탈퇴 실패:', error);

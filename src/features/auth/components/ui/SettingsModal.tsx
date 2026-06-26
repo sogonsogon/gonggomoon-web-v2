@@ -12,24 +12,18 @@ import { Separator } from '@/shared/components/ui/separator';
 import { useDeleteUser, useGetUser } from '@/features/auth/queries';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { useQueryClient } from '@tanstack/react-query';
+import { User } from '@/features/auth/types';
+import { Skeleton } from '@/shared/components/ui/skeleton';
 
 type SettingsModalView = 'settings' | 'withdraw';
 
-type SettingsModalUser = {
-  name: string;
-  email: string;
-  profileImageUrl?: string | null;
-};
-
-type SettingsModalProps = {
+interface SettingsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  user?: SettingsModalUser;
-};
+}
 
 export default function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
-  const { data } = useGetUser();
+  const { data, isLoading } = useGetUser();
   const [view, setView] = React.useState<SettingsModalView>('settings');
   const [confirmEmail, setConfirmEmail] = React.useState('');
   const [checked, setChecked] = React.useState(false);
@@ -57,16 +51,14 @@ export default function SettingsModal({ open, onOpenChange }: SettingsModalProps
   }, [resetWithdrawState]);
   const { mutate: deleteUser, isPending } = useDeleteUser();
   const router = useRouter();
-  const queryClient = useQueryClient();
 
   const handleConfirm = () => {
-    if (!setChecked || isPending) return;
+    if (!checked || isPending) return;
     deleteUser(undefined, {
       onSuccess: () => {
         handleOpenChange(false);
         router.replace('/');
         toast.success('회원 탈퇴가 완료되었습니다.');
-        queryClient.clear();
       },
       onError: (error) => {
         toast.error(error.message || '회원 탈퇴에 실패했습니다. 잠시 후 다시 시도해주세요.');
@@ -74,12 +66,14 @@ export default function SettingsModal({ open, onOpenChange }: SettingsModalProps
     });
   };
 
-  if (!data) return null;
-
   return (
     <Modal open={open} onOpenChange={handleOpenChange}>
       <ModalContent size="md" className="gap-4">
-        {view === 'settings' ? (
+        {isLoading ? (
+          <SettingsSkeletonView />
+        ) : !data ? (
+          <SettingsErrorView />
+        ) : view === 'settings' ? (
           <SettingsView user={data} onWithdrawClick={() => setView('withdraw')} />
         ) : (
           <WithdrawView
@@ -97,20 +91,15 @@ export default function SettingsModal({ open, onOpenChange }: SettingsModalProps
   );
 }
 
-function SettingsView({
-  user,
-  onWithdrawClick,
-}: {
-  user: Required<SettingsModalUser>;
-  onWithdrawClick: () => void;
-}) {
+function SettingsView({ user, onWithdrawClick }: { user: User; onWithdrawClick: () => void }) {
   return (
     <>
       <ModalHeader title="설정" description="계정 정보와 보안 관련 작업을 관리합니다" />
 
       <section className="grid gap-2">
         <h3 className="text-[15px] leading-[1.42] font-bold text-foreground">프로필 정보</h3>
-        <div className="grid rounded-[var(--radius-md)] border border-border bg-muted/70 px-4 py-1">
+
+        <div className="grid rounded-(--radius-md) border border-border bg-muted/70 px-4 py-1">
           <ProfileRow label="프로필 사진">
             <UserAvatar user={user} size="lg" />
           </ProfileRow>
@@ -154,7 +143,7 @@ function WithdrawView({
   onCancel,
   onConfirm,
 }: {
-  user: Required<SettingsModalUser>;
+  user: User;
   confirmEmail: string;
   checked: boolean;
   onConfirmEmailChange: (value: string) => void;
@@ -166,8 +155,8 @@ function WithdrawView({
 
   return (
     <>
-      <div className="flex items-start gap-[var(--gap-lg)]">
-        <div className="flex size-[42px] shrink-0 items-center justify-center rounded-[var(--radius-sm)] border border-border bg-card">
+      <div className="flex items-start gap-(--gap-lg)">
+        <div className="flex size-10.5 shrink-0 items-center justify-center rounded-(--radius-sm) border border-border bg-card">
           <TriangleAlertIcon className="size-5 text-destructive" aria-hidden="true" />
         </div>
         <ModalHeader
@@ -178,11 +167,11 @@ function WithdrawView({
         />
       </div>
 
-      <section className="grid gap-2.5 rounded-[var(--radius-lg)] border border-destructive/25 bg-destructive/5 px-[18px] py-4">
+      <section className="grid gap-2.5 rounded-(--radius-lg) border border-destructive/25 bg-destructive/5 px-4.5 py-4">
         <h3 className="text-[15px] leading-[1.42] font-bold text-destructive">
           탈퇴 시 삭제되는 내용
         </h3>
-        <ul className="grid gap-[7px]">
+        <ul className="grid gap-1.75">
           {[
             '저장된 포트폴리오 전략이 삭제됩니다.',
             '등록한 경험 데이터가 삭제됩니다.',
@@ -192,7 +181,7 @@ function WithdrawView({
               key={item}
               className="flex items-start gap-2 text-[13px] leading-[1.42] text-muted-foreground"
             >
-              <span className="mt-[7px] size-[5px] shrink-0 rounded-full bg-destructive" />
+              <span className="mt-1.75 size-1.25 shrink-0 rounded-full bg-destructive" />
               <span className="min-w-0">{item}</span>
             </li>
           ))}
@@ -212,7 +201,7 @@ function WithdrawView({
       <label className="flex cursor-pointer items-center gap-2.5 px-1">
         <Checkbox
           checked={checked}
-          className="size-[18px]"
+          className="size-4.5"
           onCheckedChange={(value) => onCheckedChange(value === true)}
         />
         <span className="min-w-0 text-[13px] leading-[1.42] text-muted-foreground">
@@ -241,18 +230,74 @@ function WithdrawView({
 
 function ProfileRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex min-h-[38px] items-center justify-between gap-[var(--gap-md)] py-2.5">
+    <div className="flex min-h-9.5 items-center justify-between gap-(--gap-md) py-2.5">
       <span className="text-[13px] leading-[1.42] font-medium text-muted-foreground">{label}</span>
       <div className="min-w-0 shrink-0">{children}</div>
     </div>
   );
 }
 
-function UserAvatar({ user, size }: { user: Required<SettingsModalUser>; size: 'md' | 'lg' }) {
+function UserAvatar({ user, size }: { user: User; size: 'md' | 'lg' }) {
   return (
     <Avatar className={size === 'lg' ? 'size-14 text-[15px]' : 'size-10 text-[15px]'}>
       <AvatarImage src={user.profileImageUrl || undefined} alt={`${user.name} 프로필`} />
       <AvatarFallback className="font-bold text-foreground">{user.name.slice(0, 1)}</AvatarFallback>
     </Avatar>
+  );
+}
+
+function SettingsSkeletonView() {
+  return (
+    <>
+      <div className="grid gap-1.5">
+        <Skeleton className="h-[24px] w-12" />
+        <Skeleton className="h-[18px] w-56 max-w-full" />
+      </div>
+
+      <section className="grid gap-2">
+        <Skeleton className="h-[21px] w-20" />
+
+        <div className="grid rounded-(--radius-md) border border-border bg-muted/70 px-4 py-1">
+          <ProfileRow label="프로필 사진">
+            <Skeleton className="size-14 rounded-full" />
+          </ProfileRow>
+          <Separator className="bg-border-subtle" />
+          <ProfileRow label="이름">
+            <Skeleton className="h-[18px] w-20" />
+          </ProfileRow>
+          <Separator className="bg-border-subtle" />
+          <ProfileRow label="이메일">
+            <Skeleton className="h-[18px] w-40 max-w-[45vw]" />
+          </ProfileRow>
+        </div>
+      </section>
+
+      <Skeleton className="h-9 w-full rounded-(--radius-sm)" />
+      <Skeleton className="mx-auto h-[17px] w-14" />
+    </>
+  );
+}
+
+function SettingsErrorView() {
+  return (
+    <>
+      <ModalHeader title="설정" description="계정 정보를 불러오지 못했습니다" />
+
+      <div className="grid gap-2.5 rounded-(--radius-md) border border-destructive/25 bg-destructive/5 px-4 py-4">
+        <div className="flex items-start gap-3">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-(--radius-sm) border border-destructive/20 bg-card">
+            <TriangleAlertIcon className="size-5 text-destructive" aria-hidden="true" />
+          </div>
+          <div className="grid min-w-0 gap-1">
+            <h3 className="text-[15px] leading-[1.42] font-bold text-destructive">
+              프로필 정보를 확인할 수 없습니다
+            </h3>
+            <p className="text-[13px] leading-[1.42] text-muted-foreground">
+              잠시 후 다시 시도해주세요.
+            </p>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }

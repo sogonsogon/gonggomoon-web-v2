@@ -3,20 +3,14 @@
 import { deleteStrategy, getStrategy, getStrategyList } from '@/features/strategy/actions';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-export const strategyKeys = {
+const strategyKeys = {
   all: ['strategy'] as const,
   list: () => [...strategyKeys.all, 'list'] as const,
   detail: (id: string) => [...strategyKeys.all, 'detail', id] as const,
-  availability: () => [...strategyKeys.all, 'availability'] as const,
 };
 
-//질문, id 인지 - strategyId 인지?
 // 포폴 전략 목록 조회
-export function useGetStrategyList() {
-  return useQuery(strategyListQueryOptions());
-}
-
-export const strategyListQueryOptions = () => ({
+const strategyListQueryOptions = () => ({
   queryKey: strategyKeys.list(),
   queryFn: async () => {
     const result = await getStrategyList();
@@ -29,12 +23,12 @@ export const strategyListQueryOptions = () => ({
   gcTime: 30 * 60 * 1000,
 });
 
-// 포폴 전략 상세 조회
-export function useGetStrategy(id: string) {
-  return useQuery(getStrategyQueryOption(id));
+export function useGetStrategyList() {
+  return useQuery(strategyListQueryOptions());
 }
 
-export const getStrategyQueryOption = (id: string) => ({
+// 포폴 전략 상세 조회
+const getStrategyQueryOption = (id: string) => ({
   queryKey: strategyKeys.detail(id),
   queryFn: async () => {
     const response = await getStrategy(id);
@@ -43,10 +37,13 @@ export const getStrategyQueryOption = (id: string) => ({
     }
     return response.data;
   },
-  staleTime: 60 * 1000,
-  enabled: !!id,
-  retry: false,
+  staleTime: 24 * 60 * 60 * 1000,
+  gcTime: 24 * 60 * 60 * 1000,
 });
+
+export function useGetStrategy(id: string) {
+  return useQuery(getStrategyQueryOption(id));
+}
 
 // 포폴 전략 삭제
 export function useDeleteStrategy() {
