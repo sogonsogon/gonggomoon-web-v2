@@ -11,15 +11,11 @@ import ExperienceEditModal from '@/features/experience/components/ui/ExperienceE
 import ExperienceExtractionBanner from '@/features/experience/components/ui/ExperienceExtractionBanner';
 import ExperienceExtractionModal from '@/features/experience/components/ui/ExperienceExtractionModal';
 import ExperienceRegisterModal from '@/features/experience/components/ui/ExperienceRegisterModal';
-import {
-  MOCK_EXPERIENCES,
-  SHOW_EMPTY_EXPERIENCES,
-  SHOW_LOADING_EXPERIENCES,
-} from '@/features/experience/constants/mock';
 import type { Experience } from '@/features/experience/types';
 import AiProcessingOverlay from '@/shared/components/ui/AiProcessingOverlay';
 import { Button } from '@/shared/components/ui/button';
 import { simulateAiRequest } from '@/shared/lib/SimulateAiRequest';
+import { useGetExperienceList } from '@/features/experience/queries';
 
 interface ExperienceSelectionSectionProps {
   strategyId: string;
@@ -27,12 +23,11 @@ interface ExperienceSelectionSectionProps {
 
 type ExperienceModalType = 'extraction' | 'register' | 'detail' | 'edit' | null;
 
-const experiences = SHOW_EMPTY_EXPERIENCES ? [] : MOCK_EXPERIENCES;
-
 export default function ExperienceSelectionSection({
   strategyId,
 }: ExperienceSelectionSectionProps) {
   const router = useRouter();
+  const { data = [], isLoading } = useGetExperienceList();
   const [activeModal, setActiveModal] = React.useState<ExperienceModalType>(null);
   const [activeExperience, setActiveExperience] = React.useState<Experience | null>(null);
   const [isProcessing, setIsProcessing] = React.useState(false);
@@ -102,8 +97,8 @@ export default function ExperienceSelectionSection({
           <ExperienceExtractionBanner onExtractionClick={() => setActiveModal('extraction')} />
 
           <ExperienceListSection
-            experiences={experiences}
-            isLoading={SHOW_LOADING_EXPERIENCES}
+            experiences={data}
+            isLoading={isLoading}
             onRegisterClick={() => setActiveModal('register')}
             onDetailClick={handleDetailClick}
             onEditClick={handleEditClick}
