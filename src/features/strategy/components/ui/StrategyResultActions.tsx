@@ -18,8 +18,10 @@ export default function StrategyResultActions({ result, isLoading }: StrategyRes
   const [analysisOpen, setAnalysisOpen] = React.useState(false);
 
   const handleCopyStrategy = async () => {
+    if (!result) return;
+
     try {
-      await navigator.clipboard.writeText(formatStrategyResultForCopy(result!));
+      await navigator.clipboard.writeText(formatStrategyResultForCopy(result));
       toast.success('전략 내용이 복사되었습니다.');
     } catch {
       toast.error('전략 내용을 복사하지 못했습니다.');
@@ -44,7 +46,7 @@ export default function StrategyResultActions({ result, isLoading }: StrategyRes
           size="sm"
           className="w-full md:w-auto"
           onClick={handleCopyStrategy}
-          disabled={isLoading}
+          disabled={isLoading || !result}
         >
           <CopyIcon className="size-4" aria-hidden="true" />
           전략 복사하기

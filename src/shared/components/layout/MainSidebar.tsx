@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   BriefcaseBusinessIcon,
   ChevronLeftIcon,
@@ -360,14 +360,16 @@ function RecentStrategySkeletonList({ collapsed = false }: { collapsed?: boolean
 }
 
 function StrategyItemDropdown({ strategy, active }: { strategy: Strategy; active: boolean }) {
-  // TODO: 모든 mutate(생성, 수정, 삭제)에 isPending을 받아서 disabled 처리 필요
   const { mutate: deleteStrategy, isPending } = useDeleteStrategy();
+  const router = useRouter();
   const handleDelete = () => {
     if (confirm('정말 포폴 전략을 삭제하시겠습니까?')) {
       deleteStrategy(strategy.id, {
         onSuccess: () => {
           toast.success(`포폴 전략이 삭제되었습니다.`);
-          // TODO: 해당 포폴 전략 결과 페이지에 있을 때 삭제한 경우, router 로직 필요
+          if (active) {
+            router.replace('/');
+          }
         },
         onError: (error) => {
           toast.error(error.message || '포폴 전략 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.');
@@ -397,7 +399,12 @@ function StrategyItemDropdown({ strategy, active }: { strategy: Strategy; active
         className="min-w-20 border-border/60 shadow-[0_8px_24px_#00000014]"
         onCloseAutoFocus={(event) => event.preventDefault()}
       >
-        <DropdownMenuItem variant="destructive" className="cursor-pointer" onClick={handleDelete}>
+        <DropdownMenuItem
+          variant="destructive"
+          className="cursor-pointer"
+          onClick={handleDelete}
+          disabled={isPending}
+        >
           <Trash2Icon className="size-4" aria-hidden="true" />
           삭제
         </DropdownMenuItem>

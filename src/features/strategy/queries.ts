@@ -57,8 +57,9 @@ export function useDeleteStrategy() {
       }
       return result.data;
     },
-    onSuccess: () => {
+    onSuccess: (_data, id) => {
       queryClient.invalidateQueries({ queryKey: strategyKeys.list() });
-    },
+      queryClient.removeQueries({ queryKey: strategyKeys.detail(id), exact: true });
+    }, //삭제 후 캐시 정리는 useDeleteStrategy의 책임으로 => 사이드바 말고 다른 곳에서 전략 삭제시 ,동일하게 상세 캐시 제거 하도록
   });
 }
