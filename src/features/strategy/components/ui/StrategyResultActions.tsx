@@ -11,10 +11,9 @@ import { StrategyResult, StrategyAnalysisCardData } from '@/features/strategy/ty
 
 interface StrategyResultActionsProps {
   result: StrategyResult;
-  isLoading: boolean;
 }
 
-export default function StrategyResultActions({ result, isLoading }: StrategyResultActionsProps) {
+export default function StrategyResultActions({ result }: StrategyResultActionsProps) {
   const [analysisOpen, setAnalysisOpen] = React.useState(false);
 
   const handleCopyStrategy = async () => {
@@ -39,13 +38,7 @@ export default function StrategyResultActions({ result, isLoading }: StrategyRes
           <FileTextIcon className="size-4" aria-hidden="true" />
           공고 분석 보기
         </Button>
-        <Button
-          type="button"
-          size="sm"
-          className="w-full md:w-auto"
-          onClick={handleCopyStrategy}
-          disabled={isLoading}
-        >
+        <Button type="button" size="sm" className="w-full md:w-auto" onClick={handleCopyStrategy}>
           <CopyIcon className="size-4" aria-hidden="true" />
           전략 복사하기
         </Button>

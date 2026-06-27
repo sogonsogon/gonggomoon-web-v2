@@ -43,7 +43,7 @@ export default function StrategyResultSection({ strategyId }: StrategyResultSect
           {isLoading ? (
             <Skeleton className="h-10 w-full max-w-[200px] rounded-lg" />
           ) : isError || !data ? null : (
-            <StrategyResultActions result={data} isLoading={isLoading} />
+            <StrategyResultActions result={data} />
           )}
         </header>
 
