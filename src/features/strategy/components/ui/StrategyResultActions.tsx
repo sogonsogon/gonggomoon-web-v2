@@ -10,7 +10,7 @@ import { Button } from '@/shared/components/ui/button';
 import { StrategyResult, StrategyAnalysisCardData } from '@/features/strategy/types';
 
 interface StrategyResultActionsProps {
-  result?: StrategyResult;
+  result: StrategyResult;
   isLoading: boolean;
 }
 
@@ -18,8 +18,6 @@ export default function StrategyResultActions({ result, isLoading }: StrategyRes
   const [analysisOpen, setAnalysisOpen] = React.useState(false);
 
   const handleCopyStrategy = async () => {
-    if (!result) return;
-
     try {
       await navigator.clipboard.writeText(formatStrategyResultForCopy(result));
       toast.success('전략 내용이 복사되었습니다.');
@@ -46,7 +44,7 @@ export default function StrategyResultActions({ result, isLoading }: StrategyRes
           size="sm"
           className="w-full md:w-auto"
           onClick={handleCopyStrategy}
-          disabled={isLoading || !result}
+          disabled={isLoading}
         >
           <CopyIcon className="size-4" aria-hidden="true" />
           전략 복사하기

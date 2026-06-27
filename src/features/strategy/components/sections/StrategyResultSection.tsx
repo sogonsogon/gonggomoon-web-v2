@@ -40,8 +40,11 @@ export default function StrategyResultSection({ strategyId }: StrategyResultSect
               </p>
             </div>
           )}
-
-          <StrategyResultActions result={data} isLoading={isLoading} />
+          {isLoading ? (
+            <Skeleton className="h-10 w-full max-w-[200px] rounded-lg" />
+          ) : isError || !data ? null : (
+            <StrategyResultActions result={data} isLoading={isLoading} />
+          )}
         </header>
 
         {isLoading ? (
