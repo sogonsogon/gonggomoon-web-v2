@@ -1,13 +1,16 @@
 'use client';
 
-import * as React from 'react';
-
-import LoginModal from '@/features/auth/components/ui/LoginModal';
+import { useAuthStore } from '@/shared/provider/AuthProvider';
+import { useLoginModal } from '@/features/auth/store/useLoginModal';
+import { useEffect } from 'react';
 
 export default function LoginGate() {
-  const [open, setOpen] = React.useState(true);
-
-  return (
-    <LoginModal open={open} onOpenChange={setOpen} onNaverLogin={() => setOpen(false)} />
-  );
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const { openDialog } = useLoginModal();
+  useEffect(() => {
+    if (!isLoggedIn) {
+      openDialog();
+    }
+  }, [isLoggedIn]);
+  return null;
 }
