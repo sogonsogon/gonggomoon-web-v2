@@ -1,8 +1,10 @@
 'use client';
 
-import { getUser, deleteUser } from '@/features/auth/actions';
+import { getUser, deleteUser, logout } from '@/features/auth/actions';
+import { isProtectedRoute } from '@/shared/constants/protectedRoutes';
 import { useAuthStore } from '@/shared/provider/AuthProvider';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { usePathname, useRouter } from 'next/navigation';
 
 export const userQueryOptions = () => ({
   queryKey: ['user'],
@@ -35,6 +37,22 @@ export function useDeleteUser() {
     },
     onError: (error) => {
       console.error('탈퇴 실패:', error);
+    },
+  });
+}
+
+//로그아웃
+export function useLogout() {
+  const queryClient = useQueryClient();
+  const pathname = usePathname();
+  const router = useRouter();
+  const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn);
+  return useMutation({
+    mutationFn: async () => {
+      queryClient.clear();
+      if (isProtectedRoute(pathname)) router.replace('/');
+      await logout();
+      setIsLoggedIn(false);
     },
   });
 }
