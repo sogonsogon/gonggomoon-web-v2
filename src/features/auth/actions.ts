@@ -7,7 +7,14 @@ import { privateFetch } from '@/shared/api/http';
 import { cookies } from 'next/headers';
 
 export async function getUser(): Promise<ApiResponse<User>> {
-  return privateFetch<User>('/api/v1/users/me');
+  return {
+    success: true,
+    code: 'SUCCESS',
+    message: '',
+    data: MOCK_USER,
+  };
+  //로그인 로그아웃 연동 여부 확인히기 위해, 내정보조회 api 연결
+  // Promise<ApiResponse<User>> {return privateFetch<User>('/api/v1/users/me');
 }
 
 export async function deleteUser(): Promise<ApiResponse<null>> {
