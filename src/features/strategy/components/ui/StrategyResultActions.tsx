@@ -6,14 +6,11 @@ import { toast } from 'sonner';
 
 import JobPostingAnalysisModal from '@/features/job-posting/components/ui/JobPostingAnalysisModal';
 import { MOCK_JOB_POSTING_ANALYSIS } from '@/features/job-posting/constants/mock';
-import type {
-  MOCK_STRATEGY_RESULT,
-  StrategyAnalysisCardData,
-} from '@/features/strategy/constants/mock';
 import { Button } from '@/shared/components/ui/button';
+import { StrategyResult, StrategyAnalysisCardData } from '@/features/strategy/types';
 
 interface StrategyResultActionsProps {
-  result: typeof MOCK_STRATEGY_RESULT;
+  result: StrategyResult;
 }
 
 export default function StrategyResultActions({ result }: StrategyResultActionsProps) {
@@ -56,7 +53,7 @@ export default function StrategyResultActions({ result }: StrategyResultActionsP
   );
 }
 
-function formatStrategyResultForCopy(result: typeof MOCK_STRATEGY_RESULT) {
+function formatStrategyResultForCopy(result: StrategyResult) {
   return [
     result.jobTitle,
     result.createdAt,

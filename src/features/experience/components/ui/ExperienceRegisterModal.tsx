@@ -80,8 +80,9 @@ export function ExperienceFormModalContent({
     ...initialValue,
   });
 
-  const { mutate: createExperience } = useCreateExperience();
-  const { mutate: updateExperience } = useUpdateExperience();
+  const { mutate: createExperience, isPending: isCreating } = useCreateExperience();
+  const { mutate: updateExperience, isPending: isUpdating } = useUpdateExperience();
+  const isSubmitting = isCreating || isUpdating;
 
   const handleValueChange = (field: keyof ExperienceFormValue, value: string) => {
     setFormValue((currentValue) => ({ ...currentValue, [field]: value }));
@@ -107,7 +108,7 @@ export function ExperienceFormModalContent({
     [],
   );
 
-  const handleSumbit = () => {
+  const handleSubmit = () => {
     const data = {
       type: formValue.type,
       title: formValue.title,
@@ -202,8 +203,9 @@ export function ExperienceFormModalContent({
           type="button"
           size="sm"
           onClick={() => {
-            handleSumbit();
+            handleSubmit();
           }}
+          disabled={isSubmitting}
         >
           {submitLabel}
         </Button>

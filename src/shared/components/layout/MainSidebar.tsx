@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   BriefcaseBusinessIcon,
   ChevronLeftIcon,
@@ -32,26 +32,21 @@ import {
   SidebarSeparator,
   useSidebar,
 } from '@/shared/components/ui/sidebar';
-import {
-  MOCK_MAIN_NAV_ITEMS,
-  MOCK_RECENT_STRATEGIES,
-  MOCK_USER,
-  SHOW_EMPTY_RECENT_STRATEGIES,
-  SHOW_LOADING_RECENT_STRATEGIES,
-} from '@/shared/constants/mock';
+import { NAV_ITEMS } from '@/shared/constants/navItems';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { cn } from '@/shared/lib/cn';
 import { Skeleton } from '@/shared/components/ui/skeleton';
+import { useDeleteStrategy, useGetStrategyList } from '@/features/strategy/queries';
+import { Strategy } from '@/features/strategy/types';
+import { toast } from 'sonner';
+import { useGetUser } from '@/features/auth/queries';
 
 type SidebarIcon = React.ComponentType<React.SVGProps<SVGSVGElement>>;
-type MainNavIconKey = (typeof MOCK_MAIN_NAV_ITEMS)[number]['icon'];
+type MainNavIconKey = (typeof NAV_ITEMS)[number]['icon'];
 
-type MainNavItem = (typeof MOCK_MAIN_NAV_ITEMS)[number] & {
+type MainNavItem = (typeof NAV_ITEMS)[number] & {
   iconComponent: SidebarIcon;
 };
-
-type RecentStrategy = (typeof MOCK_RECENT_STRATEGIES)[number];
-
 interface MainSidebarContentProps {
   showCollapseToggle?: boolean;
   onNavigate?: () => void;
@@ -64,12 +59,10 @@ const mainNavIconMap: Record<MainNavIconKey, SidebarIcon> = {
   briefcase: BriefcaseBusinessIcon,
 };
 
-const mainNavItems: MainNavItem[] = MOCK_MAIN_NAV_ITEMS.map((item) => ({
+const mainNavItems: MainNavItem[] = NAV_ITEMS.map((item) => ({
   ...item,
   iconComponent: mainNavIconMap[item.icon],
 }));
-
-const recentStrategies = SHOW_EMPTY_RECENT_STRATEGIES ? [] : MOCK_RECENT_STRATEGIES;
 
 function isMainNavActive(pathname: string, href: string) {
   return pathname === href;
@@ -106,6 +99,7 @@ export function MainSidebarContent({
 }: MainSidebarContentProps) {
   const pathname = usePathname();
   const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const { data = [], isLoading } = useGetStrategyList();
 
   return (
     <>
@@ -165,10 +159,10 @@ export function MainSidebarContent({
               최근 포트폴리오 전략
             </div>
             <div className="flex min-h-0 flex-col gap-1">
-              {SHOW_LOADING_RECENT_STRATEGIES ? (
+              {isLoading ? (
                 <RecentStrategySkeletonList />
-              ) : recentStrategies.length > 0 ? (
-                recentStrategies.map((strategy) => (
+              ) : data.length > 0 ? (
+                data.map((strategy) => (
                   <RecentStrategyCard
                     key={strategy.id}
                     strategy={strategy}
@@ -185,15 +179,15 @@ export function MainSidebarContent({
           </div>
 
           <div className="hidden min-h-0 flex-1 flex-col items-center gap-2 group-data-[collapsible=icon]:flex">
-            {SHOW_LOADING_RECENT_STRATEGIES ? (
+            {isLoading ? (
               <RecentStrategySkeletonList collapsed />
             ) : (
-              recentStrategies.map((strategy) => (
+              data.map((strategy) => (
                 <CollapsedIconButton
                   key={strategy.id}
                   label={strategy.title}
                   icon={FileTextIcon}
-                  href={strategy.href}
+                  href={`/strategy/${strategy.id}/result`}
                   active={isRecentStrategyActive(pathname, strategy.id)}
                   onNavigate={onNavigate}
                 />
@@ -302,14 +296,14 @@ function RecentStrategyCard({
   active,
   onNavigate,
 }: {
-  strategy: RecentStrategy;
+  strategy: Strategy;
   active: boolean;
   onNavigate?: () => void;
 }) {
   return (
     <div className="relative min-w-0 rounded-[var(--radius-sm)]">
       <Link
-        href={strategy.href}
+        href={`/strategy/${strategy.id}/result`}
         onClick={onNavigate}
         className={cn(
           'flex min-w-0 cursor-pointer flex-col gap-[7px] rounded-[var(--radius-sm)] bg-transparent p-2.5 pr-9 text-left transition-colors hover:bg-muted/70 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
@@ -365,7 +359,24 @@ function RecentStrategySkeletonList({ collapsed = false }: { collapsed?: boolean
   );
 }
 
-function StrategyItemDropdown({ strategy, active }: { strategy: RecentStrategy; active: boolean }) {
+function StrategyItemDropdown({ strategy, active }: { strategy: Strategy; active: boolean }) {
+  const { mutate: deleteStrategy, isPending } = useDeleteStrategy();
+  const router = useRouter();
+  const handleDelete = () => {
+    if (confirm('정말 포폴 전략을 삭제하시겠습니까?')) {
+      deleteStrategy(strategy.id, {
+        onSuccess: () => {
+          toast.success(`포폴 전략이 삭제되었습니다.`);
+          if (active) {
+            router.replace('/');
+          }
+        },
+        onError: (error) => {
+          toast.error(error.message || '포폴 전략 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        },
+      });
+    }
+  };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -388,7 +399,12 @@ function StrategyItemDropdown({ strategy, active }: { strategy: RecentStrategy; 
         className="min-w-20 border-border/60 shadow-[0_8px_24px_#00000014]"
         onCloseAutoFocus={(event) => event.preventDefault()}
       >
-        <DropdownMenuItem variant="destructive" className="cursor-pointer">
+        <DropdownMenuItem
+          variant="destructive"
+          className="cursor-pointer"
+          onClick={handleDelete}
+          disabled={isPending}
+        >
           <Trash2Icon className="size-4" aria-hidden="true" />
           삭제
         </DropdownMenuItem>
@@ -398,19 +414,30 @@ function StrategyItemDropdown({ strategy, active }: { strategy: RecentStrategy; 
 }
 
 function UserProfile({ onSettingsClick }: { onSettingsClick: () => void }) {
+  const { data, isLoading } = useGetUser();
+
   return (
     <>
       <div className="group-data-[collapsible=icon]:hidden">
         <div className="flex min-w-0 items-center justify-between gap-[var(--gap-sm)] rounded-[var(--radius-sm)] p-2">
           <div className="flex min-w-0 items-center gap-[9px]">
-            <UserAvatar />
+            <UserAvatar data={data} isLoading={isLoading} />
             <div className="flex min-w-0 flex-col gap-0.5">
-              <span className="min-w-0 truncate whitespace-nowrap text-[13px] leading-[1.25] font-semibold text-foreground">
-                {MOCK_USER.name}
-              </span>
-              <span className="min-w-0 truncate whitespace-nowrap text-[11px] leading-[1.25] font-medium text-muted-foreground">
-                {MOCK_USER.email}
-              </span>
+              {isLoading ? (
+                <>
+                  <Skeleton className="h-3.5 w-16" />
+                  <Skeleton className="h-3 w-24" />
+                </>
+              ) : data ? (
+                <>
+                  <span className="min-w-0 truncate whitespace-nowrap text-[13px] leading-[1.25] font-semibold text-foreground">
+                    {data.name}
+                  </span>
+                  <span className="min-w-0 truncate whitespace-nowrap text-[11px] leading-[1.25] font-medium text-muted-foreground">
+                    {data.email}
+                  </span>
+                </>
+              ) : null}
             </div>
           </div>
           <button
@@ -431,13 +458,23 @@ function UserProfile({ onSettingsClick }: { onSettingsClick: () => void }) {
   );
 }
 
-function UserAvatar() {
+function UserAvatar({
+  data,
+  isLoading,
+}: {
+  data: { profileImageUrl?: string | null; name: string } | undefined;
+  isLoading: boolean;
+}) {
+  if (isLoading) {
+    return <Skeleton className="size-[34px] shrink-0 rounded-full" />;
+  }
+
+  if (!data) return null;
+
   return (
     <Avatar className="size-[34px] text-sm">
-      <AvatarImage src={MOCK_USER.profileImage || undefined} alt={`${MOCK_USER.name} 프로필`} />
-      <AvatarFallback className="font-bold text-foreground">
-        {MOCK_USER.name.slice(0, 1)}
-      </AvatarFallback>
+      <AvatarImage src={data.profileImageUrl || undefined} alt={`${data.name} 프로필`} />
+      <AvatarFallback className="font-bold text-foreground">{data.name.slice(0, 1)}</AvatarFallback>
     </Avatar>
   );
 }

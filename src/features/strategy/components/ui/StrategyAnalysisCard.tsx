@@ -6,7 +6,7 @@ import {
   AccordionTrigger,
 } from '@/shared/components/ui/accordion';
 import { cn } from '@/shared/lib/cn';
-import type { StrategyAnalysisCardData } from '@/features/strategy/constants/mock';
+import type { StrategyAnalysisCardData } from '@/features/strategy/types';
 
 interface StrategyAnalysisCardProps {
   card: StrategyAnalysisCardData;

@@ -1,27 +1,4 @@
-export type StrategyAnalysisCardType = 'summary' | 'list' | 'keywords';
-
-export type StrategyAnalysisCardData =
-  | {
-      id: string;
-      order: number;
-      type: 'summary';
-      title: string;
-      content: string;
-    }
-  | {
-      id: string;
-      order: number;
-      type: 'list';
-      title: string;
-      items: string[];
-    }
-  | {
-      id: string;
-      order: number;
-      type: 'keywords';
-      title: string;
-      keywords: string[];
-    };
+import { Strategy, StrategyResult } from '@/features/strategy/types';
 
 export const MOCK_STRATEGY_RESULT = {
   createdAt: '2026.06.17',
@@ -97,5 +74,18 @@ export const MOCK_STRATEGY_RESULT = {
         '과장된 표현보다 실제 행동, 선택, 결과를 중심으로 작성하세요.',
       ],
     },
-  ] satisfies StrategyAnalysisCardData[],
-} as const;
+  ],
+} as StrategyResult;
+
+export const MOCK_RECENT_STRATEGIES = [
+  {
+    id: '1',
+    title: '당근 Frontend 개발자 채용',
+    date: '2026. 06. 02',
+  },
+  {
+    id: '2',
+    title: '토스 Backend 개발자 채용',
+    date: '2026. 06. 01',
+  },
+] as Strategy[];
