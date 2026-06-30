@@ -7,6 +7,7 @@ import { Button } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/cn';
 import { toast } from 'sonner';
 import { useDeleteExperience } from '@/features/experience/queries';
+import { EXPERIENCE_TYPE_OPTIONS } from '@/features/experience/constants/experienceOptions';
 
 interface BaseExperienceListItemProps {
   experience: Experience;
@@ -18,7 +19,7 @@ type ExperienceListItemProps =
   | (BaseExperienceListItemProps & {
       variant?: 'checkbox';
       selected: boolean;
-      onSelectedChange: (experienceId: string, selected: boolean) => void;
+      onSelectedChange: (experienceId: number, selected: boolean) => void;
     })
   | (BaseExperienceListItemProps & {
       variant: 'view';
@@ -34,7 +35,7 @@ export default function ExperienceListItem(props: ExperienceListItemProps) {
 
   const handleToggle = () => {
     if (props.variant !== 'view') {
-      props.onSelectedChange(experience.id, !selected);
+      props.onSelectedChange(experience.experienceId, !selected);
       return;
     }
 
@@ -55,7 +56,7 @@ export default function ExperienceListItem(props: ExperienceListItemProps) {
 
   const handleDelete = () => {
     if (confirm('정말 삭제하시겠습니까?')) {
-      deleteExperience(experience.id, {
+      deleteExperience(experience.experienceId, {
         onSuccess: () => {
           toast.success(`경험이 삭제되었습니다.`);
         },
@@ -65,6 +66,9 @@ export default function ExperienceListItem(props: ExperienceListItemProps) {
       });
     }
   };
+  const typeLabel =
+    EXPERIENCE_TYPE_OPTIONS.find((option) => option.value === experience.experienceType)?.label ??
+    experience.experienceType;
 
   return (
     <li
@@ -109,10 +113,10 @@ export default function ExperienceListItem(props: ExperienceListItemProps) {
         <div className="grid min-w-0 flex-1 gap-1">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <Badge variant="secondary" className="bg-primary/10 text-primary">
-              {experience.type}
+              {typeLabel}
             </Badge>
             <span className="text-xs leading-[1.45] text-muted-foreground">
-              {experience.period}
+              {`${experience.startDate} ~ ${experience.endDate ?? '진행 중'}`}
             </span>
           </div>
           <span

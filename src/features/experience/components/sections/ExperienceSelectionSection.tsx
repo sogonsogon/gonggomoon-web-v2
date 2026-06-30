@@ -27,7 +27,14 @@ export default function ExperienceSelectionSection({
   strategyId,
 }: ExperienceSelectionSectionProps) {
   const router = useRouter();
-  const { data = [], isLoading } = useGetExperienceList();
+  const {
+    data: experienceData = {
+      totalCount: 0,
+
+      contents: [],
+    },
+    isLoading,
+  } = useGetExperienceList();
   const [activeModal, setActiveModal] = React.useState<ExperienceModalType>(null);
   const [activeExperience, setActiveExperience] = React.useState<Experience | null>(null);
   const [isProcessing, setIsProcessing] = React.useState(false);
@@ -97,7 +104,7 @@ export default function ExperienceSelectionSection({
           <ExperienceExtractionBanner onExtractionClick={() => setActiveModal('extraction')} />
 
           <ExperienceListSection
-            experiences={data}
+            experiences={experienceData.contents}
             isLoading={isLoading}
             onRegisterClick={() => setActiveModal('register')}
             onDetailClick={handleDetailClick}

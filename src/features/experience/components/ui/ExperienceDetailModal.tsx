@@ -1,5 +1,6 @@
 'use client';
 
+import { EXPERIENCE_TYPE_OPTIONS } from '@/features/experience/constants/experienceOptions';
 import type { Experience } from '@/features/experience/types';
 import { Badge } from '@/shared/components/ui/badge';
 import { Modal, ModalContent, ModalHeader } from '@/shared/components/ui/modal';
@@ -15,6 +16,10 @@ export default function ExperienceDetailModal({
   onOpenChange,
   experience,
 }: ExperienceDetailModalProps) {
+  const typeLabel =
+    EXPERIENCE_TYPE_OPTIONS.find((option) => option.value === experience?.experienceType)?.label ??
+    experience?.experienceType;
+
   return (
     <Modal open={open && Boolean(experience)} onOpenChange={onOpenChange}>
       {experience ? (
@@ -24,10 +29,10 @@ export default function ExperienceDetailModal({
           <section className="grid gap-3">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <Badge variant="secondary" className="bg-primary/10 text-primary">
-                {experience.type}
+                {typeLabel}
               </Badge>
               <span className="text-xs leading-[1.45] text-muted-foreground">
-                {experience.period}
+                {`${experience.startDate} ~ ${experience.endDate ?? '진행 중'}`}
               </span>
             </div>
 
@@ -36,7 +41,7 @@ export default function ExperienceDetailModal({
                 {experience.title}
               </h3>
               <p className="text-sm leading-[1.65] text-muted-foreground break-keep break-words">
-                {experience.content}
+                {experience.experienceContent}
               </p>
             </div>
           </section>

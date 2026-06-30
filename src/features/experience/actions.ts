@@ -1,65 +1,93 @@
 'use server';
 
-import type { Experience } from '@/features/experience/types';
-import { MOCK_EXPERIENCES } from '@/features/experience/constants/mock';
+import type {
+  CreateExperienceRequest,
+  CreateExperienceResponse,
+  DeleteExperienceRequest,
+  GetExperienceListResponse,
+  GetExtractedExperienceResponse,
+  GetExtractionAvailabilityResponse,
+  StartExtractExperienceRequest,
+  StartExtractExperienceResponse,
+  UpdateExperienceRequest,
+  UpdateExperienceResponse,
+} from '@/features/experience/types';
 import { ApiResponse } from '@/shared/types/api';
+import { privateFetch } from '@/shared/api/http';
 
 // 경험 조회
-export async function getExperienceList(): Promise<ApiResponse<Experience[]>> {
-  return {
-    success: true,
-    code: 'SUCCESS',
-    message: '',
-    data: MOCK_EXPERIENCES,
-  };
+export async function getExperienceList(): Promise<ApiResponse<GetExperienceListResponse>> {
+  const response = await privateFetch<GetExperienceListResponse>('/api/v1/experiences');
+  return response;
 }
 
 //경험 등록
 export async function createExperience(
-  data: Omit<Experience, 'id'>,
-): Promise<ApiResponse<Experience>> {
-  const newExperience: Experience = {
-    id: (MOCK_EXPERIENCES.length + 1).toString(),
-    ...data,
-  };
-  return {
-    success: true,
-    code: 'SUCCESS',
-    message: '',
-    data: newExperience,
-  };
+  payload: CreateExperienceRequest,
+): Promise<ApiResponse<CreateExperienceResponse>> {
+  const response = await privateFetch<CreateExperienceResponse>(`/api/v1/experiences`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+  return response;
 }
 
 //경험 수정
-export async function updateExperience(
-  id: string,
-  data: Omit<Experience, 'id'>,
-): Promise<ApiResponse<Experience>> {
-  const existing = MOCK_EXPERIENCES.find((exp) => exp.id === id);
-  if (!existing)
-    return {
-      success: false,
-      code: 'NOT_FOUND',
-      message: '경험을 찾을 수 없습니다.',
-      data: null,
-    };
-  return {
-    success: true,
-    code: 'SUCCESS',
-    message: '',
-    data: {
-      id,
-      ...data,
+export async function updateExperience({
+  experienceId,
+  payload,
+}: UpdateExperienceRequest): Promise<ApiResponse<UpdateExperienceResponse>> {
+  const response = await privateFetch<UpdateExperienceResponse>(
+    `/api/v1/experiences/${experienceId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
     },
-  };
+  );
+  return response;
 }
 
-//경험 삭제
-export async function deleteExperience(id: string): Promise<ApiResponse<null>> {
-  return {
-    success: true,
-    code: 'SUCCESS',
-    message: '',
-    data: null,
-  };
+// 경험 삭제
+export async function deleteExperience({
+  experienceId,
+}: DeleteExperienceRequest): Promise<ApiResponse<null>> {
+  const response = await privateFetch<null>(`/api/v1/experiences/${experienceId}`, {
+    method: 'DELETE',
+  });
+  return response;
+}
+
+// 경험 추출 시작
+export async function startExtractExperience(
+  payload: StartExtractExperienceRequest,
+): Promise<ApiResponse<StartExtractExperienceResponse>> {
+  const response = await privateFetch<StartExtractExperienceResponse>(
+    '/api/v1/experiences/extractions',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      cache: 'no-store',
+    },
+  );
+  return response;
+}
+
+// 경험 추출 단건 조회
+export async function getExtractedExperience(
+  extractionId: number,
+): Promise<ApiResponse<GetExtractedExperienceResponse>> {
+  const response = await privateFetch<GetExtractedExperienceResponse>(
+    `/api/v1/experiences/extractions/${extractionId}`,
+  );
+  return response;
+}
+
+// 경험 추출 가능 여부 조회
+export async function getExtractionAvailability(): Promise<
+  ApiResponse<GetExtractionAvailabilityResponse>
+> {
+  const response = await privateFetch<GetExtractionAvailabilityResponse>(
+    '/api/v1/experiences/extractions/availability',
+  );
+  return response;
 }

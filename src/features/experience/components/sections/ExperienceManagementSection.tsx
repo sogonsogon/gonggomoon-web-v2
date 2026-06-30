@@ -18,8 +18,14 @@ import { useGetExperienceList } from '@/features/experience/queries';
 type ExperienceModalType = 'extraction' | 'register' | 'detail' | 'edit' | null;
 
 export default function ExperienceManagementSection() {
-  const { data = [], isLoading } = useGetExperienceList();
+  const {
+    data: experienceData = {
+      totalCount: 0,
 
+      contents: [],
+    },
+    isLoading,
+  } = useGetExperienceList();
   const [activeModal, setActiveModal] = React.useState<ExperienceModalType>(null);
   const [activeExperience, setActiveExperience] = React.useState<Experience | null>(null);
 
@@ -68,7 +74,7 @@ export default function ExperienceManagementSection() {
                   <Skeleton aria-hidden="true" className="mt-1 h-3 w-24" />
                 ) : (
                   <p className="mt-1 text-xs leading-[1.45] text-muted-foreground">
-                    총 {data.length}개의 경험
+                    총 {experienceData.totalCount}개의 경험
                   </p>
                 )}
               </div>
@@ -77,11 +83,11 @@ export default function ExperienceManagementSection() {
 
             {isLoading ? (
               <ExperienceListSkeleton variant="view" />
-            ) : data.length > 0 ? (
+            ) : experienceData.totalCount > 0 ? (
               <ul className="divide-y divide-border/70 border-t border-border/70">
-                {data.map((experience) => (
+                {experienceData.contents.map((experience) => (
                   <ExperienceListItem
-                    key={experience.id}
+                    key={experience.experienceId}
                     variant="view"
                     experience={experience}
                     onDetailClick={handleDetailClick}

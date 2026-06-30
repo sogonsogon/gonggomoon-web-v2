@@ -6,7 +6,7 @@ import {
   getExperienceList,
   updateExperience,
 } from '@/features/experience/actions';
-import { Experience, UpdateExperienceRequest } from '@/features/experience/types';
+import { CreateExperienceRequest, UpdateExperienceRequest } from '@/features/experience/types';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const experienceKeys = {
@@ -37,7 +37,7 @@ export function useCreateExperience() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: Omit<Experience, 'id'>) => {
+    mutationFn: async (data: CreateExperienceRequest) => {
       const result = await createExperience(data);
       if (!result.success) {
         return Promise.reject(result);
@@ -45,7 +45,7 @@ export function useCreateExperience() {
       return result.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: experienceKeys.list() });
+      queryClient.invalidateQueries({ queryKey: experienceKeys.all });
     },
   });
 }
@@ -55,15 +55,15 @@ export function useUpdateExperience() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, data }: UpdateExperienceRequest) => {
-      const result = await updateExperience(id, data);
+    mutationFn: async ({ experienceId, payload }: UpdateExperienceRequest) => {
+      const result = await updateExperience({ experienceId, payload });
       if (!result.success) {
         return Promise.reject(result);
       }
       return result.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: experienceKeys.list() });
+      queryClient.invalidateQueries({ queryKey: experienceKeys.all });
     },
   });
 }
@@ -73,15 +73,24 @@ export function useDeleteExperience() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (id: string) => {
-      const result = await deleteExperience(id);
+    mutationFn: async (experienceId: number) => {
+      const result = await deleteExperience({ experienceId });
       if (!result.success) {
         return Promise.reject(result);
       }
       return result.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: experienceKeys.list() });
+      queryClient.invalidateQueries({ queryKey: experienceKeys.all });
     },
   });
 }
+
+// 경험 추출 시작
+export function useStartExtractExperience() {}
+
+// 경험 추출 단일 조회
+export function useGetExtractedExperienceResponse() {}
+
+// 경험 추출 가능 여부 조회
+export function useGetExtractionAvailabilityResponse() {}

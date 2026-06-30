@@ -16,14 +16,15 @@ import { EXPERIENCE_TYPE_OPTIONS } from '@/features/experience/constants/experie
 import { useCreateExperience, useUpdateExperience } from '@/features/experience/queries';
 import { Input } from '@/shared/components/ui/input';
 import { toast } from 'sonner';
+import { ExperienceType } from '@/features/experience/types';
 
 export interface ExperienceFormValue {
-  type: string;
+  experienceType: ExperienceType;
   title: string;
   startDate: string | null;
   endDate: string | null;
   ongoing: boolean;
-  content: string;
+  experienceContent: string;
 }
 
 interface ExperienceRegisterModalProps {
@@ -32,7 +33,7 @@ interface ExperienceRegisterModalProps {
 }
 
 interface ExperienceFormModalContentProps {
-  id?: string; // id가 존재하면 수정, 없으면 등록
+  id?: number; // id가 존재하면 수정, 없으면 등록
   title: string;
   description: string;
   submitLabel: string;
@@ -41,13 +42,27 @@ interface ExperienceFormModalContentProps {
 }
 
 const DEFAULT_FORM_VALUE: ExperienceFormValue = {
-  type: '',
+  experienceType: 'CAREER',
   title: '',
   startDate: null,
   endDate: null,
   ongoing: false,
-  content: '',
+  experienceContent: '',
 };
+
+function toApiDate(monthValue: string | null) {
+  if (!monthValue) {
+    return null;
+  }
+
+  const [year, month] = monthValue.replace(/-/g, '.').split('.');
+
+  if (!year || !month) {
+    return null;
+  }
+
+  return `${year}-${month.padStart(2, '0')}-01`;
+}
 
 export default function ExperienceRegisterModal({
   open,
@@ -110,14 +125,15 @@ export function ExperienceFormModalContent({
 
   const handleSubmit = () => {
     const data = {
-      type: formValue.type,
+      experienceType: formValue.experienceType,
       title: formValue.title,
-      content: formValue.content,
-      period: `${formValue.startDate} ~ ${formValue.endDate ?? '진행 중'}`,
+      experienceContent: formValue.experienceContent,
+      startDate: toApiDate(formValue.startDate),
+      endDate: formValue.ongoing ? null : toApiDate(formValue.endDate),
     };
     if (id) {
       updateExperience(
-        { id, data },
+        { experienceId: id, payload: data },
         {
           onSuccess: () => {
             onOpenChange(false);
@@ -157,16 +173,16 @@ export function ExperienceFormModalContent({
         <label className="grid gap-2">
           <span className="text-[13px] leading-[1.42] font-bold text-foreground">경험 유형</span>
           <Select
-            value={formValue.type}
-            onValueChange={(value) => handleValueChange('type', value)}
+            value={formValue.experienceType}
+            onValueChange={(value) => handleValueChange('experienceType', value)}
           >
             <SelectTrigger className="w-full bg-card">
               <SelectValue placeholder="경험 유형 선택" />
             </SelectTrigger>
             <SelectContent>
-              {EXPERIENCE_TYPE_OPTIONS.map((option) => (
-                <SelectItem key={option} value={option}>
-                  {option}
+              {EXPERIENCE_TYPE_OPTIONS.map(({ label, value }) => (
+                <SelectItem key={value} value={value}>
+                  {label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -187,10 +203,10 @@ export function ExperienceFormModalContent({
         <label className="grid gap-2">
           <span className="text-[13px] leading-[1.42] font-bold text-foreground">내용</span>
           <Textarea
-            value={formValue.content}
+            value={formValue.experienceContent}
             placeholder="경험 내용, 역할, 성과를 자유롭게 작성하세요."
             className="min-h-[112px] resize-none bg-card"
-            onChange={(event) => handleValueChange('content', event.target.value)}
+            onChange={(event) => handleValueChange('experienceContent', event.target.value)}
           />
         </label>
       </div>
