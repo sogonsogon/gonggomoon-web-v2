@@ -9,7 +9,7 @@ import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Input } from '@/shared/components/ui/input';
 import { Modal, ModalContent, ModalFooter, ModalHeader } from '@/shared/components/ui/modal';
 import { Separator } from '@/shared/components/ui/separator';
-import { useDeleteUser, useGetUser } from '@/features/auth/queries';
+import { useDeleteUser, useGetUser, useLogout } from '@/features/auth/queries';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { User } from '@/features/auth/types';
@@ -24,9 +24,12 @@ interface SettingsModalProps {
 
 export default function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
   const { data, isLoading } = useGetUser();
+  const { mutate: logout, isPending: isLogoutPending } = useLogout();
   const [view, setView] = React.useState<SettingsModalView>('settings');
   const [confirmEmail, setConfirmEmail] = React.useState('');
   const [checked, setChecked] = React.useState(false);
+  const { mutate: deleteUser, isPending: isDeletePending } = useDeleteUser();
+  const router = useRouter();
 
   const resetWithdrawState = React.useCallback(() => {
     setConfirmEmail('');
@@ -49,11 +52,14 @@ export default function SettingsModal({ open, onOpenChange }: SettingsModalProps
     resetWithdrawState();
     setView('settings');
   }, [resetWithdrawState]);
-  const { mutate: deleteUser, isPending } = useDeleteUser();
-  const router = useRouter();
 
+  const handleLogout = async () => {
+    if (isLogoutPending) return;
+    onOpenChange(false);
+    logout();
+  };
   const handleConfirm = () => {
-    if (!checked || isPending) return;
+    if (!checked || isDeletePending) return;
     deleteUser(undefined, {
       onSuccess: () => {
         handleOpenChange(false);
@@ -74,7 +80,11 @@ export default function SettingsModal({ open, onOpenChange }: SettingsModalProps
         ) : !data ? (
           <SettingsErrorView />
         ) : view === 'settings' ? (
-          <SettingsView user={data} onWithdrawClick={() => setView('withdraw')} />
+          <SettingsView
+            user={data}
+            onWithdrawClick={() => setView('withdraw')}
+            onConfirmLogout={handleLogout}
+          />
         ) : (
           <WithdrawView
             user={data}
@@ -91,7 +101,15 @@ export default function SettingsModal({ open, onOpenChange }: SettingsModalProps
   );
 }
 
-function SettingsView({ user, onWithdrawClick }: { user: User; onWithdrawClick: () => void }) {
+function SettingsView({
+  user,
+  onWithdrawClick,
+  onConfirmLogout,
+}: {
+  user: User;
+  onWithdrawClick: () => void;
+  onConfirmLogout: () => void;
+}) {
   return (
     <>
       <ModalHeader title="설정" description="계정 정보와 보안 관련 작업을 관리합니다" />
@@ -118,7 +136,13 @@ function SettingsView({ user, onWithdrawClick }: { user: User; onWithdrawClick: 
         </div>
       </section>
 
-      <Button type="button" variant="outline" size="sm" className="w-full">
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="w-full"
+        onClick={onConfirmLogout}
+      >
         <LogOutIcon className="size-4" aria-hidden="true" />
         로그아웃
       </Button>

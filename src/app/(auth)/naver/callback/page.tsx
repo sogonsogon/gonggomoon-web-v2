@@ -1,3 +1,12 @@
+'use client';
+
+import { useEffect } from 'react';
+
 export default function CallbackPage() {
-  return <div></div>;
+  useEffect(() => {
+    window.opener?.postMessage({ type: 'AUTH_SUCCESS' }, window.location.origin);
+    window.close();
+  }, []);
+
+  return null;
 }

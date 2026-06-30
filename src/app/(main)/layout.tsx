@@ -1,4 +1,5 @@
 import LoginGate from '@/features/auth/components/LoginGate';
+import LoginModal from '@/features/auth/components/ui/LoginModal';
 import MainBottomNavigation from '@/shared/components/layout/MainBottomNavigation';
 import MainFooter from '@/shared/components/layout/MainFooter';
 import MainSidebar from '@/shared/components/layout/MainSidebar';
@@ -30,6 +31,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
           </SidebarInset>
           <MainBottomNavigation />
           <LoginGate />
+          <LoginModal />
           <Toaster richColors position="top-center" />
         </SidebarProvider>
       </AuthStoreProvider>
