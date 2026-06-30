@@ -7,7 +7,7 @@ import { privateFetch } from '@/shared/api/http';
 import { cookies } from 'next/headers';
 
 export async function getUser(): Promise<ApiResponse<User>> {
-  const response = privateFetch<User>('/api/v1/users/me');
+  const response = await privateFetch<User>('/api/v1/users/me');
   return response;
 }
 
