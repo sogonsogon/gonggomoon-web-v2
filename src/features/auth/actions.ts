@@ -1,7 +1,6 @@
 'use server';
 
 import { User } from '@/features/auth/types';
-import { MOCK_USER } from '@/features/auth/constants/mock';
 import { ApiResponse } from '@/shared/types/api';
 import { privateFetch } from '@/shared/api/http';
 import { cookies } from 'next/headers';
