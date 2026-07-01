@@ -72,8 +72,8 @@ function getActiveStrategyId(pathname: string) {
   return strategyRoutePattern.exec(pathname)?.[1] ?? null;
 }
 
-function isRecentStrategyActive(pathname: string, strategyId: string) {
-  return getActiveStrategyId(pathname) === strategyId;
+function isRecentStrategyActive(pathname: string, strategyId:number)  {
+  return getActiveStrategyId(pathname) === strategyId.toString();
 }
 
 export default function MainSidebar() {
@@ -99,7 +99,12 @@ export function MainSidebarContent({
 }: MainSidebarContentProps) {
   const pathname = usePathname();
   const [settingsOpen, setSettingsOpen] = React.useState(false);
-  const { data = [], isLoading } = useGetStrategyList();
+  const { 
+     data: strategyData = {
+      totalCount: 0,
+
+      contents: [],
+    }, isLoading } = useGetStrategyList();
 
   return (
     <>
@@ -161,12 +166,12 @@ export function MainSidebarContent({
             <div className="flex min-h-0 flex-col gap-1">
               {isLoading ? (
                 <RecentStrategySkeletonList />
-              ) : data.length > 0 ? (
-                data.map((strategy) => (
+              ) : strategyData.contents.length > 0 ? (
+                strategyData.contents.map((strategy) => (
                   <RecentStrategyCard
-                    key={strategy.id}
+                    key={strategy.strategyId}
                     strategy={strategy}
-                    active={isRecentStrategyActive(pathname, strategy.id)}
+                    active={isRecentStrategyActive(pathname, strategy.strategyId)}
                     onNavigate={onNavigate}
                   />
                 ))
@@ -181,18 +186,18 @@ export function MainSidebarContent({
           <div className="hidden min-h-0 flex-1 flex-col items-center gap-2 group-data-[collapsible=icon]:flex">
             {isLoading ? (
               <RecentStrategySkeletonList collapsed />
-            ) : (
-              data.map((strategy) => (
+            ) : strategyData.contents.length > 0 ? (
+              strategyData.contents.map((strategy) => (
                 <CollapsedIconButton
-                  key={strategy.id}
+                  key={strategy.strategyId}
                   label={strategy.title}
                   icon={FileTextIcon}
-                  href={`/strategy/${strategy.id}/result`}
-                  active={isRecentStrategyActive(pathname, strategy.id)}
+                  href={`/strategy/${strategy.strategyId}/result`}
+                  active={isRecentStrategyActive(pathname, strategy.strategyId)}
                   onNavigate={onNavigate}
                 />
               ))
-            )}
+            ) : null}
           </div>
         </SidebarContent>
 
@@ -303,7 +308,7 @@ function RecentStrategyCard({
   return (
     <div className="relative min-w-0 rounded-[var(--radius-sm)]">
       <Link
-        href={`/strategy/${strategy.id}/result`}
+        href={`/strategy/${strategy.strategyId}/result`}
         onClick={onNavigate}
         className={cn(
           'flex min-w-0 cursor-pointer flex-col gap-[7px] rounded-[var(--radius-sm)] bg-transparent p-2.5 pr-9 text-left transition-colors hover:bg-muted/70 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
@@ -324,7 +329,7 @@ function RecentStrategyCard({
             active && 'text-primary/80',
           )}
         >
-          {strategy.date}
+          {strategy.createdAt}
         </span>
       </Link>
       <div className="absolute top-2 right-2 z-10">
@@ -364,7 +369,7 @@ function StrategyItemDropdown({ strategy, active }: { strategy: Strategy; active
   const router = useRouter();
   const handleDelete = () => {
     if (confirm('정말 포폴 전략을 삭제하시겠습니까?')) {
-      deleteStrategy(strategy.id, {
+      deleteStrategy(strategy.strategyId, {
         onSuccess: () => {
           toast.success(`포폴 전략이 삭제되었습니다.`);
           if (active) {

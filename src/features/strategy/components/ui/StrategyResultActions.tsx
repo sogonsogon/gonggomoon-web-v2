@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import JobPostingAnalysisModal from '@/features/job-posting/components/ui/JobPostingAnalysisModal';
 import { MOCK_JOB_POSTING_ANALYSIS } from '@/features/job-posting/constants/mock';
 import { Button } from '@/shared/components/ui/button';
-import { StrategyResult, StrategyAnalysisCardData } from '@/features/strategy/types';
+import { StrategyResult } from '@/features/strategy/types';
 
 interface StrategyResultActionsProps {
   result: StrategyResult;
@@ -55,23 +55,23 @@ export default function StrategyResultActions({ result }: StrategyResultActionsP
 
 function formatStrategyResultForCopy(result: StrategyResult) {
   return [
-    result.jobTitle,
+    result.industryName,
     result.createdAt,
     '',
-    ...result.cards.map((card) => formatStrategyCardForCopy(card)),
+    `[핵심 포지셔닝 메시지]\n${result.mainPositioningMessage}\n`,
+    `[경험 배치 순서]\n${result.experienceOrdering
+      .slice()
+      .sort((a, b) => a.order - b.order)
+      .map((item) => `- ${item.title} — ${item.reason}`)
+      .join('\n')}\n`,
+    `[경험별 전략 포인트]\n${result.experienceStrategyPoints
+      .map((item) => `- ${item.experienceTitle}: ${item.strategyPoint}`)
+      .join('\n')}\n`,
+    `[강조 키워드]\n${result.keywords.join(', ')}\n`,
+    `[강조 역량]\n${result.strengths.map((item) => `- ${item}`).join('\n')}\n`,
+    `[KPI 체크리스트]\n${result.kpiCheckList.map((item) => `- ${item}`).join('\n')}\n`,
+    `[보완 가이드]\n${result.improvementGuides
+      .map((item) => `- ${item.title}: ${item.description}`)
+      .join('\n')}\n`,
   ].join('\n');
-}
-
-function formatStrategyCardForCopy(card: StrategyAnalysisCardData) {
-  const heading = `[${card.order}] ${card.title}`;
-
-  if (card.type === 'summary') {
-    return `${heading}\n${card.content}\n`;
-  }
-
-  if (card.type === 'keywords') {
-    return `${heading}\n${card.keywords.join(', ')}\n`;
-  }
-
-  return `${heading}\n${card.items.map((item) => `- ${item}`).join('\n')}\n`;
 }

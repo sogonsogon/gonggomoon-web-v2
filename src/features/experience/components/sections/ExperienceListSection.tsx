@@ -1,7 +1,5 @@
 'use client';
 
-import * as React from 'react';
-
 import ExperienceEmptyState from '@/features/experience/components/ui/ExperienceEmptyState';
 import ExperienceListItem from '@/features/experience/components/ui/ExperienceListItem';
 import ExperienceListSkeleton from '@/features/experience/components/ui/ExperienceListSkeleton';
@@ -13,6 +11,9 @@ import { cn } from '@/shared/lib/cn';
 interface ExperienceListSectionProps {
   experiences: Experience[];
   isLoading: boolean;
+  selectedExperienceIds: Set<number>;
+  onSelectedChange: (experienceId: number, selected: boolean) => void;
+  onToggleAll: () => void;
   onRegisterClick: () => void;
   onDetailClick: (experience: Experience) => void;
   onEditClick: (experience: Experience) => void;
@@ -21,40 +22,15 @@ interface ExperienceListSectionProps {
 export default function ExperienceListSection({
   experiences,
   isLoading,
+  selectedExperienceIds,
+  onSelectedChange,
+  onToggleAll,
   onRegisterClick,
   onDetailClick,
   onEditClick,
 }: ExperienceListSectionProps) {
-  const [selectedExperienceIds, setSelectedExperienceIds] = React.useState<Set<number>>(
-    () => new Set(),
-  );
-
-  const handleSelectedChange = React.useCallback((experienceId: number, selected: boolean) => {
-    setSelectedExperienceIds((currentIds) => {
-      const nextIds = new Set(currentIds);
-
-      if (selected) {
-        nextIds.add(experienceId);
-      } else {
-        nextIds.delete(experienceId);
-      }
-
-      return nextIds;
-    });
-  }, []);
-
   const isAllSelected = experiences.length > 0 && selectedExperienceIds.size === experiences.length;
   const hasExperiences = !isLoading && experiences.length > 0;
-
-  const handleToggleAll = React.useCallback(() => {
-    setSelectedExperienceIds(() => {
-      if (isAllSelected) {
-        return new Set();
-      }
-
-      return new Set(experiences.map((experience) => experience.experienceId));
-    });
-  }, [experiences, isAllSelected]);
 
   return (
     <section className="grid gap-3">
@@ -66,7 +42,7 @@ export default function ExperienceListSection({
       >
         {hasExperiences ? (
           <div className="flex items-baseline justify-between gap-2 sm:justify-start">
-            <Button type="button" variant="ghost" size="xs" onClick={handleToggleAll}>
+            <Button type="button" variant="ghost" size="xs" onClick={onToggleAll}>
               {isAllSelected ? '전체 해제' : '전체 선택'}
             </Button>
             <span className="text-[11px] leading-[1.45] text-muted-foreground">
@@ -87,7 +63,7 @@ export default function ExperienceListSection({
               key={experience.experienceId}
               experience={experience}
               selected={selectedExperienceIds.has(experience.experienceId)}
-              onSelectedChange={handleSelectedChange}
+              onSelectedChange={onSelectedChange}
               onDetailClick={onDetailClick}
               onEditClick={onEditClick}
             />
