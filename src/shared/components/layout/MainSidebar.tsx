@@ -166,7 +166,7 @@ export function MainSidebarContent({
             <div className="flex min-h-0 flex-col gap-1">
               {isLoading ? (
                 <RecentStrategySkeletonList />
-              ) : strategyData.totalCount > 0 ? (
+              ) : strategyData.contents.length > 0 ? (
                 strategyData.contents.map((strategy) => (
                   <RecentStrategyCard
                     key={strategy.strategyId}
@@ -186,7 +186,7 @@ export function MainSidebarContent({
           <div className="hidden min-h-0 flex-1 flex-col items-center gap-2 group-data-[collapsible=icon]:flex">
             {isLoading ? (
               <RecentStrategySkeletonList collapsed />
-            ) : (
+            ) : strategyData.contents.length > 0 ? (
               strategyData.contents.map((strategy) => (
                 <CollapsedIconButton
                   key={strategy.strategyId}
@@ -197,7 +197,7 @@ export function MainSidebarContent({
                   onNavigate={onNavigate}
                 />
               ))
-            )}
+            ) : null}
           </div>
         </SidebarContent>
 

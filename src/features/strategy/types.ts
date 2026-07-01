@@ -60,8 +60,6 @@ export type GetStrategyListResponse = {
   contents: Strategy[];
 };
 
-export type GetStrategyResponse = StrategyResult;
-
 export type CreateStrategyRequest = {
   jobType: JobType; //TODO: 추후 삭제 예정, 현재 요청 테스트용으로 사용
   industryId: number; //TODO: 추후 삭제 예정, 현재 요청 테스트용으로 사용

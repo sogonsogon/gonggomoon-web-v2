@@ -7,7 +7,7 @@ export default async function StrategyResultPage({
   const { strategyId } = await params;
   const numericStrategyId = Number(strategyId);
 
-  if (!Number.isInteger(numericStrategyId)) {
+  if (Number.isNaN(numericStrategyId)) {
     notFound();
   }
 

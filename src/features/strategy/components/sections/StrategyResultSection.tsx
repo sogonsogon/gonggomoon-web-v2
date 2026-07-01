@@ -1,6 +1,7 @@
 'use client';
 import StrategyAnalysisCard from '@/features/strategy/components/ui/StrategyAnalysisCard';
 import StrategyResultActions from '@/features/strategy/components/ui/StrategyResultActions';
+import TextListCard from '@/features/strategy/components/ui/TextListCard';
 import { useGetStrategy } from '@/features/strategy/queries';
 import { Accordion } from '@/shared/components/ui/accordion';
 import { Badge } from '@/shared/components/ui/badge';
@@ -8,19 +9,6 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 
 interface StrategyResultSectionProps {
   strategyId: number;
-}
-
-function TextListCard({ items }: { items: string[] }) {
-  return (
-    <ul className="grid gap-2">
-      {items.map((item) => (
-        <li key={item} className="flex min-w-0 gap-2 text-sm leading-[1.65] text-muted-foreground">
-          <span className="mt-[0.75em] size-1 shrink-0 rounded-full bg-primary" />
-          <span className="min-w-0 break-keep break-words">{item}</span>
-        </li>
-      ))}
-    </ul>
-  );
 }
 
 export default function StrategyResultSection({ strategyId }: StrategyResultSectionProps) {
