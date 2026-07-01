@@ -125,7 +125,7 @@ export function ExperienceFormModalContent({
 
   const handleSubmit = () => {
     if (!formValue.startDate) {
-      toast.error('시작 시기를 입력해주세요.');
+      toast.error('시작일을 입력해주세요.');
       return;
     }
 
