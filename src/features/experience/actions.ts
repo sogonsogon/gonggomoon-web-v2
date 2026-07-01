@@ -2,12 +2,9 @@
 
 import type {
   CreateExperienceRequest,
-  CreateExperienceResponse,
-  DeleteExperienceRequest,
   GetExperienceListResponse,
   GetExtractedExperienceResponse,
   GetExtractionAvailabilityResponse,
-  StartExtractExperienceRequest,
   StartExtractExperienceResponse,
   UpdateExperienceRequest,
   UpdateExperienceResponse,
@@ -24,8 +21,8 @@ export async function getExperienceList(): Promise<ApiResponse<GetExperienceList
 //경험 등록
 export async function createExperience(
   payload: CreateExperienceRequest,
-): Promise<ApiResponse<CreateExperienceResponse>> {
-  const response = await privateFetch<CreateExperienceResponse>(`/api/v1/experiences`, {
+): Promise<ApiResponse<{ experienceId: number }>> {
+  const response = await privateFetch<{ experienceId: number }>(`/api/v1/experiences`, {
     method: 'POST',
     body: JSON.stringify(payload),
   });
@@ -50,7 +47,7 @@ export async function updateExperience({
 // 경험 삭제
 export async function deleteExperience({
   experienceId,
-}: DeleteExperienceRequest): Promise<ApiResponse<null>> {
+}: { experienceId: number }): Promise<ApiResponse<null>> {
   const response = await privateFetch<null>(`/api/v1/experiences/${experienceId}`, {
     method: 'DELETE',
   });
@@ -59,7 +56,7 @@ export async function deleteExperience({
 
 // 경험 추출 시작
 export async function startExtractExperience(
-  payload: StartExtractExperienceRequest,
+  payload: { fileAssetIds: number[] },
 ): Promise<ApiResponse<StartExtractExperienceResponse>> {
   const response = await privateFetch<StartExtractExperienceResponse>(
     '/api/v1/experiences/extractions',

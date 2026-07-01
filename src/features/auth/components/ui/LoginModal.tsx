@@ -9,6 +9,7 @@ import { Modal, ModalContent, ModalDescription, ModalTitle } from '@/shared/comp
 import { useLoginModal } from '@/features/auth/store/useLoginModal';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 
 const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -16,6 +17,7 @@ export default function LoginModal() {
   const { isDialogOpen, openDialog, closeDialog } = useLoginModal();
   const [legalModalType, setLegalModalType] = React.useState<LegalModalType | null>(null);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const openLegalModal = (type: LegalModalType) => {
     setLegalModalType(type);
@@ -44,7 +46,7 @@ export default function LoginModal() {
       if (event.origin !== window.location.origin) return;
       if (event.data.type === 'AUTH_SUCCESS') {
         window.removeEventListener('message', handler);
-        // 유저 정보 갱신, 모달 닫기 등
+        queryClient.invalidateQueries({ queryKey: ['user'] });
         closeDialog();
         router.refresh();
       }

@@ -15,7 +15,7 @@ export const experienceKeys = {
 };
 
 export const experienceListQueryOptions = () => ({
-  queryKey: experienceKeys.all,
+  queryKey: experienceKeys.list(),
   queryFn: async () => {
     const result = await getExperienceList();
     if (!result.success) {
@@ -45,7 +45,7 @@ export function useCreateExperience() {
       return result.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: experienceKeys.all });
+      queryClient.invalidateQueries({ queryKey: experienceKeys.list() });
     },
   });
 }
@@ -63,7 +63,7 @@ export function useUpdateExperience() {
       return result.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: experienceKeys.all });
+      queryClient.invalidateQueries({ queryKey: experienceKeys.list() });
     },
   });
 }
@@ -81,7 +81,7 @@ export function useDeleteExperience() {
       return result.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: experienceKeys.all });
+      queryClient.invalidateQueries({ queryKey: experienceKeys.list() });
     },
   });
 }

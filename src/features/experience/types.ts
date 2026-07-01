@@ -24,10 +24,6 @@ export type CreateExperienceRequest = {
   endDate: string | null;
 };
 
-export type CreateExperienceResponse = {
-  experienceId: number;
-};
-
 // 경험 수정
 export type UpdateExperienceRequest = {
   experienceId: number;
@@ -41,16 +37,6 @@ export type UpdateExperienceRequest = {
 };
 
 export type UpdateExperienceResponse = Experience;
-
-// 경험 삭제
-export type DeleteExperienceRequest = {
-  experienceId: number;
-};
-
-// 경험 추출 시작
-export type StartExtractExperienceRequest = {
-  fileAssetIds: number[];
-};
 
 export type StartExtractExperienceResponse = {
   extractedExperienceIds: number[];
