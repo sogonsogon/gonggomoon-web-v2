@@ -13,31 +13,43 @@ interface ExperienceEditModalProps {
   experience: Experience | null;
 }
 
+function toMonthPickerValue(date: string | null | undefined) {
+  if (!date) {
+    return null;
+  }
+
+  const [year, month] = date.includes('-') ? date.split('-') : date.split('.');
+
+  if (!year || !month) {
+    return null;
+  }
+
+  return `${year}.${month.padStart(2, '0')}`;
+}
+
 export default function ExperienceEditModal({
   open,
   onOpenChange,
   experience,
 }: ExperienceEditModalProps) {
-  const periodValue = experience ? parseExperiencePeriod(experience.period) : null;
-  const initialValue: Partial<ExperienceFormValue> | undefined =
-    experience && periodValue
-      ? {
-          type: experience.type,
-          title: experience.title,
-          startDate: periodValue.startDate,
-          endDate: periodValue.endDate,
-          ongoing: periodValue.ongoing,
-          content: experience.content,
-        }
-      : undefined;
+  const initialValue: Partial<ExperienceFormValue> | undefined = experience
+    ? {
+        experienceType: experience.experienceType,
+        title: experience.title,
+        startDate: toMonthPickerValue(experience.startDate),
+        endDate: toMonthPickerValue(experience.endDate),
+        ongoing: experience.endDate === null,
+        experienceContent: experience.experienceContent,
+      }
+    : undefined;
 
   return (
     <Modal open={open && Boolean(experience)} onOpenChange={onOpenChange}>
       {experience ? (
         <ModalContent size="md">
           <ExperienceFormModalContent
-            id={experience.id}
-            key={`${experience.id}-${experience.period}`}
+            id={experience.experienceId}
+            key={`${experience.experienceId}-${experience.startDate}`}
             title="경험 수정"
             description="등록한 경험 내용을 수정하세요."
             submitLabel="저장"
@@ -48,15 +60,4 @@ export default function ExperienceEditModal({
       ) : null}
     </Modal>
   );
-}
-
-export function parseExperiencePeriod(period: string) {
-  const [startDate = '', endDate = ''] = period.split('-').map((value) => value.trim());
-  const ongoing = endDate === '진행 중';
-
-  return {
-    startDate: startDate || null,
-    endDate: ongoing ? null : endDate || null,
-    ongoing,
-  };
 }

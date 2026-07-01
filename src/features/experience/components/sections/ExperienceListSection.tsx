@@ -25,11 +25,11 @@ export default function ExperienceListSection({
   onDetailClick,
   onEditClick,
 }: ExperienceListSectionProps) {
-  const [selectedExperienceIds, setSelectedExperienceIds] = React.useState<Set<string>>(
+  const [selectedExperienceIds, setSelectedExperienceIds] = React.useState<Set<number>>(
     () => new Set(),
   );
 
-  const handleSelectedChange = React.useCallback((experienceId: string, selected: boolean) => {
+  const handleSelectedChange = React.useCallback((experienceId: number, selected: boolean) => {
     setSelectedExperienceIds((currentIds) => {
       const nextIds = new Set(currentIds);
 
@@ -52,7 +52,7 @@ export default function ExperienceListSection({
         return new Set();
       }
 
-      return new Set(experiences.map((experience) => experience.id));
+      return new Set(experiences.map((experience) => experience.experienceId));
     });
   }, [experiences, isAllSelected]);
 
@@ -84,9 +84,9 @@ export default function ExperienceListSection({
         <ul className="grid gap-2">
           {experiences.map((experience) => (
             <ExperienceListItem
-              key={experience.id}
+              key={experience.experienceId}
               experience={experience}
-              selected={selectedExperienceIds.has(experience.id)}
+              selected={selectedExperienceIds.has(experience.experienceId)}
               onSelectedChange={handleSelectedChange}
               onDetailClick={onDetailClick}
               onEditClick={onEditClick}
