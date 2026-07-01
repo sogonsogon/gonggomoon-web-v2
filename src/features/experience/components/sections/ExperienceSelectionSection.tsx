@@ -14,8 +14,9 @@ import ExperienceRegisterModal from '@/features/experience/components/ui/Experie
 import type { Experience } from '@/features/experience/types';
 import AiProcessingOverlay from '@/shared/components/ui/AiProcessingOverlay';
 import { Button } from '@/shared/components/ui/button';
-import { simulateAiRequest } from '@/shared/lib/SimulateAiRequest';
 import { useGetExperienceList } from '@/features/experience/queries';
+import { useCreateStrategy } from '@/features/strategy/queries';
+import type { JobType } from '@/features/strategy/types';
 
 interface ExperienceSelectionSectionProps {
   strategyId: string;
@@ -27,6 +28,7 @@ export default function ExperienceSelectionSection({
   strategyId,
 }: ExperienceSelectionSectionProps) {
   const router = useRouter();
+  const createStrategy = useCreateStrategy();
   const {
     data: experienceData = {
       totalCount: 0,
@@ -58,7 +60,7 @@ export default function ExperienceSelectionSection({
 
   const handleToggleAll = React.useCallback(() => {
     setSelectedExperienceIds((currentIds) => {
-      if (currentIds.size === experienceData.contents.length) {
+      if (experienceData.contents.length > 0 && currentIds.size === experienceData.contents.length) {
         return new Set();
       }
 
@@ -91,9 +93,13 @@ export default function ExperienceSelectionSection({
     setIsProcessing(true);
 
     try {
-      // TODO: jobType/industryId 소스가 정해지면 useCreateStrategy(postAnalysisId: strategyId, experienceIds: [...selectedExperienceIds])로 교체
-      await simulateAiRequest();
-      router.push(`/strategy/${strategyId}/result`);
+      const result = await createStrategy.mutateAsync({
+        jobType: 'FRONTEND' as JobType, //TODO: 추후 삭제 예정, 현재 요청 테스트용으로 사용
+        industryId: 1, //TODO: 추후 삭제 예정, 현재 요청 테스트용으로 사용
+        postAnalysisId: Number(strategyId),
+        experienceIds: [...selectedExperienceIds],
+      });
+      router.push(`/strategy/${result.strategyId}/result`);
     } catch {
       setIsProcessing(false);
       toast.error('포트폴리오 전략을 생성하지 못했습니다. 다시 시도해주세요.');

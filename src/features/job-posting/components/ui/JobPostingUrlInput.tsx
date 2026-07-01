@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import AiProcessingOverlay from '@/shared/components/ui/AiProcessingOverlay';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
+import { MOCK_JOB_POSTING_ANALYSIS } from '@/features/job-posting/constants/mock';
 import { simulateAiRequest } from '@/shared/lib/SimulateAiRequest';
 
 const JOB_POSTING_URL_REGEX = /^https?:\/\/(?:[\w-]+\.)+[\w-]{2,}(?::\d{2,5})?(?:[/?#][^\s]*)?$/i;
@@ -33,7 +34,9 @@ export default function JobPostingUrlInput() {
 
     try {
       await simulateAiRequest();
-      router.push('/strategy/1/analysis');
+      // TODO: 실제 API 연동 시 POST /api/v1/posts 응답의 analysisId로 교체
+      const analysisId = MOCK_JOB_POSTING_ANALYSIS.id;
+      router.push(`/strategy/${analysisId}/analysis`);
     } catch {
       setIsProcessing(false);
       toast.error('공고를 분석하지 못했습니다. 다시 시도해주세요.');

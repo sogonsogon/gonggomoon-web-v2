@@ -1,6 +1,6 @@
-import { GenerationStatus } from "@/shared/types/generation";
+import { GenerationStatus } from '@/shared/types/generation';
 
-export type JobType = 
+export type JobType =
   | 'FRONTEND'
   | 'BACKEND'
   | 'EMBEDDED'
@@ -12,7 +12,6 @@ export type JobType =
   | 'PM_PO'
   | 'QA';
 
-
 export type Strategy = {
   strategyId: number;
   jobType: JobType;
@@ -20,24 +19,24 @@ export type Strategy = {
   title: string;
   status?: GenerationStatus;
   createdAt: string;
-}
+};
 
 export type StrategyExperiencePoint = {
   experienceType: string;
   experienceTitle: string;
   strategyPoint: string;
-}
+};
 
 export type StrategyExperienceOrdering = {
   order: number;
   title: string;
   reason: string;
-}
+};
 
 export type StrategyImprovementGuide = {
   title: string;
   description: string;
-}
+};
 
 export type StrategyResult = {
   strategyId: number;
@@ -52,35 +51,20 @@ export type StrategyResult = {
   strengths: string[];
   kpiCheckList: string[];
   improvementGuides: StrategyImprovementGuide[];
-}
+};
 
 export type GetStrategyDetailResponse = StrategyResult;
 
 export type GetStrategyListResponse = {
   totalCount: number;
   contents: Strategy[];
-}
-
-export type GetStrategyRequest = {
-  strategyId: number;
-}
+};
 
 export type GetStrategyResponse = StrategyResult;
 
-export type CreateStrategyRequest ={
-  jobType: JobType;
-  industryId: number;
+export type CreateStrategyRequest = {
+  jobType: JobType; //TODO: 추후 삭제 예정, 현재 요청 테스트용으로 사용
+  industryId: number; //TODO: 추후 삭제 예정, 현재 요청 테스트용으로 사용
   postAnalysisId: number;
   experienceIds: number[];
-}
-
-
-export type DeleteStrategyRequest = {
-  strategyId: number;
-}
-
-
-
-
-
-
+};

@@ -1,9 +1,13 @@
 'use client';
 
-import { createStrategy, deleteStrategy, getStrategy, getStrategyList } from '@/features/strategy/actions';
+import {
+  createStrategy,
+  deleteStrategy,
+  getStrategy,
+  getStrategyList,
+} from '@/features/strategy/actions';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { CreateStrategyRequest } from './types';
-import { ApiResponse } from '@/shared/types/api';
 
 const strategyKeys = {
   all: ['strategy'] as const,
@@ -46,7 +50,6 @@ const getStrategyQueryOption = (strategyId: number) => ({
 export function useGetStrategy(strategyId: number) {
   return useQuery(getStrategyQueryOption(strategyId));
 }
-
 
 // 포폴 전략 생성
 export function useCreateStrategy() {
