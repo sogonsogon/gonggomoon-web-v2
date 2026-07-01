@@ -38,6 +38,33 @@ export default function ExperienceSelectionSection({
   const [activeModal, setActiveModal] = React.useState<ExperienceModalType>(null);
   const [activeExperience, setActiveExperience] = React.useState<Experience | null>(null);
   const [isProcessing, setIsProcessing] = React.useState(false);
+  const [selectedExperienceIds, setSelectedExperienceIds] = React.useState<Set<number>>(
+    () => new Set(),
+  );
+
+  const handleSelectedChange = React.useCallback((experienceId: number, selected: boolean) => {
+    setSelectedExperienceIds((currentIds) => {
+      const nextIds = new Set(currentIds);
+
+      if (selected) {
+        nextIds.add(experienceId);
+      } else {
+        nextIds.delete(experienceId);
+      }
+
+      return nextIds;
+    });
+  }, []);
+
+  const handleToggleAll = React.useCallback(() => {
+    setSelectedExperienceIds((currentIds) => {
+      if (currentIds.size === experienceData.contents.length) {
+        return new Set();
+      }
+
+      return new Set(experienceData.contents.map((experience) => experience.experienceId));
+    });
+  }, [experienceData.contents]);
 
   const handleModalOpenChange = React.useCallback((open: boolean) => {
     if (!open) {
@@ -64,6 +91,7 @@ export default function ExperienceSelectionSection({
     setIsProcessing(true);
 
     try {
+      // TODO: jobType/industryId 소스가 정해지면 useCreateStrategy(postAnalysisId: strategyId, experienceIds: [...selectedExperienceIds])로 교체
       await simulateAiRequest();
       router.push(`/strategy/${strategyId}/result`);
     } catch {
@@ -106,6 +134,9 @@ export default function ExperienceSelectionSection({
           <ExperienceListSection
             experiences={experienceData.contents}
             isLoading={isLoading}
+            selectedExperienceIds={selectedExperienceIds}
+            onSelectedChange={handleSelectedChange}
+            onToggleAll={handleToggleAll}
             onRegisterClick={() => setActiveModal('register')}
             onDetailClick={handleDetailClick}
             onEditClick={handleEditClick}
