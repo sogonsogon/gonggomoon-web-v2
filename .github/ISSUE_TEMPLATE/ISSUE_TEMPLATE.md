@@ -1,0 +1,16 @@
+---
+name: Default Issue Template
+about: Default Issue Template
+title: ''
+labels: []
+assignees: []
+---
+
+## 개요
+
+- 작업의 목적이나 배경을 간략히 설명합니다. (ex. API 응답 속도 개선, 신규 기능 구현)
+
+## 작업 내용
+
+- 구체적인 구현 사항 1
+- 구체적인 구현 사항 2
