@@ -72,7 +72,7 @@ function getActiveStrategyId(pathname: string) {
   return strategyRoutePattern.exec(pathname)?.[1] ?? null;
 }
 
-function isRecentStrategyActive(pathname: string, strategyId:number)  {
+function isRecentStrategyActive(pathname: string, strategyId: number) {
   return getActiveStrategyId(pathname) === strategyId.toString();
 }
 
@@ -99,12 +99,14 @@ export function MainSidebarContent({
 }: MainSidebarContentProps) {
   const pathname = usePathname();
   const [settingsOpen, setSettingsOpen] = React.useState(false);
-  const { 
-     data: strategyData = {
+  const {
+    data: strategyData = {
       totalCount: 0,
 
       contents: [],
-    }, isLoading } = useGetStrategyList();
+    },
+    isLoading,
+  } = useGetStrategyList();
 
   return (
     <>
@@ -329,7 +331,7 @@ function RecentStrategyCard({
             active && 'text-primary/80',
           )}
         >
-          {strategy.createdAt}
+          {strategy.createdAt.slice(0, 10).replace(/-/g, '.')}
         </span>
       </Link>
       <div className="absolute top-2 right-2 z-10">

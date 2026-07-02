@@ -14,8 +14,6 @@ export type JobType =
 
 export type Strategy = {
   strategyId: number;
-  jobType: JobType;
-  industryName: string;
   title: string;
   status?: GenerationStatus;
   createdAt: string;
@@ -40,8 +38,7 @@ export type StrategyImprovementGuide = {
 
 export type StrategyResult = {
   strategyId: number;
-  jobType: JobType;
-  industryName: string;
+  title: string;
   selectedExperienceCount: number;
   createdAt: string;
   mainPositioningMessage: string;
@@ -61,8 +58,6 @@ export type GetStrategyListResponse = {
 };
 
 export type CreateStrategyRequest = {
-  jobType: JobType; //TODO: 추후 삭제 예정, 현재 요청 테스트용으로 사용
-  industryId: number; //TODO: 추후 삭제 예정, 현재 요청 테스트용으로 사용
   postAnalysisId: number;
   experienceIds: number[];
 };

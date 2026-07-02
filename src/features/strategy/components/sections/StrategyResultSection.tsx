@@ -1,7 +1,6 @@
 'use client';
 import StrategyAnalysisCard from '@/features/strategy/components/ui/StrategyAnalysisCard';
 import StrategyResultActions from '@/features/strategy/components/ui/StrategyResultActions';
-import TextListCard from '@/features/strategy/components/ui/TextListCard';
 import { useGetStrategy } from '@/features/strategy/queries';
 import { Accordion } from '@/shared/components/ui/accordion';
 import { Badge } from '@/shared/components/ui/badge';
@@ -9,6 +8,23 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 
 interface StrategyResultSectionProps {
   strategyId: number;
+}
+
+interface TextListCardProps {
+  items: string[];
+}
+
+function TextListCard({ items }: TextListCardProps) {
+  return (
+    <ul className="grid gap-2">
+      {items.map((item) => (
+        <li key={item} className="flex min-w-0 gap-2 text-sm leading-[1.65] text-muted-foreground">
+          <span className="mt-[0.75em] size-1 shrink-0 rounded-full bg-primary" />
+          <span className="min-w-0 break-keep break-words">{item}</span>
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 export default function StrategyResultSection({ strategyId }: StrategyResultSectionProps) {
@@ -37,7 +53,7 @@ export default function StrategyResultSection({ strategyId }: StrategyResultSect
                 {strategyData.createdAt}
               </p>
               <h1 className="mt-1 text-2xl leading-tight font-bold tracking-normal text-foreground break-keep md:text-[28px]">
-                {strategyData.industryName}
+                {strategyData.title}
               </h1>
               <p className="mt-2 max-w-155 text-sm leading-[1.6] text-muted-foreground break-keep wrap-break-word">
                 공고 분석 내용과 선택된 경험 기반으로 생성된 포트폴리오 전략을 확인해보세요.
@@ -64,8 +80,21 @@ export default function StrategyResultSection({ strategyId }: StrategyResultSect
                 {strategyData.mainPositioningMessage}
               </p>
             </StrategyAnalysisCard>
-
-            <StrategyAnalysisCard id="experienceOrdering" order={2} title="경험 배치 순서">
+            <StrategyAnalysisCard id="improvementGuides" order={7} title="보완 가이드">
+              <TextListCard
+                items={strategyData.improvementGuides.map(
+                  (item) => `${item.title}: ${item.description}`,
+                )}
+              />
+            </StrategyAnalysisCard>
+            <StrategyAnalysisCard id="experienceStrategyPoints" order={3} title="경험별 포인트">
+              <TextListCard
+                items={strategyData.experienceStrategyPoints.map(
+                  (item) => `${item.experienceTitle}: ${item.strategyPoint}`,
+                )}
+              />
+            </StrategyAnalysisCard>
+            <StrategyAnalysisCard id="experienceOrdering" order={2} title="경험 정렬 전략">
               <TextListCard
                 items={strategyData.experienceOrdering
                   .slice()
@@ -73,15 +102,6 @@ export default function StrategyResultSection({ strategyId }: StrategyResultSect
                   .map((item) => `${item.title} — ${item.reason}`)}
               />
             </StrategyAnalysisCard>
-
-            <StrategyAnalysisCard id="experienceStrategyPoints" order={3} title="경험별 전략 포인트">
-              <TextListCard
-                items={strategyData.experienceStrategyPoints.map(
-                  (item) => `${item.experienceTitle}: ${item.strategyPoint}`,
-                )}
-              />
-            </StrategyAnalysisCard>
-
             <StrategyAnalysisCard id="keywords" order={4} title="강조 키워드">
               <div className="flex flex-wrap gap-2">
                 {strategyData.keywords.map((keyword) => (
@@ -95,21 +115,11 @@ export default function StrategyResultSection({ strategyId }: StrategyResultSect
                 ))}
               </div>
             </StrategyAnalysisCard>
-
             <StrategyAnalysisCard id="strengths" order={5} title="강조 역량">
               <TextListCard items={strategyData.strengths} />
             </StrategyAnalysisCard>
-
-            <StrategyAnalysisCard id="kpiCheckList" order={6} title="KPI 체크리스트">
+            <StrategyAnalysisCard id="kpiCheckList" order={6} title="KPI(핵심 성과 지표)">
               <TextListCard items={strategyData.kpiCheckList} />
-            </StrategyAnalysisCard>
-
-            <StrategyAnalysisCard id="improvementGuides" order={7} title="보완 가이드">
-              <TextListCard
-                items={strategyData.improvementGuides.map(
-                  (item) => `${item.title}: ${item.description}`,
-                )}
-              />
             </StrategyAnalysisCard>
           </Accordion>
         )}

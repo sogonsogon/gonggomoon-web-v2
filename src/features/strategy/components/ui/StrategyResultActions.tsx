@@ -55,23 +55,23 @@ export default function StrategyResultActions({ result }: StrategyResultActionsP
 
 function formatStrategyResultForCopy(result: StrategyResult) {
   return [
-    result.industryName,
+    result.title,
     result.createdAt,
     '',
     `[핵심 포지셔닝 메시지]\n${result.mainPositioningMessage}\n`,
-    `[경험 배치 순서]\n${result.experienceOrdering
+    `[보완 가이드]\n${result.improvementGuides
+      .map((item) => `- ${item.title}: ${item.description}`)
+      .join('\n')}\n`,
+    `[경험별 포인트]\n${result.experienceStrategyPoints
+      .map((item) => `- ${item.experienceTitle}: ${item.strategyPoint}`)
+      .join('\n')}\n`,
+    `[경험 정렬 전략]\n${result.experienceOrdering
       .slice()
       .sort((a, b) => a.order - b.order)
       .map((item) => `- ${item.title} — ${item.reason}`)
       .join('\n')}\n`,
-    `[경험별 전략 포인트]\n${result.experienceStrategyPoints
-      .map((item) => `- ${item.experienceTitle}: ${item.strategyPoint}`)
-      .join('\n')}\n`,
     `[강조 키워드]\n${result.keywords.join(', ')}\n`,
     `[강조 역량]\n${result.strengths.map((item) => `- ${item}`).join('\n')}\n`,
-    `[KPI 체크리스트]\n${result.kpiCheckList.map((item) => `- ${item}`).join('\n')}\n`,
-    `[보완 가이드]\n${result.improvementGuides
-      .map((item) => `- ${item.title}: ${item.description}`)
-      .join('\n')}\n`,
+    `[KPI(핵심 성과 지표)]\n${result.kpiCheckList.map((item) => `- ${item}`).join('\n')}\n`,
   ].join('\n');
 }

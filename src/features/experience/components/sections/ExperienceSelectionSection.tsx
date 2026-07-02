@@ -60,7 +60,10 @@ export default function ExperienceSelectionSection({
 
   const handleToggleAll = React.useCallback(() => {
     setSelectedExperienceIds((currentIds) => {
-      if (experienceData.contents.length > 0 && currentIds.size === experienceData.contents.length) {
+      if (
+        experienceData.contents.length > 0 &&
+        currentIds.size === experienceData.contents.length
+      ) {
         return new Set();
       }
 
@@ -94,8 +97,6 @@ export default function ExperienceSelectionSection({
 
     try {
       const result = await createStrategy.mutateAsync({
-        jobType: 'FRONTEND' as JobType, //TODO: 추후 삭제 예정, 현재 요청 테스트용으로 사용
-        industryId: 1, //TODO: 추후 삭제 예정, 현재 요청 테스트용으로 사용
         postAnalysisId: Number(strategyId),
         experienceIds: [...selectedExperienceIds],
       });
