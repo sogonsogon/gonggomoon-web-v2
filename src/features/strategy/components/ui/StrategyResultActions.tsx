@@ -55,7 +55,7 @@ export default function StrategyResultActions({ result }: StrategyResultActionsP
 
 function formatStrategyResultForCopy(result: StrategyResult) {
   return [
-    result.title,
+    result.jobPostingTitle,
     result.createdAt,
     '',
     `[핵심 포지셔닝 메시지]\n${result.mainPositioningMessage}\n`,

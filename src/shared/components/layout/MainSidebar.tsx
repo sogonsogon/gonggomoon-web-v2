@@ -192,7 +192,7 @@ export function MainSidebarContent({
               strategyData.contents.map((strategy) => (
                 <CollapsedIconButton
                   key={strategy.strategyId}
-                  label={strategy.title}
+                  label={strategy.jobPostingTitle}
                   icon={FileTextIcon}
                   href={`/strategy/${strategy.strategyId}/result`}
                   active={isRecentStrategyActive(pathname, strategy.strategyId)}
@@ -323,7 +323,7 @@ function RecentStrategyCard({
             active && 'text-primary',
           )}
         >
-          {strategy.title}
+          {strategy.jobPostingTitle}
         </span>
         <span
           className={cn(
@@ -389,7 +389,7 @@ function StrategyItemDropdown({ strategy, active }: { strategy: Strategy; active
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          aria-label={`${strategy.title} 메뉴`}
+          aria-label={`${strategy.jobPostingTitle} 메뉴`}
           className={cn(
             'flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-md bg-transparent text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
             active && 'text-primary hover:bg-primary/10 hover:text-primary',

@@ -53,7 +53,7 @@ export default function StrategyResultSection({ strategyId }: StrategyResultSect
                 {strategyData.createdAt}
               </p>
               <h1 className="mt-1 text-2xl leading-tight font-bold tracking-normal text-foreground break-keep md:text-[28px]">
-                {strategyData.title}
+                {strategyData.jobPostingTitle}
               </h1>
               <p className="mt-2 max-w-155 text-sm leading-[1.6] text-muted-foreground break-keep wrap-break-word">
                 공고 분석 내용과 선택된 경험 기반으로 생성된 포트폴리오 전략을 확인해보세요.

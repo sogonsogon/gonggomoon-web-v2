@@ -14,7 +14,7 @@ export type JobType =
 
 export type Strategy = {
   strategyId: number;
-  title: string;
+  jobPostingTitle: string;
   status?: GenerationStatus;
   createdAt: string;
 };
@@ -38,7 +38,7 @@ export type StrategyImprovementGuide = {
 
 export type StrategyResult = {
   strategyId: number;
-  title: string;
+  jobPostingTitle: string;
   selectedExperienceCount: number;
   createdAt: string;
   mainPositioningMessage: string;
