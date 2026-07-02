@@ -14,8 +14,9 @@ import ExperienceRegisterModal from '@/features/experience/components/ui/Experie
 import type { Experience } from '@/features/experience/types';
 import AiProcessingOverlay from '@/shared/components/ui/AiProcessingOverlay';
 import { Button } from '@/shared/components/ui/button';
-import { simulateAiRequest } from '@/shared/lib/SimulateAiRequest';
 import { useGetExperienceList } from '@/features/experience/queries';
+import { useCreateStrategy } from '@/features/strategy/queries';
+import type { JobType } from '@/features/strategy/types';
 
 interface ExperienceSelectionSectionProps {
   strategyId: string;
@@ -27,6 +28,7 @@ export default function ExperienceSelectionSection({
   strategyId,
 }: ExperienceSelectionSectionProps) {
   const router = useRouter();
+  const createStrategy = useCreateStrategy();
   const {
     data: experienceData = {
       totalCount: 0,
@@ -38,6 +40,36 @@ export default function ExperienceSelectionSection({
   const [activeModal, setActiveModal] = React.useState<ExperienceModalType>(null);
   const [activeExperience, setActiveExperience] = React.useState<Experience | null>(null);
   const [isProcessing, setIsProcessing] = React.useState(false);
+  const [selectedExperienceIds, setSelectedExperienceIds] = React.useState<Set<number>>(
+    () => new Set(),
+  );
+
+  const handleSelectedChange = React.useCallback((experienceId: number, selected: boolean) => {
+    setSelectedExperienceIds((currentIds) => {
+      const nextIds = new Set(currentIds);
+
+      if (selected) {
+        nextIds.add(experienceId);
+      } else {
+        nextIds.delete(experienceId);
+      }
+
+      return nextIds;
+    });
+  }, []);
+
+  const handleToggleAll = React.useCallback(() => {
+    setSelectedExperienceIds((currentIds) => {
+      if (
+        experienceData.contents.length > 0 &&
+        currentIds.size === experienceData.contents.length
+      ) {
+        return new Set();
+      }
+
+      return new Set(experienceData.contents.map((experience) => experience.experienceId));
+    });
+  }, [experienceData.contents]);
 
   const handleModalOpenChange = React.useCallback((open: boolean) => {
     if (!open) {
@@ -64,8 +96,11 @@ export default function ExperienceSelectionSection({
     setIsProcessing(true);
 
     try {
-      await simulateAiRequest();
-      router.push(`/strategy/${strategyId}/result`);
+      const result = await createStrategy.mutateAsync({
+        postAnalysisId: Number(strategyId),
+        experienceIds: [...selectedExperienceIds],
+      });
+      router.push(`/strategy/${result.strategyId}/result`);
     } catch {
       setIsProcessing(false);
       toast.error('포트폴리오 전략을 생성하지 못했습니다. 다시 시도해주세요.');
@@ -106,6 +141,9 @@ export default function ExperienceSelectionSection({
           <ExperienceListSection
             experiences={experienceData.contents}
             isLoading={isLoading}
+            selectedExperienceIds={selectedExperienceIds}
+            onSelectedChange={handleSelectedChange}
+            onToggleAll={handleToggleAll}
             onRegisterClick={() => setActiveModal('register')}
             onDetailClick={handleDetailClick}
             onEditClick={handleEditClick}
