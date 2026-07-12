@@ -4,6 +4,7 @@ import {
   createExperience,
   deleteExperience,
   getExperienceList,
+  startExtractExperience,
   updateExperience,
 } from '@/features/experience/actions';
 import { CreateExperienceRequest, UpdateExperienceRequest } from '@/features/experience/types';
@@ -12,6 +13,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 export const experienceKeys = {
   all: ['experiences'] as const,
   list: () => [...experienceKeys.all, 'list'] as const,
+  extraction: (extractionId: number) =>
+    [...experienceKeys.all, 'extraction', extractionId] as const,
+  // extractionAvailability: () => [...experienceKeys.all, 'extraction-availability'] as const,
 };
 
 export const experienceListQueryOptions = () => ({
@@ -87,10 +91,32 @@ export function useDeleteExperience() {
 }
 
 // 경험 추출 시작
-export function useStartExtractExperience() {}
+export function useStartExtractExperience() {
+  return useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
 
-// 경험 추출 단일 조회
-export function useGetExtractedExperienceResponse() {}
+      const result = await startExtractExperience(formData);
+      if (!result.success) {
+        console.log('추출시작', result);
+        return Promise.reject(result);
+      }
+      return result.data;
+    },
+  });
+}
 
 // 경험 추출 가능 여부 조회
-export function useGetExtractionAvailabilityResponse() {}
+// export function useGetExtractionAvailabilityResponse() {
+//   return useQuery({
+//     queryKey: experienceKeys.extractionAvailability(),
+//     queryFn: async () => {
+//       const result = await getExtractionAvailability();
+//       if (!result.success) {
+//         return Promise.reject(result);
+//       }
+//       return result.data;
+//     },
+//   });
+// }
