@@ -39,19 +39,13 @@ export type UpdateExperienceRequest = {
 export type UpdateExperienceResponse = Experience;
 
 export type StartExtractExperienceResponse = {
-  extractedExperienceIds: number[];
-};
-
-// 경험 추출 단일 조회
-export type GetExtractedExperienceResponse = {
-  totalCount: number;
-  contents: Omit<Experience, 'experienceId'>[];
+  extractionId: number;
 };
 
 // 경험 추출 가능 여부 조회
-export type GetExtractionAvailabilityResponse = {
-  usedCount: number;
-  limitCount: number;
-  canGenerate: boolean;
-  canRetry: boolean;
-};
+// export type GetExtractionAvailabilityResponse = {
+//   usedCount: number;
+//   limitCount: number;
+//   canGenerate: boolean;
+//   canRetry: boolean;
+// };
