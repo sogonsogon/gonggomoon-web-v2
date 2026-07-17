@@ -1,36 +1,27 @@
+import type { JobPostingAnalysis } from '@/features/job-posting/types';
+
 export const MOCK_JOB_POSTING_ANALYSIS = {
-  id: '1',
-  title: '토스플레이스 Frontend 신입 채용',
-  summary:
-    '상점 운영에 필요한 결제 경험의 핵심 사용 흐름을 설계하고, 데이터 기반으로 운영성과 품질을 지속 개선하는 B2B 프론트엔드 개발 포지션입니다.',
-  sections: [
-    {
-      title: 'R&R(역할과 책임)',
-      items: [
-        '제품 도메인 사용자 경험 개선',
-        'PM/개발자와 요구사항 및 우선순위 조율',
-        '시스템 지표와 고객 피드백 기반 화면 흐름 개선',
-      ],
-    },
-    {
-      title: '필수 역량',
-      items: [
-        '웹/모바일 프론트엔드 디자인 경험',
-        '비교적 간단한 디자인 시스템 활용 능력',
-        '경험 중심 데이터를 쉽게 표현하고 연결하는 역량',
-      ],
-    },
-    {
-      title: '자격 요건',
-      items: [
-        'B2B SaaS 또는 결제 도메인 도구 설계 경험',
-        '복잡한 공고 구조와 정책을 단순하게 시각화하는 역량',
-        '개발 구현 계획을 고려해 실용적인 디자인 진행',
-      ],
-    },
-    {
-      title: '핵심 키워드',
-      items: ['문제 해결', '어드민 사용성', '디자인 시스템 확장', '고객 인터뷰', '실험 기반 개선'],
-    },
-  ],
-} as const;
+  postId: 1,
+  postAnalysisId: 101,
+  title: '영진기술 웹 프론트엔드 개발자 채용',
+  summary: {
+    title: '영진기술 웹 프론트엔드 개발자 채용',
+    summary:
+      '영진기술에서 웹 프론트엔드 개발자를 채용합니다. Vue.js와 React를 활용한 웹 개발 경험이 있는 분을 찾고 있습니다.',
+    company_intro: '무선 통신장비 제조 및 솔루션',
+    rnr: [
+      'Vue.js/React 기반 개발',
+      'TypeScript 기반 개발',
+      '상태관리 라이브러리 활용',
+      'REST API 연동 및 비동기 처리',
+      'Git을 활용한 협업',
+    ],
+    required_skills: ['Vue.js', 'React', 'TypeScript', 'HTML/CSS/JavaScript', 'Git'],
+    differentiators: [
+      'Vue.js/React 양쪽 실무 경험',
+      '실시간 데이터 처리 경험',
+      'Docker/Kubernetes 기반 배포 경험',
+    ],
+    hidden_keywords: ['#프론트엔드', '#Vue.js', '#React', '#TypeScript', '#웹개발'],
+  },
+} satisfies JobPostingAnalysis;

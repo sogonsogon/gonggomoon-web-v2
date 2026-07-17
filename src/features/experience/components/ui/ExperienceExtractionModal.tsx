@@ -10,6 +10,7 @@ import AiJobSseListener from '@/shared/components/AiJobSseListener';
 import AiProcessingOverlay from '@/shared/components/ui/AiProcessingOverlay';
 import { Button } from '@/shared/components/ui/button';
 import { Modal, ModalContent, ModalFooter, ModalHeader } from '@/shared/components/ui/modal';
+import type { AiJobSseFailurePayload } from '@/shared/types/ai';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
@@ -112,10 +113,10 @@ export default function ExperienceExtractionModal({
     toast.success('경험 추출이 완료되었습니다.');
   }, [queryClient]);
 
-  const handleFailed = React.useCallback(() => {
+  const handleFailed = React.useCallback((payload: AiJobSseFailurePayload) => {
     setPendingExtractionId(null);
     setIsProcessing(false);
-    toast.error('경험을 추출하지 못했습니다. 다시 시도해주세요.');
+    toast.error(payload.message || '경험을 추출하지 못했습니다. 다시 시도해주세요.');
   }, []);
 
   return (

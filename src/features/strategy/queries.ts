@@ -9,14 +9,14 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { CreateStrategyRequest } from './types';
 
-const strategyKeys = {
+export const strategyKeys = {
   all: ['strategy'] as const,
   list: () => [...strategyKeys.all, 'list'] as const,
   detail: (strategyId: number) => [...strategyKeys.all, 'detail', strategyId] as const,
 };
 
 // 포폴 전략 목록 조회
-const strategyListQueryOptions = () => ({
+export const strategyListQueryOptions = () => ({
   queryKey: strategyKeys.list(),
   queryFn: async () => {
     const result = await getStrategyList();
@@ -34,7 +34,7 @@ export function useGetStrategyList() {
 }
 
 // 포폴 전략 상세 조회
-const getStrategyQueryOption = (strategyId: number) => ({
+export const getStrategyQueryOptions = (strategyId: number) => ({
   queryKey: strategyKeys.detail(strategyId),
   queryFn: async () => {
     const response = await getStrategy(strategyId);
@@ -48,13 +48,11 @@ const getStrategyQueryOption = (strategyId: number) => ({
 });
 
 export function useGetStrategy(strategyId: number) {
-  return useQuery(getStrategyQueryOption(strategyId));
+  return useQuery(getStrategyQueryOptions(strategyId));
 }
 
 // 포폴 전략 생성
 export function useCreateStrategy() {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (payload: CreateStrategyRequest) => {
       const result = await createStrategy(payload);
@@ -62,17 +60,7 @@ export function useCreateStrategy() {
       if (!result.success) {
         return Promise.reject(result);
       }
-
       return result.data;
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: strategyKeys.list() });
-      queryClient.invalidateQueries({
-        queryKey: strategyKeys.detail(data.strategyId),
-      });
-    },
-    onError: (error) => {
-      console.error('포폴 전략 생성 실패:', error);
     },
   });
 }

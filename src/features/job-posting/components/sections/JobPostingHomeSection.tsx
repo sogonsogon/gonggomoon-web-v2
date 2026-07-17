@@ -9,7 +9,7 @@ export default function JobPostingHomeSection() {
         </h1>
         <p className="text-sm leading-[1.5] text-muted-foreground md:text-base whitespace-pre-line text-balance break-keep">
           {
-            '채용 공고 URL만 입력하면 AI가 핵심 역량을 분석하고,\n 내 경험과 매칭해 맞춤 포트폴리오 전략을 만들어드립니다.'
+            '채용 공고 URL만 입력하면 AI가 핵심 역량을 분석하고,\n 내 경험과 매칭해 맞춤 포트폴리오 전략을 만들 수 있어요'
           }
         </p>
       </div>

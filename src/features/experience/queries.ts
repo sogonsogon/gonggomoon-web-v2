@@ -99,7 +99,6 @@ export function useStartExtractExperience() {
 
       const result = await startExtractExperience(formData);
       if (!result.success) {
-        console.log('추출시작', result);
         return Promise.reject(result);
       }
       return result.data;

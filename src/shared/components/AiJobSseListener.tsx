@@ -61,6 +61,13 @@ export default function AiJobSseListener({
       close();
     });
 
+    eventSource.addEventListener('failed', (event) => {
+      callbacksRef.current.onFailed(
+        parseEventData<AiJobSseFailurePayload>(event.data, {}),
+      );
+      close();
+    });
+
     eventSource.addEventListener('ai-job-status', (event) => {
       const payload = parseEventData<AiJobStatusPayload | null>(event.data, null);
 
@@ -74,6 +81,7 @@ export default function AiJobSseListener({
 
       if (payload.status === 'READY') {
         callbacksRef.current.onDone({
+          ...payload,
           id: payload.id ?? id,
           type: payload.type ?? type,
           status: payload.status,
@@ -85,7 +93,7 @@ export default function AiJobSseListener({
       if (payload.status === 'FAILED') {
         callbacksRef.current.onFailed({
           code: payload.code,
-          message: payload.message ?? 'AI job subscription failed.',
+          message: payload.message,
         });
         close();
       }

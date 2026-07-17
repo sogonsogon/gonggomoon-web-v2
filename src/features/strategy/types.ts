@@ -1,5 +1,7 @@
 import { GenerationStatus } from '@/shared/types/generation';
 
+export type StrategyStatus = GenerationStatus | 'DRAFT';
+
 export type JobType =
   | 'FRONTEND'
   | 'BACKEND'
@@ -14,8 +16,9 @@ export type JobType =
 
 export type Strategy = {
   strategyId: number;
-  jobPostingTitle: string;
-  status?: GenerationStatus;
+  postAnalysisId: number;
+  postAnalysisTitle: string;
+  status: StrategyStatus;
   createdAt: string;
 };
 
@@ -38,16 +41,17 @@ export type StrategyImprovementGuide = {
 
 export type StrategyResult = {
   strategyId: number;
-  jobPostingTitle: string;
+  postAnalysisId: number;
+  postAnalysisTitle: string;
   selectedExperienceCount: number;
   createdAt: string;
   mainPositioningMessage: string;
+  improvementGuides: StrategyImprovementGuide[];
   experienceStrategyPoints: StrategyExperiencePoint[];
   experienceOrdering: StrategyExperienceOrdering[];
   keywords: string[];
   strengths: string[];
   kpiCheckList: string[];
-  improvementGuides: StrategyImprovementGuide[];
 };
 
 export type GetStrategyDetailResponse = StrategyResult;

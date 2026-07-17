@@ -34,7 +34,7 @@ export default function ExperienceExtractionBanner({
           이력서·포트폴리오에서 경험 추출하기
         </h2>
         <p className="text-xs leading-[1.55] text-muted-foreground break-keep break-words">
-          기존에 작성한 문서를 업로드하면 경험을 자동으로 추출할 수 있습니다.
+          기존에 작성한 문서에서 경험을 추출할 수 있어요
         </p>
       </div>
 

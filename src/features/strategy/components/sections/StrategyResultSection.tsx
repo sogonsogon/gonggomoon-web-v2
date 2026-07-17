@@ -14,6 +14,14 @@ interface TextListCardProps {
   items: string[];
 }
 
+interface DetailListCardProps {
+  items: Array<{
+    title: string;
+    description: string;
+  }>;
+  numbered?: boolean;
+}
+
 export default function StrategyResultSection({ strategyId }: StrategyResultSectionProps) {
   const { data: strategyData, isLoading, isError } = useGetStrategy(strategyId);
 
@@ -37,20 +45,20 @@ export default function StrategyResultSection({ strategyId }: StrategyResultSect
           ) : (
             <div className="min-w-0">
               <p className="text-xs leading-[1.45] font-medium text-primary">
-                {strategyData.createdAt}
+                {strategyData.createdAt.slice(0, 10).replace(/-/g, '.')}
               </p>
               <h1 className="mt-1 text-2xl leading-tight font-bold tracking-normal text-foreground break-keep md:text-[28px]">
-                {strategyData.jobPostingTitle}
+                {strategyData.postAnalysisTitle}
               </h1>
               <p className="mt-2 max-w-155 text-sm leading-[1.6] text-muted-foreground break-keep wrap-break-word">
-                공고 분석 내용과 선택된 경험 기반으로 생성된 포트폴리오 전략을 확인해보세요.
+                공고 분석 내용과 선택된 경험 기반으로 생성된 포트폴리오 전략을 확인해보세요
               </p>
             </div>
           )}
           {isLoading ? (
             <Skeleton className="h-10 w-full max-w-[200px] rounded-lg" />
           ) : isError || !strategyData ? null : (
-            <StrategyResultActions result={strategyData} />
+            <StrategyResultActions strategy={strategyData} />
           )}
         </header>
 
@@ -67,29 +75,32 @@ export default function StrategyResultSection({ strategyId }: StrategyResultSect
                 {strategyData.mainPositioningMessage}
               </p>
             </StrategyAnalysisCard>
-            <StrategyAnalysisCard id="improvementGuides" order={7} title="보완 가이드">
-              <TextListCard
-                items={strategyData.improvementGuides.map(
-                  (item) => `${item.title}: ${item.description}`,
-                )}
+            <StrategyAnalysisCard id="improvementGuides" order={2} title="보완 가이드">
+              <DetailListCard
+                items={strategyData.improvementGuides.map((item) => ({
+                  title: item.title,
+                  description: item.description,
+                }))}
               />
             </StrategyAnalysisCard>
             <StrategyAnalysisCard id="experienceStrategyPoints" order={3} title="경험별 포인트">
-              <TextListCard
-                items={strategyData.experienceStrategyPoints.map(
-                  (item) => `${item.experienceTitle}: ${item.strategyPoint}`,
-                )}
+              <DetailListCard
+                items={strategyData.experienceStrategyPoints.map((item) => ({
+                  title: item.experienceTitle,
+                  description: item.strategyPoint,
+                }))}
               />
             </StrategyAnalysisCard>
-            <StrategyAnalysisCard id="experienceOrdering" order={2} title="경험 정렬 전략">
-              <TextListCard
+            <StrategyAnalysisCard id="experienceOrdering" order={4} title="경험 정렬 전략">
+              <DetailListCard
+                numbered
                 items={strategyData.experienceOrdering
                   .slice()
                   .sort((a, b) => a.order - b.order)
-                  .map((item) => `${item.title} — ${item.reason}`)}
+                  .map((item) => ({ title: item.title, description: item.reason }))}
               />
             </StrategyAnalysisCard>
-            <StrategyAnalysisCard id="keywords" order={4} title="강조 키워드">
+            <StrategyAnalysisCard id="keywords" order={5} title="강조 키워드">
               <div className="flex flex-wrap gap-2">
                 {strategyData.keywords.map((keyword) => (
                   <Badge
@@ -102,16 +113,44 @@ export default function StrategyResultSection({ strategyId }: StrategyResultSect
                 ))}
               </div>
             </StrategyAnalysisCard>
-            <StrategyAnalysisCard id="strengths" order={5} title="강조 역량">
+            <StrategyAnalysisCard id="strengths" order={6} title="강조 역량">
               <TextListCard items={strategyData.strengths} />
             </StrategyAnalysisCard>
-            <StrategyAnalysisCard id="kpiCheckList" order={6} title="KPI(핵심 성과 지표)">
+            <StrategyAnalysisCard id="kpiCheckList" order={7} title="KPI(핵심 성과 지표)">
               <TextListCard items={strategyData.kpiCheckList} />
             </StrategyAnalysisCard>
           </Accordion>
         )}
       </div>
     </section>
+  );
+}
+
+function DetailListCard({ items, numbered = false }: DetailListCardProps) {
+  const List = numbered ? 'ol' : 'ul';
+
+  return (
+    <List className="grid gap-3">
+      {items.map((item, index) => (
+        <li key={`${item.title}-${item.description}`} className="flex min-w-0 gap-2">
+          {numbered ? (
+            <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs leading-none font-semibold text-primary">
+              {index + 1}
+            </span>
+          ) : (
+            <span className="mt-[0.65em] size-1 shrink-0 rounded-full bg-primary" />
+          )}
+          <div className="min-w-0">
+            <p className="text-sm leading-[1.5] font-semibold text-foreground break-keep break-words">
+              {item.title}
+            </p>
+            <p className="mt-1 text-sm leading-[1.65] text-muted-foreground break-keep break-words">
+              {item.description}
+            </p>
+          </div>
+        </li>
+      ))}
+    </List>
   );
 }
 

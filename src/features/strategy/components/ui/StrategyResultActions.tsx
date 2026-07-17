@@ -5,20 +5,19 @@ import { CopyIcon, FileTextIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import JobPostingAnalysisModal from '@/features/job-posting/components/ui/JobPostingAnalysisModal';
-import { MOCK_JOB_POSTING_ANALYSIS } from '@/features/job-posting/constants/mock';
 import { Button } from '@/shared/components/ui/button';
 import { StrategyResult } from '@/features/strategy/types';
 
 interface StrategyResultActionsProps {
-  result: StrategyResult;
+  strategy: StrategyResult;
 }
 
-export default function StrategyResultActions({ result }: StrategyResultActionsProps) {
+export default function StrategyResultActions({ strategy }: StrategyResultActionsProps) {
   const [analysisOpen, setAnalysisOpen] = React.useState(false);
 
   const handleCopyStrategy = async () => {
     try {
-      await navigator.clipboard.writeText(formatStrategyResultForCopy(result));
+      await navigator.clipboard.writeText(formatStrategyResultForCopy(strategy));
       toast.success('전략 내용이 복사되었습니다.');
     } catch {
       toast.error('전략 내용을 복사하지 못했습니다.');
@@ -47,31 +46,31 @@ export default function StrategyResultActions({ result }: StrategyResultActionsP
       <JobPostingAnalysisModal
         open={analysisOpen}
         onOpenChange={setAnalysisOpen}
-        analysis={MOCK_JOB_POSTING_ANALYSIS}
+        postAnalysisId={strategy.postAnalysisId}
       />
     </>
   );
 }
 
-function formatStrategyResultForCopy(result: StrategyResult) {
+function formatStrategyResultForCopy(strategy: StrategyResult) {
   return [
-    result.jobPostingTitle,
-    result.createdAt,
+    strategy.postAnalysisTitle,
+    strategy.createdAt.slice(0, 10).replace(/-/g, '.'),
     '',
-    `[핵심 포지셔닝 메시지]\n${result.mainPositioningMessage}\n`,
-    `[보완 가이드]\n${result.improvementGuides
-      .map((item) => `- ${item.title}: ${item.description}`)
+    `[핵심 포지셔닝 메시지]\n${strategy.mainPositioningMessage}\n`,
+    `[보완 가이드]\n${strategy.improvementGuides
+      .map((item) => `- ${item.title}\n  ${item.description}`)
       .join('\n')}\n`,
-    `[경험별 포인트]\n${result.experienceStrategyPoints
-      .map((item) => `- ${item.experienceTitle}: ${item.strategyPoint}`)
+    `[경험별 포인트]\n${strategy.experienceStrategyPoints
+      .map((item) => `- ${item.experienceTitle}\n  ${item.strategyPoint}`)
       .join('\n')}\n`,
-    `[경험 정렬 전략]\n${result.experienceOrdering
+    `[경험 정렬 전략]\n${strategy.experienceOrdering
       .slice()
       .sort((a, b) => a.order - b.order)
-      .map((item) => `- ${item.title} — ${item.reason}`)
+      .map((item, index) => `${index + 1}. ${item.title}\n   ${item.reason}`)
       .join('\n')}\n`,
-    `[강조 키워드]\n${result.keywords.join(', ')}\n`,
-    `[강조 역량]\n${result.strengths.map((item) => `- ${item}`).join('\n')}\n`,
-    `[KPI(핵심 성과 지표)]\n${result.kpiCheckList.map((item) => `- ${item}`).join('\n')}\n`,
+    `[강조 키워드]\n${strategy.keywords.join(', ')}\n`,
+    `[강조 역량]\n${strategy.strengths.map((item) => `- ${item}`).join('\n')}\n`,
+    `[KPI(핵심 성과 지표)]\n${strategy.kpiCheckList.map((item) => `- ${item}`).join('\n')}\n`,
   ].join('\n');
 }
