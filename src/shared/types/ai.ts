@@ -2,7 +2,7 @@ export const AI_JOB_TYPES = [
   'EXTRACT_EXPERIENCE',
   'PORTFOLIO_STRATEGY',
   'INTERVIEW_STRATEGY',
-  'RECRUITMENT_ANALYSIS',
+  'POST_ANALYSIS',
 ] as const;
 
 export type AiJobType = (typeof AI_JOB_TYPES)[number];
@@ -20,6 +20,7 @@ export type AiJobStatusPayload = {
   id?: string | number;
   type?: AiJobType;
   status: AiJobStatus;
+  strategyId?: number;
   code?: string;
   message?: string;
 };
@@ -27,7 +28,7 @@ export type AiJobStatusPayload = {
 export type AiJobSseFailurePayload = {
   status?: number;
   code?: string;
-  message: string;
+  message?: string;
 };
 
 export type AiJobSseAlreadyFinishedPayload = {
