@@ -7,6 +7,7 @@ import LegalModal, { type LegalModalType } from '@/shared/components/layout/Lega
 import logoImage from '@/shared/assets/images/logo.png';
 import { Modal, ModalContent, ModalDescription, ModalTitle } from '@/shared/components/ui/modal';
 import { useLoginModal } from '@/features/auth/store/useLoginModal';
+import { strategyKeys } from '@/features/strategy/queries';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
@@ -42,11 +43,14 @@ export default function LoginModal() {
       return;
     }
 
-    const handler = (event: MessageEvent) => {
+    const handler = async (event: MessageEvent) => {
       if (event.origin !== window.location.origin) return;
       if (event.data.type === 'AUTH_SUCCESS') {
         window.removeEventListener('message', handler);
-        queryClient.invalidateQueries({ queryKey: ['user'] });
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ['user'] }),
+          queryClient.invalidateQueries({ queryKey: strategyKeys.list() }),
+        ]);
         closeDialog();
         router.refresh();
       }
