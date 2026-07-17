@@ -1,9 +1,10 @@
-'use client';
+﻿'use client';
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowRightIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 
 import ExperienceListSection from '@/features/experience/components/sections/ExperienceListSection';
 import ExperienceDetailModal from '@/features/experience/components/ui/ExperienceDetailModal';
@@ -12,27 +13,34 @@ import ExperienceExtractionBanner from '@/features/experience/components/ui/Expe
 import ExperienceExtractionModal from '@/features/experience/components/ui/ExperienceExtractionModal';
 import ExperienceRegisterModal from '@/features/experience/components/ui/ExperienceRegisterModal';
 import type { Experience } from '@/features/experience/types';
+import { useGetExperienceList } from '@/features/experience/queries';
+import {
+  getStrategyQueryOptions,
+  strategyKeys,
+  useCreateStrategy,
+} from '@/features/strategy/queries';
+import AiJobSseListener from '@/shared/components/AiJobSseListener';
 import AiProcessingOverlay from '@/shared/components/ui/AiProcessingOverlay';
 import { Button } from '@/shared/components/ui/button';
-import { useGetExperienceList } from '@/features/experience/queries';
-import { useCreateStrategy } from '@/features/strategy/queries';
-import type { JobType } from '@/features/strategy/types';
+import type { AiJobSseFailurePayload } from '@/shared/types/ai';
 
 interface ExperienceSelectionSectionProps {
   strategyId: string;
+  postAnalysisId?: string;
 }
 
 type ExperienceModalType = 'extraction' | 'register' | 'detail' | 'edit' | null;
 
 export default function ExperienceSelectionSection({
   strategyId,
+  postAnalysisId,
 }: ExperienceSelectionSectionProps) {
   const router = useRouter();
-  const createStrategy = useCreateStrategy();
+  const queryClient = useQueryClient();
+  const { mutate: createStrategy } = useCreateStrategy();
   const {
     data: experienceData = {
       totalCount: 0,
-
       contents: [],
     },
     isLoading,
@@ -40,6 +48,7 @@ export default function ExperienceSelectionSection({
   const [activeModal, setActiveModal] = React.useState<ExperienceModalType>(null);
   const [activeExperience, setActiveExperience] = React.useState<Experience | null>(null);
   const [isProcessing, setIsProcessing] = React.useState(false);
+  const [pendingStrategyId, setPendingStrategyId] = React.useState<number | null>(null);
   const [selectedExperienceIds, setSelectedExperienceIds] = React.useState<Set<number>>(
     () => new Set(),
   );
@@ -88,24 +97,74 @@ export default function ExperienceSelectionSection({
     setActiveModal('edit');
   }, []);
 
-  const handleGenerateStrategy = async () => {
-    if (isProcessing) {
+  const handleGenerateStrategy = () => {
+    if (isProcessing || selectedExperienceIds.size === 0) {
+      return;
+    }
+
+    const numericPostAnalysisId = Number(postAnalysisId);
+
+    if (!Number.isSafeInteger(numericPostAnalysisId) || numericPostAnalysisId <= 0) {
+      toast.error('공고 분석 정보를 확인하지 못했습니다. 다시 시도해주세요.');
       return;
     }
 
     setIsProcessing(true);
 
-    try {
-      const result = await createStrategy.mutateAsync({
-        postAnalysisId: Number(strategyId),
+    createStrategy(
+      {
+        postAnalysisId: numericPostAnalysisId,
         experienceIds: [...selectedExperienceIds],
-      });
-      router.push(`/strategy/${result.strategyId}/result`);
-    } catch {
-      setIsProcessing(false);
-      toast.error('포트폴리오 전략을 생성하지 못했습니다. 다시 시도해주세요.');
-    }
+      },
+      {
+        onSuccess: (result) => {
+          if (!result.strategyId) {
+            setIsProcessing(false);
+            toast.error('포트폴리오 전략을 생성하지 못했습니다. 다시 시도해주세요.');
+            return;
+          }
+
+          setPendingStrategyId(result.strategyId);
+        },
+        onError: (error) => {
+          setIsProcessing(false);
+          toast.error(error.message || '포트폴리오 전략을 생성하지 못했습니다. 다시 시도해주세요.');
+        },
+      },
+    );
   };
+
+  const handleStrategyFinished = React.useCallback(async () => {
+    if (!pendingStrategyId) {
+      return;
+    }
+
+    try {
+      await queryClient.fetchQuery({
+        ...getStrategyQueryOptions(pendingStrategyId),
+        staleTime: 0,
+      });
+      void queryClient.invalidateQueries({ queryKey: strategyKeys.list() });
+      setPendingStrategyId(null);
+      setIsProcessing(false);
+      router.push(`/strategy/${pendingStrategyId}/result`);
+    } catch (error) {
+      setPendingStrategyId(null);
+      setIsProcessing(false);
+      toast.error(
+        getErrorMessage(error) ||
+          '포트폴리오 전략을 생성하지 못했습니다. 다시 시도해주세요.',
+      );
+    }
+  }, [pendingStrategyId, queryClient, router]);
+
+  const handleStrategyFailed = React.useCallback((payload: AiJobSseFailurePayload) => {
+    setPendingStrategyId(null);
+    setIsProcessing(false);
+    toast.error(
+      payload.message || '포트폴리오 전략을 생성하지 못했습니다. 다시 시도해주세요.',
+    );
+  }, []);
 
   return (
     <>
@@ -128,7 +187,7 @@ export default function ExperienceSelectionSection({
               type="button"
               size="sm"
               className="w-full md:w-auto"
-              disabled={isProcessing}
+              disabled={isProcessing || selectedExperienceIds.size === 0}
               onClick={handleGenerateStrategy}
             >
               <ArrowRightIcon />
@@ -174,6 +233,25 @@ export default function ExperienceSelectionSection({
         title="포트폴리오 전략을 생성하고 있어요"
         description="공고와 선택한 경험을 바탕으로 맞춤 전략을 만들고 있어요. 잠시만 기다려주세요."
       />
+
+      {pendingStrategyId ? (
+        <AiJobSseListener
+          type="PORTFOLIO_STRATEGY"
+          id={pendingStrategyId}
+          onDone={handleStrategyFinished}
+          onAlreadyFinished={handleStrategyFinished}
+          onFailed={handleStrategyFailed}
+        />
+      ) : null}
     </>
   );
+}
+
+function getErrorMessage(error: unknown) {
+  if (typeof error === 'object' && error !== null && 'message' in error) {
+    const message = error.message;
+    return typeof message === 'string' ? message : undefined;
+  }
+
+  return undefined;
 }

@@ -76,6 +76,15 @@ function isRecentStrategyActive(pathname: string, strategyId: number) {
   return getActiveStrategyId(pathname) === strategyId.toString();
 }
 
+function getStrategyHref(strategy: Strategy) {
+  if (strategy.status === 'READY') {
+    return `/strategy/${strategy.strategyId}/result`;
+  } else {
+    const searchParams = new URLSearchParams({ postAnalysisId: String(strategy.postAnalysisId) });
+    return `/strategy/${strategy.strategyId}/analysis?${searchParams.toString()}`;
+  }
+}
+
 export default function MainSidebar() {
   const isMobile = useIsMobile();
 
@@ -102,7 +111,6 @@ export function MainSidebarContent({
   const {
     data: strategyData = {
       totalCount: 0,
-
       contents: [],
     },
     isLoading,
@@ -165,7 +173,7 @@ export function MainSidebarContent({
             <div className="px-2 text-xs leading-[1.3] font-semibold whitespace-nowrap text-muted-foreground">
               최근 포트폴리오 전략
             </div>
-            <div className="flex min-h-0 flex-col gap-1">
+            <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {isLoading ? (
                 <RecentStrategySkeletonList />
               ) : strategyData.contents.length > 0 ? (
@@ -185,16 +193,16 @@ export function MainSidebarContent({
             </div>
           </div>
 
-          <div className="hidden min-h-0 flex-1 flex-col items-center gap-2 group-data-[collapsible=icon]:flex">
+          <div className="hidden min-h-0 flex-1 flex-col items-center gap-2 overflow-y-auto overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden group-data-[collapsible=icon]:flex">
             {isLoading ? (
               <RecentStrategySkeletonList collapsed />
             ) : strategyData.contents.length > 0 ? (
               strategyData.contents.map((strategy) => (
                 <CollapsedIconButton
                   key={strategy.strategyId}
-                  label={strategy.jobPostingTitle}
+                  label={strategy.postAnalysisTitle}
                   icon={FileTextIcon}
-                  href={`/strategy/${strategy.strategyId}/result`}
+                  href={getStrategyHref(strategy)}
                   active={isRecentStrategyActive(pathname, strategy.strategyId)}
                   onNavigate={onNavigate}
                 />
@@ -310,7 +318,7 @@ function RecentStrategyCard({
   return (
     <div className="relative min-w-0 rounded-[var(--radius-sm)]">
       <Link
-        href={`/strategy/${strategy.strategyId}/result`}
+        href={getStrategyHref(strategy)}
         onClick={onNavigate}
         className={cn(
           'flex min-w-0 cursor-pointer flex-col gap-[7px] rounded-[var(--radius-sm)] bg-transparent p-2.5 pr-9 text-left transition-colors hover:bg-muted/70 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
@@ -323,7 +331,7 @@ function RecentStrategyCard({
             active && 'text-primary',
           )}
         >
-          {strategy.jobPostingTitle}
+          {strategy.postAnalysisTitle}
         </span>
         <span
           className={cn(
@@ -389,7 +397,7 @@ function StrategyItemDropdown({ strategy, active }: { strategy: Strategy; active
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          aria-label={`${strategy.jobPostingTitle} 메뉴`}
+          aria-label={`${strategy.postAnalysisTitle} 메뉴`}
           className={cn(
             'flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-md bg-transparent text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
             active && 'text-primary hover:bg-primary/10 hover:text-primary',

@@ -2,7 +2,8 @@ import { Strategy, StrategyResult } from '@/features/strategy/types';
 
 export const MOCK_STRATEGY_RESULT: StrategyResult = {
   strategyId: 1,
-  jobPostingTitle: '토스 Backend 신입 채용',
+  postAnalysisId: 101,
+  postAnalysisTitle: '토스 Backend 신입 채용',
   selectedExperienceCount: 3,
   createdAt: '2026-07-01T22:26:00.056',
   mainPositioningMessage:
@@ -63,12 +64,16 @@ export const MOCK_STRATEGY_RESULT: StrategyResult = {
 export const MOCK_RECENT_STRATEGIES: Strategy[] = [
   {
     strategyId: 1,
-    jobPostingTitle: '당근 Frontend 개발자 채용',
+    postAnalysisId: 1,
+    postAnalysisTitle: '당근 Frontend 개발자 채용',
+    status: 'READY',
     createdAt: '2026. 06. 02',
   },
   {
     strategyId: 2,
-    jobPostingTitle: '토스 Backend 개발자 채용',
+    postAnalysisId: 2,
+    postAnalysisTitle: '토스 Backend 개발자 채용',
+    status: 'READY',
     createdAt: '2026. 06. 01',
   },
 ];

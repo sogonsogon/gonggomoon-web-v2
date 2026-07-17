@@ -3,13 +3,18 @@ import StrategyStepIndicator from '@/features/strategy/components/ui/StrategySte
 
 export default async function ExperienceSelectPage({
   params,
+  searchParams,
 }: PageProps<'/strategy/[strategyId]/experience-select'>) {
-  const { strategyId } = await params;
+  const [{ strategyId }, resolvedSearchParams] = await Promise.all([params, searchParams]);
+  const postAnalysisIdParam = resolvedSearchParams.postAnalysisId;
+  const postAnalysisId = Array.isArray(postAnalysisIdParam)
+    ? postAnalysisIdParam[0]
+    : postAnalysisIdParam;
 
   return (
     <main className="min-h-svh bg-background">
       <StrategyStepIndicator currentStep="experience" />
-      <ExperienceSelectionSection strategyId={strategyId} />
+      <ExperienceSelectionSection strategyId={strategyId} postAnalysisId={postAnalysisId} />
     </main>
   );
 }
