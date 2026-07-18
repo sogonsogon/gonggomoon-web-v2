@@ -11,11 +11,13 @@ import { cookies } from 'next/headers';
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
-  const isLoggedIn = Boolean(cookieStore.get('access_token')?.value);
+  const isLoggedIn = Boolean(
+    cookieStore.get('access_token')?.value || cookieStore.get('refresh_token')?.value,
+  );
 
   return (
-    <QueryProvider>
-      <AuthStoreProvider isLoggedIn={isLoggedIn}>
+    <AuthStoreProvider isLoggedIn={isLoggedIn}>
+      <QueryProvider>
         <SidebarProvider
           style={
             {
@@ -34,7 +36,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
           <LoginModal />
           <Toaster richColors position="top-center" />
         </SidebarProvider>
-      </AuthStoreProvider>
-    </QueryProvider>
+      </QueryProvider>
+    </AuthStoreProvider>
   );
 }
