@@ -19,7 +19,7 @@ export async function createRecruitmentAnalysis(
 }
 
 export async function getRecruitmentAnalysis(
-  postAnalysisId: number,
+  postAnalysisId: string,
 ): Promise<ApiResponse<GetRecruitmentAnalysisResponse>> {
   return privateFetch<GetRecruitmentAnalysisResponse>(`/api/v1/posts/${postAnalysisId}`, {
     cache: 'no-store',

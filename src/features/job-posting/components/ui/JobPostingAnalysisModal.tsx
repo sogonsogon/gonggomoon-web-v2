@@ -8,7 +8,7 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 interface JobPostingAnalysisModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  postAnalysisId: number;
+  postAnalysisId: string;
 }
 
 export default function JobPostingAnalysisModal({

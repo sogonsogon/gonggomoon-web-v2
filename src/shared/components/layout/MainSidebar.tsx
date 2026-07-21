@@ -72,8 +72,8 @@ function getActiveStrategyId(pathname: string) {
   return strategyRoutePattern.exec(pathname)?.[1] ?? null;
 }
 
-function isRecentStrategyActive(pathname: string, strategyId: number) {
-  return getActiveStrategyId(pathname) === strategyId.toString();
+function isRecentStrategyActive(pathname: string, strategyId: string) {
+  return getActiveStrategyId(pathname) === strategyId;
 }
 
 function getStrategyHref(strategy: Strategy) {

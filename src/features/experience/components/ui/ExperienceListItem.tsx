@@ -19,7 +19,7 @@ type ExperienceListItemProps =
   | (BaseExperienceListItemProps & {
       variant?: 'checkbox';
       selected: boolean;
-      onSelectedChange: (experienceId: number, selected: boolean) => void;
+      onSelectedChange: (experienceId: string, selected: boolean) => void;
     })
   | (BaseExperienceListItemProps & {
       variant: 'view';

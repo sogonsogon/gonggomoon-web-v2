@@ -19,8 +19,8 @@ export async function getExperienceList(): Promise<ApiResponse<GetExperienceList
 //경험 등록
 export async function createExperience(
   payload: CreateExperienceRequest,
-): Promise<ApiResponse<{ experienceId: number }>> {
-  const response = await privateFetch<{ experienceId: number }>(`/api/v1/experiences`, {
+): Promise<ApiResponse<{ experienceId: string }>> {
+  const response = await privateFetch<{ experienceId: string }>(`/api/v1/experiences`, {
     method: 'POST',
     body: JSON.stringify(payload),
   });
@@ -46,7 +46,7 @@ export async function updateExperience({
 export async function deleteExperience({
   experienceId,
 }: {
-  experienceId: number;
+  experienceId: string;
 }): Promise<ApiResponse<null>> {
   const response = await privateFetch<null>(`/api/v1/experiences/${experienceId}`, {
     method: 'DELETE',

@@ -5,7 +5,7 @@ export const SHOW_LOADING_EXPERIENCES = false;
 
 export const MOCK_EXPERIENCES: Experience[] = [
   {
-    experienceId: 1,
+    experienceId: 'e4194b8c-bb0d-4284-b13e-a1156ae00e79',
     experienceType: 'COMPETITION',
     startDate: '2023-07',
     endDate: '2023-12',
@@ -14,7 +14,7 @@ export const MOCK_EXPERIENCES: Experience[] = [
       '카카오 서비스 데이터를 분석해 사용자 행동 패턴을 도출하고, 이탈 지표 기반의 개선 아이디어를 제안했습니다. 데이터 전처리와 시각화, 발표 자료 제작을 담당했습니다.',
   },
   {
-    experienceId: 2,
+    experienceId: '3f1c9755-04a6-4d58-a4dd-3d02ecf4f90e',
     experienceType: 'EDUCATION',
     startDate: '2022-03',
     endDate: '2023-02',
@@ -23,7 +23,7 @@ export const MOCK_EXPERIENCES: Experience[] = [
       'UX 리서치와 사용성 테스트 방법론을 학습하는 스터디를 운영했습니다. 매주 학습 주제를 선정하고 사례 분석 세션을 진행하며 팀원의 결과물을 리뷰했습니다.',
   },
   {
-    experienceId: 3,
+    experienceId: '50d05d62-0b24-4645-8320-b436fdbcef47',
     experienceType: 'PROJECT',
     startDate: '2024-09',
     endDate: '2024-11',

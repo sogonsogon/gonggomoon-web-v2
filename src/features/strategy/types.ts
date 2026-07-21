@@ -1,22 +1,8 @@
-import { GenerationStatus } from '@/shared/types/generation';
-
-export type StrategyStatus = GenerationStatus | 'DRAFT';
-
-export type JobType =
-  | 'FRONTEND'
-  | 'BACKEND'
-  | 'EMBEDDED'
-  | 'DEVOPS'
-  | 'DATA_ANALYSIS'
-  | 'AI'
-  | 'INFORMATION_SECURITY'
-  | 'DESIGN'
-  | 'PM_PO'
-  | 'QA';
+export type StrategyStatus = 'READY' | 'PROCESSING' | 'DRAFT' | string;
 
 export type Strategy = {
-  strategyId: number;
-  postAnalysisId: number;
+  strategyId: string;
+  postAnalysisId: string;
   postAnalysisTitle: string;
   status: StrategyStatus;
   createdAt: string;
@@ -40,8 +26,8 @@ export type StrategyImprovementGuide = {
 };
 
 export type StrategyResult = {
-  strategyId: number;
-  postAnalysisId: number;
+  strategyId: string;
+  postAnalysisId: string;
   postAnalysisTitle: string;
   selectedExperienceCount: number;
   createdAt: string;
@@ -62,6 +48,6 @@ export type GetStrategyListResponse = {
 };
 
 export type CreateStrategyRequest = {
-  postAnalysisId: number;
-  experienceIds: number[];
+  postAnalysisId: string;
+  experienceIds: string[];
 };

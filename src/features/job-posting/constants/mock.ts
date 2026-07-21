@@ -1,8 +1,8 @@
 import type { JobPostingAnalysis } from '@/features/job-posting/types';
 
 export const MOCK_JOB_POSTING_ANALYSIS = {
-  postId: 1,
-  postAnalysisId: 101,
+  postId: '30879cdb-b00e-421d-8854-01ea9488d9c0',
+  postAnalysisId: 'e9e77335-672a-408b-ac2a-010a98e4d86a',
   title: '영진기술 웹 프론트엔드 개발자 채용',
   summary: {
     title: '영진기술 웹 프론트엔드 개발자 채용',

@@ -13,7 +13,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 export const experienceKeys = {
   all: ['experiences'] as const,
   list: () => [...experienceKeys.all, 'list'] as const,
-  extraction: (extractionId: number) =>
+  extraction: (extractionId: string) =>
     [...experienceKeys.all, 'extraction', extractionId] as const,
   // extractionAvailability: () => [...experienceKeys.all, 'extraction-availability'] as const,
 };
@@ -77,7 +77,7 @@ export function useDeleteExperience() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (experienceId: number) => {
+    mutationFn: async (experienceId: string) => {
       const result = await deleteExperience({ experienceId });
       if (!result.success) {
         return Promise.reject(result);

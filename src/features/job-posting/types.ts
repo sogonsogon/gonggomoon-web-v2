@@ -3,14 +3,14 @@ export type CreateRecruitmentAnalysisRequest = {
 };
 
 export type CreateRecruitmentAnalysisResponse = {
-  postId: number;
+  postId: string;
   url: string;
   status: 'PENDING' | 'SUCCESS';
 };
 
 export type JobPostingAnalysis = {
-  postId: number;
-  postAnalysisId: number;
+  postId: string;
+  postAnalysisId: string;
   title: string;
   summary: {
     title: string;

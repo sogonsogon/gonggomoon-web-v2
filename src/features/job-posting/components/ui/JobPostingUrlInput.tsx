@@ -23,10 +23,10 @@ export default function JobPostingUrlInput() {
   const fetchRecruitmentAnalysisByStrategyId = useFetchRecruitmentAnalysisByStrategyId();
   const [url, setUrl] = React.useState('');
   const [isProcessing, setIsProcessing] = React.useState(false);
-  const [pendingPostId, setPendingPostId] = React.useState<number | null>(null);
+  const [pendingPostId, setPendingPostId] = React.useState<string | null>(null);
 
   const fetchAnalysisAndNavigate = React.useCallback(
-    async (strategyId: number) => {
+    async (strategyId: string) => {
       try {
         const postAnalysisId = await fetchRecruitmentAnalysisByStrategyId(strategyId);
         setPendingPostId(null);
@@ -62,7 +62,7 @@ export default function JobPostingUrlInput() {
       { postUrl: url.trim() },
       {
         onSuccess: (result) => {
-          if (!isPositiveInteger(result.postId)) {
+          if (!result.postId) {
             setIsProcessing(false);
             toast.error('공고를 분석하지 못했습니다. 다시 시도해주세요.');
             return;
@@ -90,7 +90,7 @@ export default function JobPostingUrlInput() {
         return;
       }
 
-      if (!isPositiveInteger(payload.strategyId)) {
+      if (!payload.strategyId) {
         setPendingPostId(null);
         setIsProcessing(false);
         toast.error('공고 분석 완료 정보를 확인하지 못했습니다. 다시 시도해주세요.');
@@ -172,8 +172,4 @@ function getErrorMessage(error: unknown) {
   }
 
   return undefined;
-}
-
-function isPositiveInteger(value: unknown): value is number {
-  return typeof value === 'number' && Number.isInteger(value) && value > 0;
 }

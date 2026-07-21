@@ -12,7 +12,7 @@ import { CreateStrategyRequest } from './types';
 export const strategyKeys = {
   all: ['strategy'] as const,
   list: () => [...strategyKeys.all, 'list'] as const,
-  detail: (strategyId: number) => [...strategyKeys.all, 'detail', strategyId] as const,
+  detail: (strategyId: string) => [...strategyKeys.all, 'detail', strategyId] as const,
 };
 
 // 포폴 전략 목록 조회
@@ -34,7 +34,7 @@ export function useGetStrategyList() {
 }
 
 // 포폴 전략 상세 조회
-export const getStrategyQueryOptions = (strategyId: number) => ({
+export const getStrategyQueryOptions = (strategyId: string) => ({
   queryKey: strategyKeys.detail(strategyId),
   queryFn: async () => {
     const response = await getStrategy(strategyId);
@@ -47,7 +47,7 @@ export const getStrategyQueryOptions = (strategyId: number) => ({
   gcTime: 24 * 60 * 60 * 1000,
 });
 
-export function useGetStrategy(strategyId: number) {
+export function useGetStrategy(strategyId: string) {
   return useQuery(getStrategyQueryOptions(strategyId));
 }
 
@@ -70,7 +70,7 @@ export function useDeleteStrategy() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (strategyId: number) => {
+    mutationFn: async (strategyId: string) => {
       const result = await deleteStrategy(strategyId);
       if (!result.success) {
         return Promise.reject(result);
@@ -80,6 +80,6 @@ export function useDeleteStrategy() {
     onSuccess: (_data, strategyId) => {
       queryClient.invalidateQueries({ queryKey: strategyKeys.list() });
       queryClient.removeQueries({ queryKey: strategyKeys.detail(strategyId), exact: true });
-    }, //삭제 후 캐시 정리는 useDeleteStrategy의 책임으로 => 사이드바 말고 다른 곳에서 전략 삭제시 ,동일하게 상세 캐시 제거 하도록
+    },
   });
 }

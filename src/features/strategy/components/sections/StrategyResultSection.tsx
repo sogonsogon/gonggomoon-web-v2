@@ -7,7 +7,7 @@ import { Badge } from '@/shared/components/ui/badge';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 
 interface StrategyResultSectionProps {
-  strategyId: number;
+  strategyId: string;
 }
 
 interface TextListCardProps {

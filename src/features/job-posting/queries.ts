@@ -5,17 +5,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { createRecruitmentAnalysis, getRecruitmentAnalysis } from '@/features/job-posting/actions';
 import type { CreateRecruitmentAnalysisRequest } from '@/features/job-posting/types';
-import {
-  strategyKeys,
-  strategyListQueryOptions,
-} from '@/features/strategy/queries';
+import { strategyKeys, strategyListQueryOptions } from '@/features/strategy/queries';
 
 export const jobPostingKeys = {
   all: ['job-posting'] as const,
-  detail: (postId: number) => [...jobPostingKeys.all, 'detail', postId] as const,
+  detail: (postId: string) => [...jobPostingKeys.all, 'detail', postId] as const,
 };
 
-export const recruitmentAnalysisQueryOptions = (postAnalysisId: number) => ({
+export const recruitmentAnalysisQueryOptions = (postAnalysisId: string) => ({
   queryKey: jobPostingKeys.detail(postAnalysisId),
   queryFn: async () => {
     const result = await getRecruitmentAnalysis(postAnalysisId);
@@ -42,10 +39,10 @@ export function useCreateRecruitmentAnalysis() {
   });
 }
 
-export function useGetRecruitmentAnalysis(postAnalysisId: number) {
+export function useGetRecruitmentAnalysis(postAnalysisId: string) {
   return useQuery({
     ...recruitmentAnalysisQueryOptions(postAnalysisId),
-    enabled: Number.isFinite(postAnalysisId) && postAnalysisId > 0,
+    enabled: !!postAnalysisId,
   });
 }
 
@@ -53,13 +50,13 @@ export function useFetchRecruitmentAnalysisByStrategyId() {
   const queryClient = useQueryClient();
 
   return React.useCallback(
-    async (strategyId: number) => {
+    async (strategyId: string) => {
       await queryClient.invalidateQueries({ queryKey: strategyKeys.list() });
 
       const strategyData = await queryClient.fetchQuery(strategyListQueryOptions());
       const strategy = strategyData.contents.find((item) => item.strategyId === strategyId);
 
-      if (!strategy || !isPositiveInteger(strategy.postAnalysisId)) {
+      if (!strategy || !strategy.postAnalysisId) {
         throw new Error('공고 분석 정보를 확인하지 못했습니다. 다시 시도해주세요.');
       }
 
@@ -74,8 +71,4 @@ export function useFetchRecruitmentAnalysisByStrategyId() {
     },
     [queryClient],
   );
-}
-
-function isPositiveInteger(value: unknown): value is number {
-  return typeof value === 'number' && Number.isInteger(value) && value > 0;
 }

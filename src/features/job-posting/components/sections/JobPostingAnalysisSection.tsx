@@ -10,15 +10,14 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 
 interface JobPostingAnalysisSectionProps {
   strategyId: string;
-  postAnalysisId?: string;
+  postAnalysisId: string;
 }
 
 export default function JobPostingAnalysisSection({
   strategyId,
   postAnalysisId,
 }: JobPostingAnalysisSectionProps) {
-  const numericPostAnalysisId = parsePositiveInteger(postAnalysisId);
-  const { data: analysis, isLoading, isError } = useGetRecruitmentAnalysis(numericPostAnalysisId);
+  const { data: analysis, isLoading, isError } = useGetRecruitmentAnalysis(postAnalysisId);
 
   if (isLoading) {
     return (
@@ -59,7 +58,7 @@ export default function JobPostingAnalysisSection({
 
           <Button asChild size="sm" className="w-full md:w-auto">
             <Link
-              href={`/strategy/${strategyId}/experience-select?postAnalysisId=${numericPostAnalysisId}`}
+              href={`/strategy/${strategyId}/experience-select?postAnalysisId=${postAnalysisId}`}
             >
               <ArrowRightIcon />
               경험 입력
@@ -71,13 +70,4 @@ export default function JobPostingAnalysisSection({
       </div>
     </section>
   );
-}
-
-function parsePositiveInteger(value?: string) {
-  if (!value || !/^\d+$/.test(value)) {
-    return Number.NaN;
-  }
-
-  const numericValue = Number(value);
-  return Number.isSafeInteger(numericValue) && numericValue > 0 ? numericValue : Number.NaN;
 }
