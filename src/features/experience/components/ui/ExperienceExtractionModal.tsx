@@ -27,7 +27,7 @@ export default function ExperienceExtractionModal({
   const { mutate: startExtractExperience, isPending: isStartExtractExperiencePending } =
     useStartExtractExperience();
   const [isProcessing, setIsProcessing] = React.useState(false);
-  const [pendingExtractionId, setPendingExtractionId] = React.useState<number | null>(null);
+  const [pendingExtractionId, setPendingExtractionId] = React.useState<string | null>(null);
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 

@@ -48,12 +48,12 @@ export default function ExperienceSelectionSection({
   const [activeModal, setActiveModal] = React.useState<ExperienceModalType>(null);
   const [activeExperience, setActiveExperience] = React.useState<Experience | null>(null);
   const [isProcessing, setIsProcessing] = React.useState(false);
-  const [pendingStrategyId, setPendingStrategyId] = React.useState<number | null>(null);
-  const [selectedExperienceIds, setSelectedExperienceIds] = React.useState<Set<number>>(
+  const [pendingStrategyId, setPendingStrategyId] = React.useState<string | null>(null);
+  const [selectedExperienceIds, setSelectedExperienceIds] = React.useState<Set<string>>(
     () => new Set(),
   );
 
-  const handleSelectedChange = React.useCallback((experienceId: number, selected: boolean) => {
+  const handleSelectedChange = React.useCallback((experienceId: string, selected: boolean) => {
     setSelectedExperienceIds((currentIds) => {
       const nextIds = new Set(currentIds);
 
@@ -102,9 +102,7 @@ export default function ExperienceSelectionSection({
       return;
     }
 
-    const numericPostAnalysisId = Number(postAnalysisId);
-
-    if (!Number.isSafeInteger(numericPostAnalysisId) || numericPostAnalysisId <= 0) {
+    if (!postAnalysisId) {
       toast.error('공고 분석 정보를 확인하지 못했습니다. 다시 시도해주세요.');
       return;
     }
@@ -113,7 +111,7 @@ export default function ExperienceSelectionSection({
 
     createStrategy(
       {
-        postAnalysisId: numericPostAnalysisId,
+        postAnalysisId,
         experienceIds: [...selectedExperienceIds],
       },
       {
@@ -152,8 +150,7 @@ export default function ExperienceSelectionSection({
       setPendingStrategyId(null);
       setIsProcessing(false);
       toast.error(
-        getErrorMessage(error) ||
-          '포트폴리오 전략을 생성하지 못했습니다. 다시 시도해주세요.',
+        getErrorMessage(error) || '포트폴리오 전략을 생성하지 못했습니다. 다시 시도해주세요.',
       );
     }
   }, [pendingStrategyId, queryClient, router]);
@@ -161,9 +158,7 @@ export default function ExperienceSelectionSection({
   const handleStrategyFailed = React.useCallback((payload: AiJobSseFailurePayload) => {
     setPendingStrategyId(null);
     setIsProcessing(false);
-    toast.error(
-      payload.message || '포트폴리오 전략을 생성하지 못했습니다. 다시 시도해주세요.',
-    );
+    toast.error(payload.message || '포트폴리오 전략을 생성하지 못했습니다. 다시 시도해주세요.');
   }, []);
 
   return (

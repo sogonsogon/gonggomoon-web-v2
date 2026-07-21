@@ -16,7 +16,7 @@ export async function getStrategyList(): Promise<ApiResponse<GetStrategyListResp
 }
 
 //포폴 전략 단건 조회
-export async function getStrategy(strategyId: number): Promise<ApiResponse<StrategyResult>> {
+export async function getStrategy(strategyId: string): Promise<ApiResponse<StrategyResult>> {
   const response = await privateFetch<GetStrategyDetailResponse>(
     `/api/v1/portfolio-strategies/${strategyId}`,
     {
@@ -29,8 +29,8 @@ export async function getStrategy(strategyId: number): Promise<ApiResponse<Strat
 // 포폴 전략 생성
 export async function createStrategy(
   payload: CreateStrategyRequest,
-): Promise<ApiResponse<{ strategyId: number }>> {
-  const response = await privateFetch<{ strategyId: number }>(`/api/v1/portfolio-strategies`, {
+): Promise<ApiResponse<{ strategyId: string }>> {
+  const response = await privateFetch<{ strategyId: string }>(`/api/v1/portfolio-strategies`, {
     method: 'POST',
     body: JSON.stringify(payload),
   });
@@ -38,7 +38,7 @@ export async function createStrategy(
 }
 
 //포폴 전략 삭제
-export async function deleteStrategy(strategyId: number): Promise<ApiResponse<null>> {
+export async function deleteStrategy(strategyId: string): Promise<ApiResponse<null>> {
   const response = await privateFetch<null>(`/api/v1/portfolio-strategies/${strategyId}`, {
     method: 'DELETE',
   });

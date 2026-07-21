@@ -1,7 +1,7 @@
 export type ExperienceType = 'CAREER' | 'PROJECT' | 'EDUCATION' | 'COMPETITION' | 'OTHER';
 
 export type Experience = {
-  experienceId: number;
+  experienceId: string;
   title: string;
   experienceType: ExperienceType;
   experienceContent?: string;
@@ -26,7 +26,7 @@ export type CreateExperienceRequest = {
 
 // 경험 수정
 export type UpdateExperienceRequest = {
-  experienceId: number;
+  experienceId: string;
   payload: {
     title: string;
     experienceType: ExperienceType;
@@ -39,7 +39,7 @@ export type UpdateExperienceRequest = {
 export type UpdateExperienceResponse = Experience;
 
 export type StartExtractExperienceResponse = {
-  extractionId: number;
+  extractionId: string;
 };
 
 // 경험 추출 가능 여부 조회

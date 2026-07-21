@@ -33,7 +33,7 @@ interface ExperienceRegisterModalProps {
 }
 
 interface ExperienceFormModalContentProps {
-  id?: number; // id가 존재하면 수정, 없으면 등록
+  id?: string; // id가 존재하면 수정, 없으면 등록
   title: string;
   description: string;
   submitLabel: string;

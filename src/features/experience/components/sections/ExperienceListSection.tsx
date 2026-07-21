@@ -11,8 +11,8 @@ import { cn } from '@/shared/lib/cn';
 interface ExperienceListSectionProps {
   experiences: Experience[];
   isLoading: boolean;
-  selectedExperienceIds: Set<number>;
-  onSelectedChange: (experienceId: number, selected: boolean) => void;
+  selectedExperienceIds: Set<string>;
+  onSelectedChange: (experienceId: string, selected: boolean) => void;
   onToggleAll: () => void;
   onRegisterClick: () => void;
   onDetailClick: (experience: Experience) => void;

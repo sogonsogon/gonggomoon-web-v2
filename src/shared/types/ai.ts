@@ -9,7 +9,7 @@ export type AiJobType = (typeof AI_JOB_TYPES)[number];
 
 export type AiJobSubscribeTarget = {
   type: AiJobType;
-  id: string | number;
+  id: string;
 };
 
 export type AiJobSseEventType = 'failed' | 'already_finished' | 'ai-job-status';
@@ -17,10 +17,10 @@ export type AiJobSseEventType = 'failed' | 'already_finished' | 'ai-job-status';
 export type AiJobStatus = 'READY' | 'PROCESSING' | 'FAILED';
 
 export type AiJobStatusPayload = {
-  id?: string | number;
+  id?: string;
   type?: AiJobType;
   status: AiJobStatus;
-  strategyId?: number;
+  strategyId?: string;
   code?: string;
   message?: string;
 };
